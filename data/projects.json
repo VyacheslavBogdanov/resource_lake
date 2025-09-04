@@ -1,1 +1,34 @@
-{ "projects": [] }
+{
+  "projects": [
+    {
+      "name": "123",
+      "archived": false,
+      "id": 1
+    },
+    {
+      "name": "234",
+      "archived": false,
+      "id": 2
+    },
+    {
+      "name": "456",
+      "archived": false,
+      "id": 3
+    },
+    {
+      "name": "ыфв",
+      "archived": false,
+      "id": 4
+    },
+    {
+      "name": "фыв",
+      "archived": false,
+      "id": 5
+    },
+    {
+      "name": "фыв",
+      "archived": false,
+      "id": 6
+    }
+  ]
+}

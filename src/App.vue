@@ -9,6 +9,11 @@
 
 <script setup lang="ts">
 import NavHeader from './components/NavHeader.vue';
+import { onMounted } from 'vue';
+import { useResourceStore } from './stores/resource';
+
+const store = useResourceStore();
+onMounted(() => store.fetchAll());
 </script>
 
 <style scoped lang="scss">

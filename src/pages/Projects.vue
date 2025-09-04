@@ -52,10 +52,11 @@ import { onMounted, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 import type { Project } from '../types/domain';
 
-const store = useResourceStore();
-const newName = ref('');
-
 onMounted(() => store.fetchAll());
+
+const store = useResourceStore();
+
+const newName = ref('');
 
 async function addProject() {
 	await store.addProject(newName.value);
