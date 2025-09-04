@@ -1,1 +1,29 @@
-{ "groups": [] }
+{
+  "groups": [
+    {
+      "name": "a",
+      "capacityHours": 1,
+      "id": 1
+    },
+    {
+      "name": "b",
+      "capacityHours": 2,
+      "id": 2
+    },
+    {
+      "name": "c",
+      "capacityHours": 3,
+      "id": 3
+    },
+    {
+      "name": "e",
+      "capacityHours": 4,
+      "id": 4
+    },
+    {
+      "name": "f",
+      "capacityHours": 5,
+      "id": 5
+    }
+  ]
+}

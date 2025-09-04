@@ -1,34 +1,29 @@
 {
   "projects": [
     {
-      "name": "123",
+      "name": "1",
       "archived": false,
       "id": 1
     },
     {
-      "name": "234",
+      "name": "2",
       "archived": false,
       "id": 2
     },
     {
-      "name": "456",
+      "name": "3",
       "archived": false,
       "id": 3
     },
     {
-      "name": "ыфв",
+      "name": "4",
       "archived": false,
       "id": 4
     },
     {
-      "name": "фыв",
+      "name": "5",
       "archived": false,
       "id": 5
-    },
-    {
-      "name": "фыв",
-      "archived": false,
-      "id": 6
     }
   ]
 }
