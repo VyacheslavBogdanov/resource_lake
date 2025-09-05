@@ -1,29 +1,24 @@
 {
   "groups": [
     {
-      "name": "a",
-      "capacityHours": 1,
+      "name": "Конструкторыыыыыы",
+      "capacityHours": 200,
       "id": 1
     },
     {
-      "name": "b",
-      "capacityHours": 2,
+      "name": "Программисты",
+      "capacityHours": 20,
       "id": 2
     },
     {
-      "name": "c",
-      "capacityHours": 3,
+      "name": "Тестеровщики",
+      "capacityHours": 50,
       "id": 3
     },
     {
-      "name": "e",
-      "capacityHours": 4,
+      "name": "Дев опсы",
+      "capacityHours": 33,
       "id": 4
-    },
-    {
-      "name": "f",
-      "capacityHours": 5,
-      "id": 5
     }
   ]
 }
