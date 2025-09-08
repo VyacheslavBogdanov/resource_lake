@@ -19,9 +19,10 @@ onMounted(() => store.fetchAll());
 <style scoped lang="scss">
 .app {
 	&__main {
+		display: inline;
 		max-width: 1100px;
-		margin: 20px auto;
-		padding: 0 16px;
+		margin: 50px auto;
+		padding: 0 20px;
 	}
 }
 </style>

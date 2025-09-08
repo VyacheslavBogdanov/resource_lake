@@ -47,6 +47,24 @@
       "groupId": 4,
       "hours": 65,
       "id": 8
+    },
+    {
+      "projectId": 4,
+      "groupId": 5,
+      "hours": 300,
+      "id": 9
+    },
+    {
+      "projectId": 5,
+      "groupId": 5,
+      "hours": 100,
+      "id": 10
+    },
+    {
+      "projectId": 6,
+      "groupId": 5,
+      "hours": 100,
+      "id": 11
     }
   ]
 }
