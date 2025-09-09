@@ -15,7 +15,7 @@
     {
       "projectId": 1,
       "groupId": 2,
-      "hours": 19,
+      "hours": 5,
       "id": 3
     },
     {
@@ -47,6 +47,36 @@
       "groupId": 4,
       "hours": 65,
       "id": 8
+    },
+    {
+      "projectId": 1,
+      "groupId": 7,
+      "hours": 100,
+      "id": 9
+    },
+    {
+      "projectId": 2,
+      "groupId": 7,
+      "hours": 100,
+      "id": 10
+    },
+    {
+      "projectId": 3,
+      "groupId": 7,
+      "hours": 100,
+      "id": 11
+    },
+    {
+      "projectId": 4,
+      "groupId": 7,
+      "hours": 100,
+      "id": 12
+    },
+    {
+      "projectId": 5,
+      "groupId": 7,
+      "hours": 100,
+      "id": 13
     }
   ]
 }

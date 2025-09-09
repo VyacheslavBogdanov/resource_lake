@@ -73,6 +73,10 @@
 				<h2 class="plan__chart-title">Загрузка по группам</h2>
 				<div class="plan__legend">
 					<span class="plan__legend-item">
+						<i class="plan__legend-swatch plan__legend-swatch--overspending"></i>
+						Перерасход
+					</span>
+					<span class="plan__legend-item">
 						<i class="plan__legend-swatch plan__legend-swatch--alloc"></i> Заложено
 					</span>
 					<span class="plan__legend-item">
@@ -83,7 +87,9 @@
 
 			<div class="plan__bars">
 				<div v-for="row in chartRows" :key="row.id" class="plan__bar-row">
-					<div class="plan__bar-label" :title="row.name">{{ row.name }}</div>
+					<div class="plan__bar-label" :title="row.name">
+						{{ row.name }}
+					</div>
 
 					<div class="plan__bar-track" :title="`Ёмкость: ${row.capacity} ч`">
 						<!-- Заложено: цвет и ширина по правилам -->
@@ -93,7 +99,6 @@
 							:title="`Заложено: ${row.allocated} ч`"
 						></div>
 					</div>
-
 					<div class="plan__bar-value">{{ row.allocated }} / {{ row.capacity }} ч</div>
 				</div>
 			</div>
@@ -171,7 +176,7 @@ const chartRows = computed(() => {
 
 	&__th,
 	&__cell {
-		padding: 10px 10px;
+		padding: 20px 10px;
 		text-align: center;
 		border-bottom: 1px solid #e9eef6;
 		white-space: nowrap;
@@ -224,7 +229,6 @@ const chartRows = computed(() => {
 		margin-top: 18px;
 		background: #fff;
 		border: 1px solid #e6eef7;
-		border-radius: 12px;
 		box-shadow: var(--shadow);
 		padding: 14px;
 	}
@@ -243,6 +247,7 @@ const chartRows = computed(() => {
 
 	&__legend {
 		display: flex;
+		flex-direction: row-reverse;
 		gap: 14px;
 		flex-wrap: wrap;
 	}
@@ -265,6 +270,9 @@ const chartRows = computed(() => {
 	&__legend-swatch--cap {
 		background: #cfe1ff;
 	}
+	&__legend-swatch--overspending {
+		background: rgb(239, 68, 68);
+	}
 
 	&__bars {
 		display: flex;
@@ -274,10 +282,8 @@ const chartRows = computed(() => {
 	}
 
 	&__bar-row {
-		display: grid;
-		grid-template-columns: 1fr 6fr auto;
+		display: block;
 		align-items: center;
-		gap: 10px;
 	}
 	&__bar-label {
 		font-size: 14px;
