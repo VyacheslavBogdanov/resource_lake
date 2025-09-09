@@ -15,13 +15,13 @@
     {
       "projectId": 1,
       "groupId": 2,
-      "hours": 20,
+      "hours": 19,
       "id": 3
     },
     {
       "projectId": 2,
       "groupId": 2,
-      "hours": 170,
+      "hours": 0,
       "id": 4
     },
     {
@@ -47,24 +47,6 @@
       "groupId": 4,
       "hours": 65,
       "id": 8
-    },
-    {
-      "projectId": 4,
-      "groupId": 5,
-      "hours": 300,
-      "id": 9
-    },
-    {
-      "projectId": 5,
-      "groupId": 5,
-      "hours": 100,
-      "id": 10
-    },
-    {
-      "projectId": 6,
-      "groupId": 5,
-      "hours": 100,
-      "id": 11
     }
   ]
 }

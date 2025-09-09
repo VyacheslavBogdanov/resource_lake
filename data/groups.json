@@ -19,11 +19,6 @@
       "name": "Дев опсы",
       "capacityHours": 33,
       "id": 4
-    },
-    {
-      "name": "Слава",
-      "capacityHours": 300,
-      "id": 5
     }
   ]
 }
