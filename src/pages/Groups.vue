@@ -27,11 +27,9 @@ function startEdit(g: Group) {
 	editCap.value = g.capacityHours;
 }
 
-// сохранить изменения
 async function saveEdit(g: Group) {
 	if (editingId.value !== g.id) return;
 
-	// простая валидация
 	const name = editName.value.trim();
 	const cap = Number(editCap.value ?? 0);
 	if (!name) {
@@ -45,9 +43,7 @@ async function saveEdit(g: Group) {
 
 	saving.value = true;
 	try {
-		// требуется экшен в Pinia: updateGroup(id, { name?, capacityHours? })
 		await store.updateGroup(g.id, { name, capacityHours: cap });
-		// выход из режима редактирования
 		editingId.value = null;
 	} finally {
 		saving.value = false;
@@ -83,73 +79,94 @@ async function removeGroup(g: Group) {
 		</form>
 
 		<table class="groups__table" v-if="store.groups.length">
+			<!-- фикс ширины колонок -->
+			<colgroup>
+				<col style="width: 34%" />
+				<col style="width: 33%" />
+				<col style="width: 33%" />
+			</colgroup>
+
 			<thead>
 				<tr>
-					<th class="groups__th groups__th--left">Название</th>
-					<th class="groups__th">Ёмкость (ч·ч)</th>
-					<th class="groups__th">Действия</th>
+					<th class="groups__th groups__th--left">
+						<div class="groups__cell-inner">Название</div>
+					</th>
+					<th class="groups__th"><div class="groups__cell-inner">Ёмкость (ч·ч)</div></th>
+					<th class="groups__th"><div class="groups__cell-inner">Действия</div></th>
 				</tr>
 			</thead>
+
 			<tbody>
 				<tr v-for="g in store.groups" :key="g.id" class="groups__row">
-					<td
-						class="groups__cell groups__cell--left"
-						:class="{ 'groups__cell--editing': editingId === g.id }"
-					>
-						<template v-if="editingId === g.id">
-							<input
-								class="groups__input groups__input--inline"
-								v-model.trim="editName"
-								:disabled="saving"
-								@keydown.enter.prevent="saveEdit(g)"
-								@keydown.esc.prevent="editingId = null"
-								autofocus
-							/>
-						</template>
-						<template v-else>
-							{{ g.name }}
-						</template>
-					</td>
+					<!-- Имя -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
 					>
-						<template v-if="editingId === g.id">
-							<input
-								class="groups__input groups__input--num groups__input--inline"
-								type="number"
-								min="0"
-								v-model.number="editCap"
-								:disabled="saving"
-								@keydown.enter.prevent="saveEdit(g)"
-								@keydown.esc.prevent="editingId = null"
-							/>
-						</template>
-						<template v-else>
-							{{ g.capacityHours }}
-						</template>
+						<div class="groups__cell-inner">
+							<template v-if="editingId === g.id">
+								<input
+									class="groups__input groups__input--inline"
+									v-model.trim="editName"
+									:disabled="saving"
+									@keydown.enter.prevent="saveEdit(g)"
+									@keydown.esc.prevent="editingId = null"
+								/>
+							</template>
+							<template v-else>
+								<span class="groups__text" :title="g.name">{{ g.name }}</span>
+							</template>
+						</div>
 					</td>
-					<td class="groups__cell">
-						<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
-							Редактировать
-						</button>
 
-						<button
-							v-else
-							class="btn btn--primary"
-							:disabled="saving"
-							@click="saveEdit(g)"
-						>
-							Сохранить
-						</button>
+					<!-- Ёмкость -->
+					<td
+						class="groups__cell"
+						:class="{ 'groups__cell--editing': editingId === g.id }"
+					>
+						<div class="groups__cell-inner">
+							<template v-if="editingId === g.id">
+								<input
+									class="groups__input groups__input--num groups__input--inline"
+									type="number"
+									min="0"
+									v-model.number="editCap"
+									:disabled="saving"
+									@keydown.enter.prevent="saveEdit(g)"
+									@keydown.esc.prevent="editingId = null"
+								/>
+							</template>
+							<template v-else>
+								<span class="groups__text">{{ g.capacityHours }}</span>
+							</template>
+						</div>
+					</td>
 
-						<button
-							class="btn btn--danger"
-							:disabled="saving && editingId === g.id"
-							@click="removeGroup(g)"
-						>
-							Удалить
-						</button>
+					<!-- Действия -->
+					<td class="groups__cell groups__cell--actions">
+						<div class="groups__cell-inner groups__actions">
+							<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
+								Редактировать
+							</button>
+
+							<button
+								v-else
+								class="btn btn--primary"
+								:disabled="saving"
+								@click="saveEdit(g)"
+							>
+								Сохранить
+							</button>
+
+							<button
+								v-if="editingId !== g.id"
+								class="btn btn--danger"
+								:disabled="saving && editingId === g.id"
+								@click="removeGroup(g)"
+							>
+								Удалить
+							</button>
+						</div>
 					</td>
 				</tr>
 			</tbody>
@@ -161,58 +178,102 @@ async function removeGroup(g: Group) {
 
 <style scoped lang="scss">
 .groups {
+	/* Константы для стабильной высоты */
+	--row-h: 44px; /* высота строки таблицы */
+	--ctl-h: 32px; /* высота инпута/кнопки */
+
 	&__title {
 		margin-bottom: 16px;
 	}
+
 	&__form {
 		display: flex;
-		gap: 8px;
+		gap: 10px;
 		margin-bottom: 14px;
 		flex-wrap: wrap;
 	}
+
 	&__input {
-		padding: 8px 10px;
+		padding: 0 10px;
+		height: var(--ctl-h);
 		border: 1px solid #cfe1ff;
 		border-radius: 8px;
+		background: #fff;
+		box-sizing: border-box;
+		font: inherit;
 	}
 	&__input--num {
 		width: 200px;
 	}
+	&__input--inline {
+		width: 40%;
+	}
+
 	&__table {
 		width: 100%;
 		background: #fff;
-		border-radius: 12px;
 		box-shadow: var(--shadow);
 		border-collapse: separate;
 		border-spacing: 0;
+		table-layout: fixed;
 	}
+
+	/* ВАЖНО: у ячеек нет вертикальных паддингов — высоту держит inner-контейнер */
 	&__th,
 	&__cell {
-		padding: 10px 12px;
+		padding: 0 12px;
 		border-bottom: 1px solid #e9eef6;
-		text-align: left;
+		text-align: center;
+		vertical-align: middle;
 	}
-	&__th--left,
-	&__cell--left {
-		text-align: left;
+
+	/* Внутренний контейнер фиксированной высоты выравнивает контент по центру */
+	&__cell-inner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: var(--row-h);
+		height: var(--row-h);
+		gap: 8px;
 	}
+
 	&__cell--editing {
 		background: #f8fbff;
 	}
+	&__cell--actions {
+		white-space: nowrap;
+	}
+
+	&__actions {
+		display: inline-flex;
+		gap: 8px;
+		min-width: 220px; /* фикс ширины колонки действий */
+	}
+
+	&__text {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		line-height: 1; /* не влияем на высоту контейнера */
+	}
+
 	&__empty {
 		color: #446;
 	}
-	&__input--inline {
-		width: 100%;
-	}
 }
+
 .btn {
-	padding: 6px 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: var(--ctl-h);
+	padding: 0 12px;
 	border: 1px solid #cfe1ff;
 	border-radius: 8px;
 	background: #fff;
 	cursor: pointer;
-	margin-right: 6px;
 	&:hover {
 		background: #f4f8ff;
 	}

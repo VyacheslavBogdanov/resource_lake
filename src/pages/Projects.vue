@@ -80,7 +80,7 @@ async function removeProject(p: Project) {
 		margin-bottom: 14px;
 	}
 	&__input {
-		flex: 1;
+		flex: 0;
 		padding: 8px 10px;
 		border: 1px solid #cfe1ff;
 		border-radius: 8px;
@@ -88,7 +88,6 @@ async function removeProject(p: Project) {
 	&__table {
 		width: 100%;
 		background: #fff;
-		border-radius: 12px;
 		box-shadow: var(--shadow);
 		border-collapse: separate;
 		border-spacing: 0;
