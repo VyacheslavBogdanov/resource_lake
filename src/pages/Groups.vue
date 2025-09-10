@@ -274,9 +274,7 @@ async function removeGroup(g: Group) {
 	border-radius: 8px;
 	background: #fff;
 	cursor: pointer;
-	&:hover {
-		background: #f4f8ff;
-	}
+
 	&--primary {
 		background: var(--blue-600);
 		color: #fff;
