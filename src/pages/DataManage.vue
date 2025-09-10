@@ -107,7 +107,6 @@ async function saveAll() {
 	&__table {
 		width: 100%;
 		background: #fff;
-		border-radius: 12px;
 		box-shadow: var(--shadow);
 		border-collapse: separate;
 		border-spacing: 0;

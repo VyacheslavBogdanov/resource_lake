@@ -1,1 +1,44 @@
-{ "groups": [] }
+{
+  "groups": [
+    {
+      "name": "Конструкторы",
+      "capacityHours": 2000,
+      "id": 1
+    },
+    {
+      "name": "Программисты",
+      "capacityHours": 20,
+      "id": 2
+    },
+    {
+      "name": "Тестеровщики",
+      "capacityHours": 50,
+      "id": 3
+    },
+    {
+      "name": "Дев опсы",
+      "capacityHours": 33,
+      "id": 4
+    },
+    {
+      "name": "rg5",
+      "capacityHours": 300,
+      "id": 5
+    },
+    {
+      "name": "rg6",
+      "capacityHours": 500,
+      "id": 6
+    },
+    {
+      "name": "rg7",
+      "capacityHours": 700,
+      "id": 7
+    },
+    {
+      "name": "rg8",
+      "capacityHours": 99,
+      "id": 8
+    }
+  ]
+}

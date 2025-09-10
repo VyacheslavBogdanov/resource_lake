@@ -1,34 +1,29 @@
 {
   "projects": [
     {
-      "name": "123",
+      "name": "Проект «Ветрянная мельница»",
       "archived": false,
       "id": 1
     },
     {
-      "name": "234",
+      "name": "Проект «Лучший друг»",
       "archived": false,
       "id": 2
     },
     {
-      "name": "456",
+      "name": "Проект №3",
       "archived": false,
       "id": 3
     },
     {
-      "name": "ыфв",
+      "name": "Проект №4",
       "archived": false,
       "id": 4
     },
     {
-      "name": "фыв",
+      "name": "Проект №5",
       "archived": false,
       "id": 5
-    },
-    {
-      "name": "фыв",
-      "archived": false,
-      "id": 6
     }
   ]
 }

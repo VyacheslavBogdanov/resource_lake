@@ -11,10 +11,11 @@ async function http<T>(input: RequestInfo, init: RequestInit = {}): Promise<T> {
 	});
 	if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
 
-	// json-server может вернуть пусто на DELETE
+	// json-server на DELETE может вернуть пусто
 	return (method === 'DELETE' ? (undefined as unknown as T) : await res.json()) as T;
 }
 
+// Приводим ответ к массиву: поддерживаем и [] и { key: [] }
 function pickList<T>(key: string, data: any): T[] {
 	if (Array.isArray(data)) return data as T[];
 	if (data && Array.isArray(data[key])) return data[key] as T[];
@@ -23,39 +24,11 @@ function pickList<T>(key: string, data: any): T[] {
 }
 
 export const api = {
-	// УСТОЙЧИВО: /projects → массив, либо {projects:[...]} с fallback'ами
 	list: async <T>(path: string) => {
-		const key = path.replace(/^\//, '').split('/').pop() || path; // 'projects'
-		// 1) основной эндпоинт
-		try {
-			const d1 = await http<any>(`${BASE}/${path}`);
-			const a1 = pickList<T>(key, d1);
-			if (a1.length) return a1;
-		} catch (_) {
-			/* игнор */
-		}
-
-		// 2) fallback /db (часто есть у json-server)
-		try {
-			const d2 = await http<any>(`${BASE}/db`);
-			const a2 = pickList<T>(key, d2);
-			if (a2.length) return a2;
-		} catch (_) {
-			/* игнор */
-		}
-
-		// 3) fallback корень '/'
-		try {
-			const d3 = await http<any>(`${BASE}/`);
-			const a3 = pickList<T>(key, d3);
-			if (a3.length) return a3;
-		} catch (_) {
-			/* игнор */
-		}
-
-		return [] as T[];
+		const key = path.replace(/^\//, '').split('/').pop() || path; // 'projects' | 'groups' | 'allocations'
+		const data = await http<any>(`${BASE}/${path}`);
+		return pickList<T>(key, data);
 	},
-
 	get: <T>(path: string, id: number) => http<T>(`${BASE}/${path}/${id}`),
 	create: <T>(path: string, payload: unknown) =>
 		http<T>(`${BASE}/${path}`, { method: 'POST', body: JSON.stringify(payload) }),
