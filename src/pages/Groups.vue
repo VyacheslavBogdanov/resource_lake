@@ -79,7 +79,6 @@ async function removeGroup(g: Group) {
 		</form>
 
 		<table class="groups__table" v-if="store.groups.length">
-			<!-- фикс ширины колонок -->
 			<colgroup>
 				<col style="width: 34%" />
 				<col style="width: 33%" />
@@ -98,7 +97,6 @@ async function removeGroup(g: Group) {
 
 			<tbody>
 				<tr v-for="g in store.groups" :key="g.id" class="groups__row">
-					<!-- Имя -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -119,7 +117,6 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<!-- Ёмкость -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -142,7 +139,6 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<!-- Действия -->
 					<td class="groups__cell groups__cell--actions">
 						<div class="groups__cell-inner groups__actions">
 							<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
@@ -178,9 +174,8 @@ async function removeGroup(g: Group) {
 
 <style scoped lang="scss">
 .groups {
-	/* Константы для стабильной высоты */
-	--row-h: 44px; /* высота строки таблицы */
-	--ctl-h: 32px; /* высота инпута/кнопки */
+	--row-h: 44px;
+	--ctl-h: 32px;
 
 	&__title {
 		margin-bottom: 16px;
@@ -218,7 +213,6 @@ async function removeGroup(g: Group) {
 		table-layout: fixed;
 	}
 
-	/* ВАЖНО: у ячеек нет вертикальных паддингов — высоту держит inner-контейнер */
 	&__th,
 	&__cell {
 		padding: 0 12px;
@@ -227,7 +221,6 @@ async function removeGroup(g: Group) {
 		vertical-align: middle;
 	}
 
-	/* Внутренний контейнер фиксированной высоты выравнивает контент по центру */
 	&__cell-inner {
 		display: flex;
 		align-items: center;
@@ -247,7 +240,7 @@ async function removeGroup(g: Group) {
 	&__actions {
 		display: inline-flex;
 		gap: 8px;
-		min-width: 220px; /* фикс ширины колонки действий */
+		min-width: 220px;
 	}
 
 	&__text {
@@ -256,7 +249,7 @@ async function removeGroup(g: Group) {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		line-height: 1; /* не влияем на высоту контейнера */
+		line-height: 1;
 	}
 
 	&__empty {

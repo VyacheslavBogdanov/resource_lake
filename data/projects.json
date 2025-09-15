@@ -24,6 +24,16 @@
       "name": "Проект №5",
       "archived": false,
       "id": 5
+    },
+    {
+      "name": "Проект 6",
+      "archived": false,
+      "id": 6
+    },
+    {
+      "name": "Проект 7",
+      "archived": false,
+      "id": 7
     }
   ]
 }

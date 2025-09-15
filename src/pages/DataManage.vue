@@ -76,7 +76,7 @@ async function saveAll() {
 	await store.batchSetAllocationsForGroup(selectedGroupId.value, buffer.value);
 	const cur = selectedGroupId.value;
 	selectedGroupId.value = 0;
-	selectedGroupId.value = cur; // пересчитать буфер из актуальных allocations
+	selectedGroupId.value = cur;
 	alert('Сохранено');
 }
 </script>
