@@ -2,7 +2,6 @@
 	<section class="plan">
 		<h1 class="plan__title">Ресурсный план</h1>
 
-		<!-- KPI -->
 		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Проектов</div>
@@ -30,14 +29,12 @@
 
 		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
-				<!-- РОВНАЯ раскладка: фикс ширин колонок -->
 				<colgroup>
 					<col style="width: 28ch" />
-					<!-- Проект -->
+
 					<col v-for="g in store.groups" :key="g.id" style="width: 12ch" />
-					<!-- Группы -->
+
 					<col style="width: 16ch" />
-					<!-- Итого по проекту -->
 				</colgroup>
 
 				<thead>
@@ -143,7 +140,6 @@
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
-		<!-- Диаграмма (ровная сетка) -->
 		<div v-if="store.groups.length" class="plan__chart">
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">Загрузка по группам</h2>
@@ -185,7 +181,6 @@ import { useResourceStore } from '../stores/resource';
 const store = useResourceStore();
 onMounted(() => store.fetchAll());
 
-/* KPI */
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (Number(g.capacityHours) || 0), 0),
 );
@@ -201,7 +196,6 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
-/* Прогресс для заголовков по группам */
 type HeaderBar = { fillPct: number; fillColor: string };
 const headerBars = computed<Record<number, HeaderBar>>(() => {
 	const map: Record<number, HeaderBar> = {};
@@ -233,7 +227,6 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
-/* Диаграмма */
 const chartRows = computed(() => {
 	return store.groups.map((g) => {
 		const capacity = Number(g.capacityHours) || 0;
@@ -267,16 +260,14 @@ const chartRows = computed(() => {
 
 <style scoped lang="scss">
 .plan {
-	/* Базовая сетка и размеры — для ровности */
-	--row-h: 44px; /* высота строки таблицы */
-	--th-h: 64px; /* высота заголовка колонки */
-	--bar-h: 14px; /* высота полос бар-чарта */
+	--row-h: 44px;
+	--th-h: 64px;
+	--bar-h: 14px;
 
 	&__title {
 		margin-bottom: 16px;
 	}
 
-	/* KPI */
 	&__kpis {
 		display: grid;
 		grid-template-columns: repeat(5, minmax(130px, 1fr));
@@ -355,7 +346,7 @@ const chartRows = computed(() => {
 
 	&__th,
 	&__cell {
-		padding: 0 10px; /* вертикальные паддинги убраны — высоту держит inner */
+		padding: 0 10px;
 		text-align: center;
 		border-bottom: 1px solid #e9eef6;
 		white-space: nowrap;
@@ -364,7 +355,6 @@ const chartRows = computed(() => {
 		vertical-align: middle;
 	}
 
-	/* Внутренние контейнеры фиксируют высоту = ровные строки/заголовки */
 	&__th-inner {
 		height: var(--th-h);
 		display: flex;
@@ -384,7 +374,6 @@ const chartRows = computed(() => {
 		justify-content: flex-start;
 	}
 
-	/* Зебра/ховер для ровной сетки */
 	tbody .plan__row:nth-child(odd) {
 		background: #fbfdff;
 	}
@@ -404,7 +393,7 @@ const chartRows = computed(() => {
 		background: #f8fbff;
 		text-align: left;
 		z-index: 1;
-		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08); /* тонкая тень-разделитель */
+		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08);
 	}
 
 	&__th--total,
@@ -436,7 +425,6 @@ const chartRows = computed(() => {
 		opacity: 0.75;
 	}
 
-	/* Микро-прогресс в заголовке (ровная высота) */
 	&__th-progress {
 		width: 100%;
 		height: 6px;
@@ -515,7 +503,7 @@ const chartRows = computed(() => {
 
 	&__bar-row {
 		display: grid;
-		grid-template-columns: 28ch 1fr 16ch; /* совпадает с colgroup → ровная сетка */
+		grid-template-columns: 28ch 1fr 16ch;
 		align-items: center;
 		gap: 10px;
 		min-height: 32px;
@@ -544,9 +532,6 @@ const chartRows = computed(() => {
 		border-radius: 999px;
 		transition: width 0.3s ease, background-color 0.2s ease;
 	}
-	// &__bar--fill {
-	// 	/* цвет и ширина задаются инлайном */
-	// }
 
 	&__bar-value {
 		font-variant-numeric: tabular-nums;

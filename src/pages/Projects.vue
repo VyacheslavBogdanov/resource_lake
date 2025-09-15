@@ -13,14 +13,12 @@
 		</form>
 
 		<table class="projects__table" v-if="store.projects.length">
-			<!-- фикс ширины колонок -->
 			<colgroup>
 				<col style="width: 55%" />
-				<!-- Название -->
+
 				<col style="width: 15%" />
-				<!-- Статус -->
+
 				<col style="width: 30%" />
-				<!-- Действия -->
 			</colgroup>
 
 			<thead>
@@ -98,9 +96,8 @@ async function removeProject(p: Project) {
 
 <style scoped lang="scss">
 .projects {
-	/* стабильные размеры */
-	--row-h: 44px; /* высота строки */
-	--ctl-h: 32px; /* высота кнопок/инпутов */
+	--row-h: 44px;
+	--ctl-h: 32px;
 
 	&__title {
 		margin-bottom: 16px;
@@ -128,10 +125,9 @@ async function removeProject(p: Project) {
 		box-shadow: var(--shadow);
 		border-collapse: separate;
 		border-spacing: 0;
-		table-layout: fixed; /* фикс раскладка: ширина колонок не прыгает */
+		table-layout: fixed;
 	}
 
-	/* убираем вертикальные паддинги у ячеек — высоту держит inner-контейнер */
 	&__th,
 	&__cell {
 		padding: 0 12px;
@@ -144,7 +140,6 @@ async function removeProject(p: Project) {
 		text-align: left;
 	}
 
-	/* внутренний контейнер фиксированной высоты */
 	&__cell-inner {
 		display: flex;
 		align-items: center;
@@ -171,12 +166,11 @@ async function removeProject(p: Project) {
 		white-space: nowrap;
 	}
 
-	/* действия: фиксируем ширину, чтобы различная длина текста кнопок не меняла макет */
 	&__actions {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		min-width: 280px; /* под "Разархивировать" + "Удалить" */
+		min-width: 280px;
 		justify-content: flex-start;
 	}
 
@@ -185,14 +179,13 @@ async function removeProject(p: Project) {
 	}
 }
 
-/* бейдж со стабильной шириной */
 .badge {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	padding: 0 10px;
 	height: 24px;
-	min-width: 92px; /* чтобы "Активен" / "В архиве" не гуляли */
+	min-width: 92px;
 	border-radius: 999px;
 	font-size: 12px;
 	border: 1px solid transparent;
@@ -209,7 +202,6 @@ async function removeProject(p: Project) {
 	}
 }
 
-/* кнопки одной высоты, не расталкивают строку */
 .btn {
 	display: inline-flex;
 	align-items: center;
@@ -225,7 +217,6 @@ async function removeProject(p: Project) {
 		background: #f4f8ff;
 	}
 
-	/* кнопка архивации бывает длинной — зададим min-width для стабильности */
 	&--archive {
 		min-width: 150px;
 		text-align: center;

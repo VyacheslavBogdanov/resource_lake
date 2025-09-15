@@ -76,9 +76,7 @@ export const useResourceStore = defineStore('resource', {
 			this.groups = await api.list<Group>('groups');
 		},
 
-		// Частичное обновление группы: PATCH /groups/:id, затем перечитать список groups
 		async updateGroup(id: number, patch: { name?: string; capacityHours?: number }) {
-			// Подготавливаем тело: только валидные поля
 			const body: { name?: string; capacityHours?: number } = {};
 
 			if (typeof patch.name === 'string') {
@@ -91,15 +89,12 @@ export const useResourceStore = defineStore('resource', {
 				if (!Number.isFinite(patch.capacityHours) || patch.capacityHours < 0) {
 					throw new Error('capacityHours должно быть числом ≥ 0');
 				}
-				// если нужны только целые:
-				// if (!Number.isInteger(patch.capacityHours)) throw new Error('capacityHours должно быть целым числом');
+
 				body.capacityHours = patch.capacityHours;
 			}
 
-			// если нечего патчить — выходим
 			if (!('name' in body) && !('capacityHours' in body)) return;
 
-			// PATCH и обновление стора
 			await api.update('groups', id, body);
 			this.groups = await api.list('groups');
 		},
