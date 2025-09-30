@@ -5,7 +5,7 @@ type Option = { value: number; label: string; disabled?: boolean };
 
 const props = withDefaults(
 	defineProps<{
-		modelValue: number; // 0 = не выбрано (как у тебя)
+		modelValue: number;
 		options: Option[];
 		placeholder?: string;
 		disabled?: boolean;
@@ -24,16 +24,13 @@ const triggerRef = ref<HTMLButtonElement | null>(null);
 const listRef = ref<HTMLUListElement | null>(null);
 const activeIndex = ref<number>(-1);
 
-// текущая опция
 const selected = computed(() => props.options.find((o) => o.value === props.modelValue));
 const displayLabel = computed(() => selected.value?.label ?? props.placeholder);
 
-// открыть/закрыть
 function toggle() {
 	if (props.disabled) return;
 	open.value = !open.value;
 	if (open.value) {
-		// активируем выделение на выбранную/первую доступную
 		const start = Math.max(
 			0,
 			props.options.findIndex((o) => o.value === props.modelValue),
@@ -48,7 +45,6 @@ function close() {
 	nextTick(() => triggerRef.value?.focus());
 }
 
-// выбор
 function selectByIndex(idx: number) {
 	const opt = props.options[idx];
 	if (!opt || opt.disabled) return;
@@ -56,7 +52,6 @@ function selectByIndex(idx: number) {
 	close();
 }
 
-// навигация
 function setActiveToNearestEnabled(start: number, direction: 0 | 1 | -1 = 0) {
 	const len = props.options.length;
 	if (!len) {
@@ -64,7 +59,6 @@ function setActiveToNearestEnabled(start: number, direction: 0 | 1 | -1 = 0) {
 		return;
 	}
 	if (direction === 0) {
-		// если старт disabled — ищем ближайшую вниз
 		let i = start;
 		while (i < len && props.options[i].disabled) i++;
 		activeIndex.value = i < len ? i : 0;
@@ -130,7 +124,7 @@ function onListKeydown(e: KeyboardEvent) {
 			e.preventDefault();
 			setActiveToNearestEnabled(props.options.length - 1);
 			break;
-		case 'Tab': // позволяем табу выйти, но закрываем список
+		case 'Tab':
 			close();
 			break;
 		default:
@@ -138,7 +132,6 @@ function onListKeydown(e: KeyboardEvent) {
 	}
 }
 
-// клик вне — закрыть
 function onDocClick(ev: MouseEvent) {
 	const t = ev.target as Node;
 	if (triggerRef.value?.contains(t) || listRef.value?.contains(t)) return;
@@ -147,7 +140,6 @@ function onDocClick(ev: MouseEvent) {
 onMounted(() => document.addEventListener('mousedown', onDocClick));
 onBeforeUnmount(() => document.removeEventListener('mousedown', onDocClick));
 
-// если текущего значения нет в списке — сброс на 0
 watch(
 	() => props.options,
 	(opts) => {
@@ -200,7 +192,6 @@ watch(
 			tabindex="0"
 			@keydown="onListKeydown"
 		>
-			<!-- Псевдо-плейсхолдер (неактивный) -->
 			<li v-if="!selected" class="c-select__option is-placeholder" aria-disabled="true">
 				{{ placeholder }}
 			</li>

@@ -18,6 +18,26 @@
 			<button class="btn btn--primary" :disabled="!selectedGroupId" @click="saveAll">
 				Сохранить изменения
 			</button>
+
+			<transition name="fade">
+				<div
+					v-if="showSaved"
+					class="manage__notice manage__notice--success"
+					role="status"
+					aria-live="polite"
+				>
+					<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<path
+							d="M20 6L9 17l-5-5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						/>
+					</svg>
+					<span>Сохранено</span>
+				</div>
+			</transition>
 		</div>
 
 		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
@@ -54,12 +74,15 @@
 
 <script setup lang="ts">
 import UiSelect from '../components/UiSelect.vue';
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
 import { useResourceStore } from '../stores/resource';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
 const buffer = ref<Record<number, number>>({});
+
+const showSaved = ref(false);
+let hideTimer: number | null = null;
 
 onMounted(() => store.fetchAll());
 
@@ -82,13 +105,23 @@ function groupName(id: number) {
 	return store.groups.find((g) => g.id === id)?.name ?? '';
 }
 
+function showSuccess() {
+	showSaved.value = true;
+	if (hideTimer) window.clearTimeout(hideTimer);
+	hideTimer = window.setTimeout(() => (showSaved.value = false), 2500);
+}
+
+onBeforeUnmount(() => {
+	if (hideTimer) window.clearTimeout(hideTimer);
+});
+
 async function saveAll() {
 	if (!selectedGroupId.value) return;
 	await store.batchSetAllocationsForGroup(selectedGroupId.value, buffer.value);
 	const cur = selectedGroupId.value;
 	selectedGroupId.value = 0;
 	selectedGroupId.value = cur;
-	alert('Сохранено');
+	showSuccess();
 }
 </script>
 
@@ -115,9 +148,21 @@ async function saveAll() {
 		align-items: center;
 	}
 
-	/* UiSelect уже со своими стилями — зададим минимум ширины, чтобы не прыгал */
 	&__select {
 		min-width: 280px;
+	}
+
+	&__notice {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 10px;
+		border-radius: 999px;
+		border: 1px solid #bbf7d0;
+		background: #ecfdf5;
+		color: #065f46;
+		font-weight: 600;
+		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
 	}
 
 	&__table {
@@ -132,26 +177,23 @@ async function saveAll() {
 		overflow: hidden;
 	}
 
-	/* Центруем ВЕСЬ контент таблицы */
 	&__th,
 	&__cell {
-		padding: 0 12px; /* высоту держим константой ниже */
+		padding: 0 12px;
 		border-bottom: 1px solid #e9eef6;
 		vertical-align: middle;
 		height: var(--row-h);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		text-align: center; /* <-- центрирование */
+		text-align: center;
 	}
 
-	/* правим модификаторы, чтобы не сбивали центр */
 	&__th--left,
 	&__cell--left {
-		text-align: center; /* <-- раньше было left */
+		text-align: center;
 	}
 
-	/* зебра и ховер для читабельности */
 	tbody .manage__row:nth-child(odd) {
 		background: #fbfdff;
 	}
@@ -159,7 +201,6 @@ async function saveAll() {
 		background: #f2f7ff;
 	}
 
-	/* плавная подсветка активной строки при фокусе на инпуте */
 	&__cell {
 		transition: background-color 0.15s ease;
 	}
@@ -180,7 +221,6 @@ async function saveAll() {
 		border-radius: 4px 0 0 4px;
 	}
 
-	/* Инпут по центру визуально и по тексту */
 	&__input {
 		width: 140px;
 		height: var(--ctl-h);
@@ -190,9 +230,9 @@ async function saveAll() {
 		border-radius: 8px;
 		background: #fff;
 		box-sizing: border-box;
-		text-align: center; /* <-- центр внутри поля */
-		display: inline-block; /* чтобы центрирование в ячейке работало */
-		margin: 0 auto; /* перестраховка для центрирования блока */
+		text-align: center;
+		display: inline-block;
+		margin: 0 auto;
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -202,15 +242,14 @@ async function saveAll() {
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 	}
 
-	/* убираем стрелки у number (необязательно, но аккуратнее) */
 	&__input::-webkit-outer-spin-button,
 	&__input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
-	&__input[type='number'] {
-		-moz-appearance: textfield;
-	}
+	// &__input[type='number'] {
+	// 	-moz-appearance: textfield;
+	// }
 
 	&__row--archived {
 		opacity: 0.6;
@@ -219,6 +258,16 @@ async function saveAll() {
 	&__empty {
 		color: #446;
 	}
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+	transform: translateY(-4px);
 }
 
 .btn {
@@ -232,9 +281,6 @@ async function saveAll() {
 	align-items: center;
 	justify-content: center;
 
-	&:hover {
-		background: #f4f8ff;
-	}
 	&--primary {
 		background: var(--blue-600);
 		color: #fff;
