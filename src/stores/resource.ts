@@ -13,12 +13,14 @@ export const useResourceStore = defineStore('resource', {
 	}),
 
 	getters: {
+		// значение в ячейке (проект × группа)
 		valueByPair:
 			(state) =>
 			(projectId: number, groupId: number): number =>
 				state.allocations.find((a) => a.projectId === projectId && a.groupId === groupId)
 					?.hours ?? 0,
 
+		// сумма по проекту (строка)
 		rowTotalByProject:
 			(state) =>
 			(projectId: number): number =>
@@ -26,14 +28,31 @@ export const useResourceStore = defineStore('resource', {
 					.filter((a) => a.projectId === projectId)
 					.reduce((s, a) => s + (a.hours || 0), 0),
 
+		// суммы по группам (колонки)
 		colTotals: (state): Record<number, number> => {
 			const m: Record<number, number> = {};
 			for (const a of state.allocations) m[a.groupId] = (m[a.groupId] || 0) + (a.hours || 0);
 			return m;
 		},
 
+		// общий итог по всем проектам
 		grandTotal(): number {
 			return this.allocations.reduce((s, a) => s + (a.hours || 0), 0);
+		},
+
+		/**
+		 * Эффективная ёмкость по id группы:
+		 * capacityHours * (1 - supportPercent/100), обрезано к [0, +∞)
+		 */
+		effectiveCapacityById(state): Record<number, number> {
+			const map: Record<number, number> = {};
+			for (const g of state.groups) {
+				const rawCap = Number(g.capacityHours) || 0;
+				const pct = Math.min(100, Math.max(0, g.supportPercent ?? 0));
+				const eff = Math.max(0, rawCap * (1 - pct / 100));
+				map[g.id] = eff;
+			}
+			return map;
 		},
 	},
 
@@ -51,15 +70,17 @@ export const useResourceStore = defineStore('resource', {
 			this.loading = false;
 		},
 
-		// Projects
+		// ===================== Projects =====================
 		async addProject(name: string) {
 			await api.create<Project>('projects', { name, archived: false });
 			this.projects = await api.list<Project>('projects');
 		},
+
 		async toggleArchiveProject(id: number, archived: boolean) {
 			await api.update<Project>('projects', id, { archived });
 			this.projects = await api.list<Project>('projects');
 		},
+
 		async deleteProject(id: number) {
 			const related = this.allocations.filter((a) => a.projectId === id);
 			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
@@ -70,16 +91,28 @@ export const useResourceStore = defineStore('resource', {
 			]);
 		},
 
-		// Groups
-		async addGroup(name: string, capacityHours: number) {
-			await api.create<Group>('groups', { name, capacityHours });
+		// ===================== Groups =====================
+		/**
+		 * Добавление группы. supportPercent — опционально, по умолчанию 0.
+		 * Сохранится в json-server как поле supportPercent.
+		 */
+		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
+			await api.create<Group>('groups', { name, capacityHours, supportPercent });
 			this.groups = await api.list<Group>('groups');
 		},
 
-		// Частичное обновление группы: PATCH /groups/:id, затем перечитать список groups
-		async updateGroup(id: number, patch: { name?: string; capacityHours?: number }) {
-			// Подготавливаем тело: только валидные поля
-			const body: { name?: string; capacityHours?: number } = {};
+		/**
+		 * Частичное обновление группы (name / capacityHours / supportPercent).
+		 * Все значения валидируются/нормализуются:
+		 * - name.trim() не пустой
+		 * - capacityHours >= 0
+		 * - supportPercent в пределах [0,100]
+		 */
+		async updateGroup(
+			id: number,
+			patch: { name?: string; capacityHours?: number; supportPercent?: number },
+		) {
+			const body: { name?: string; capacityHours?: number; supportPercent?: number } = {};
 
 			if (typeof patch.name === 'string') {
 				const name = patch.name.trim();
@@ -91,17 +124,18 @@ export const useResourceStore = defineStore('resource', {
 				if (!Number.isFinite(patch.capacityHours) || patch.capacityHours < 0) {
 					throw new Error('capacityHours должно быть числом ≥ 0');
 				}
-				// если нужны только целые:
-				// if (!Number.isInteger(patch.capacityHours)) throw new Error('capacityHours должно быть целым числом');
 				body.capacityHours = patch.capacityHours;
 			}
 
-			// если нечего патчить — выходим
-			if (!('name' in body) && !('capacityHours' in body)) return;
+			if (typeof patch.supportPercent === 'number') {
+				const p = Math.min(100, Math.max(0, patch.supportPercent));
+				body.supportPercent = p;
+			}
 
-			// PATCH и обновление стора
+			if (!Object.keys(body).length) return;
+
 			await api.update('groups', id, body);
-			this.groups = await api.list('groups');
+			this.groups = await api.list<Group>('groups');
 		},
 
 		async deleteGroup(id: number) {
@@ -114,7 +148,7 @@ export const useResourceStore = defineStore('resource', {
 			]);
 		},
 
-		// Allocations
+		// ===================== Allocations =====================
 		async setAllocation(projectId: number, groupId: number, hours: number) {
 			const existing = this.allocations.find(
 				(a) => a.projectId === projectId && a.groupId === groupId,
