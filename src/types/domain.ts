@@ -8,6 +8,7 @@ export interface Group {
 	id: number;
 	name: string;
 	capacityHours: number;
+	supportPercent?: number;
 }
 
 export interface Allocation {

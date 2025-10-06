@@ -4,27 +4,38 @@ import { useResourceStore } from '../stores/resource';
 import type { Group } from '../types/domain';
 
 const store = useResourceStore();
+
 const newName = ref('');
 const newCap = ref<number | null>(null);
+const newSupport = ref<number | null>(0); // % поддержки при создании
 
 const editingId = ref<number | null>(null);
 const editName = ref('');
 const editCap = ref<number | null>(null);
+const editSupport = ref<number | null>(null); // % поддержки при редактировании
 const saving = ref(false);
 
 onMounted(() => store.fetchAll());
 
 async function addGroup() {
-	if (newCap.value == null || newCap.value < 0) return;
-	await store.addGroup(newName.value, newCap.value);
+	const cap = Number(newCap.value ?? 0);
+	const sp = Number(newSupport.value ?? 0);
+
+	if (!newName.value.trim()) return;
+	if (!Number.isFinite(cap) || cap < 0) return;
+	if (!Number.isFinite(sp) || sp < 0 || sp > 100) return;
+
+	await store.addGroup(newName.value.trim(), cap, sp);
 	newName.value = '';
 	newCap.value = null;
+	newSupport.value = 0;
 }
 
 function startEdit(g: Group) {
 	editingId.value = g.id;
 	editName.value = g.name;
 	editCap.value = g.capacityHours;
+	editSupport.value = g.supportPercent ?? 0;
 }
 
 async function saveEdit(g: Group) {
@@ -32,6 +43,8 @@ async function saveEdit(g: Group) {
 
 	const name = editName.value.trim();
 	const cap = Number(editCap.value ?? 0);
+	const sp = Number(editSupport.value ?? 0);
+
 	if (!name) {
 		alert('Название не может быть пустым');
 		return;
@@ -40,10 +53,14 @@ async function saveEdit(g: Group) {
 		alert('Ёмкость должна быть числом ≥ 0');
 		return;
 	}
+	if (!Number.isFinite(sp) || sp < 0 || sp > 100) {
+		alert('Процент поддержки должен быть в диапазоне 0–100');
+		return;
+	}
 
 	saving.value = true;
 	try {
-		await store.updateGroup(g.id, { name, capacityHours: cap });
+		await store.updateGroup(g.id, { name, capacityHours: cap, supportPercent: sp });
 		editingId.value = null;
 	} finally {
 		saving.value = false;
@@ -75,14 +92,24 @@ async function removeGroup(g: Group) {
 				placeholder="Часы (ёмкость)"
 				required
 			/>
+			<input
+				class="groups__input groups__input--pct"
+				v-model.number="newSupport"
+				type="number"
+				min="0"
+				max="100"
+				placeholder="% в поддержке"
+				title="Процент ресурсов, уходящих на поддержку (0–100)"
+			/>
 			<button class="btn btn--primary" type="submit">Добавить</button>
 		</form>
 
 		<table class="groups__table" v-if="store.groups.length">
 			<colgroup>
 				<col style="width: 34%" />
-				<col style="width: 33%" />
-				<col style="width: 33%" />
+				<col style="width: 22%" />
+				<col style="width: 12%" />
+				<col style="width: 32%" />
 			</colgroup>
 
 			<thead>
@@ -90,13 +117,21 @@ async function removeGroup(g: Group) {
 					<th class="groups__th groups__th--left">
 						<div class="groups__cell-inner">Название</div>
 					</th>
-					<th class="groups__th"><div class="groups__cell-inner">Ёмкость (ч·ч)</div></th>
-					<th class="groups__th"><div class="groups__cell-inner">Действия</div></th>
+					<th class="groups__th">
+						<div class="groups__cell-inner">Ёмкость (ч·ч)</div>
+					</th>
+					<th class="groups__th">
+						<div class="groups__cell-inner">% в поддержке</div>
+					</th>
+					<th class="groups__th">
+						<div class="groups__cell-inner">Действия</div>
+					</th>
 				</tr>
 			</thead>
 
 			<tbody>
 				<tr v-for="g in store.groups" :key="g.id" class="groups__row">
+					<!-- Название -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -117,6 +152,7 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
+					<!-- Ёмкость -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -139,6 +175,32 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
+					<!-- % в поддержке -->
+					<td
+						class="groups__cell"
+						:class="{ 'groups__cell--editing': editingId === g.id }"
+					>
+						<div class="groups__cell-inner">
+							<template v-if="editingId === g.id">
+								<input
+									class="groups__input groups__input--pct groups__input--inline"
+									type="number"
+									min="0"
+									max="100"
+									v-model.number="editSupport"
+									:disabled="saving"
+									@keydown.enter.prevent="saveEdit(g)"
+									@keydown.esc.prevent="editingId = null"
+									title="Процент ресурсов, уходящих на поддержку (0–100)"
+								/>
+							</template>
+							<template v-else>
+								<span class="groups__text">{{ g.supportPercent ?? 0 }}%</span>
+							</template>
+						</div>
+					</td>
+
+					<!-- Действия -->
 					<td class="groups__cell groups__cell--actions">
 						<div class="groups__cell-inner groups__actions">
 							<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
@@ -196,13 +258,17 @@ async function removeGroup(g: Group) {
 		background: #fff;
 		box-sizing: border-box;
 		font: inherit;
+		text-align: center;
 	}
 	&__input--num {
 		width: 200px;
 	}
+	&__input--pct {
+		width: 140px;
+	} /* компактнее для процентов */
 	&__input--inline {
-		width: 40%;
-	}
+		width: 80%;
+	} /* внутри ячейки — пошире */
 
 	&__table {
 		width: 100%;
@@ -211,6 +277,8 @@ async function removeGroup(g: Group) {
 		border-collapse: separate;
 		border-spacing: 0;
 		table-layout: fixed;
+		border-radius: 12px;
+		overflow: hidden;
 	}
 
 	&__th,
@@ -267,6 +335,10 @@ async function removeGroup(g: Group) {
 	border-radius: 8px;
 	background: #fff;
 	cursor: pointer;
+
+	&:hover {
+		background: #f4f8ff;
+	}
 
 	&--primary {
 		background: var(--blue-600);

@@ -3,17 +3,20 @@
     {
       "name": "Конструкторы",
       "capacityHours": 2000,
-      "id": 1
+      "id": 1,
+      "supportPercent": 0
     },
     {
       "name": "Программисты",
       "capacityHours": 2000,
-      "id": 2
+      "id": 2,
+      "supportPercent": 10
     },
     {
       "name": "Тестеровщики",
       "capacityHours": 50,
-      "id": 3
+      "id": 3,
+      "supportPercent": 50
     },
     {
       "name": "Дев опсы",

@@ -2,6 +2,7 @@
 	<section class="plan">
 		<h1 class="plan__title">Ресурсный план</h1>
 
+		<!-- KPI -->
 		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Проектов</div>
@@ -19,6 +20,15 @@
 				<div class="plan__kpi-label">Заложено</div>
 				<div class="plan__kpi-value">{{ totalAllocated }}</div>
 			</div>
+
+			<!-- Новый KPI: ресурсы в поддержке -->
+			<div class="plan__kpi plan__kpi--support">
+				<div class="plan__kpi-label">В поддержке</div>
+				<div class="plan__kpi-value">
+					<span class="plan__pill plan__pill--support">{{ totalSupport }}</span>
+				</div>
+			</div>
+
 			<div class="plan__kpi plan__kpi--util">
 				<div class="plan__kpi-label">Утилизация</div>
 				<div class="plan__kpi-value">
@@ -31,10 +41,11 @@
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-
 					<col v-for="g in store.groups" :key="g.id" style="width: 12ch" />
-
 					<col style="width: 16ch" />
+					<!-- Итого (по проекту) -->
+					<col style="width: 18ch" />
+					<!-- Размер проекта, % -->
 				</colgroup>
 
 				<thead>
@@ -48,15 +59,19 @@
 							:key="g.id"
 							class="plan__th"
 							:class="{
-								'plan__th--over': (store.colTotals[g.id] || 0) > g.capacityHours,
+								'plan__th--over':
+									(store.colTotals[g.id] || 0) >
+									(store.effectiveCapacityById[g.id] || 0),
 							}"
 							:title="`${g.name}: заложено ${store.colTotals[g.id] || 0} ч из ${
-								g.capacityHours
-							} ч`"
+								store.effectiveCapacityById[g.id] || 0
+							} ч (доступно)`"
 						>
 							<div class="plan__th-inner">
 								<span class="plan__th-name" :title="g.name">{{ g.name }}</span>
-								<small class="plan__capacity">{{ g.capacityHours }} ч</small>
+								<small class="plan__capacity">
+									доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
+								</small>
 								<div class="plan__th-progress" aria-hidden="true">
 									<div
 										class="plan__th-progress-bar"
@@ -72,6 +87,13 @@
 						<th class="plan__th plan__th--total">
 							<div class="plan__th-inner" title="Итого (по проекту)">
 								Итого (по проекту)
+							</div>
+						</th>
+
+						<!-- Новый заголовок: Размер проекта, % -->
+						<th class="plan__th plan__th--total">
+							<div class="plan__th-inner" title="Доля проекта от общего пула">
+								Размер проекта, %
 							</div>
 						</th>
 					</tr>
@@ -95,7 +117,9 @@
 							:key="g.id"
 							class="plan__cell"
 							:class="{
-								'plan__cell--over': (store.colTotals[g.id] || 0) > g.capacityHours,
+								'plan__cell--over':
+									(store.colTotals[g.id] || 0) >
+									(store.effectiveCapacityById[g.id] || 0),
 							}"
 						>
 							<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
@@ -106,6 +130,13 @@
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" :title="`Итого по проекту ${p.name}`">
 								{{ store.rowTotalByProject(p.id) }}
+							</div>
+						</td>
+
+						<!-- Новая ячейка: Размер проекта, % -->
+						<td class="plan__cell plan__cell--total">
+							<div class="plan__cell-inner" :title="`Доля проекта ${p.name}`">
+								{{ projectShare(p.id) }}%
 							</div>
 						</td>
 					</tr>
@@ -121,7 +152,9 @@
 							:key="g.id"
 							class="plan__cell plan__cell--footer"
 							:class="{
-								'plan__cell--over': (store.colTotals[g.id] || 0) > g.capacityHours,
+								'plan__cell--over':
+									(store.colTotals[g.id] || 0) >
+									(store.effectiveCapacityById[g.id] || 0),
 							}"
 						>
 							<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
@@ -133,6 +166,10 @@
 								{{ store.grandTotal }}
 							</div>
 						</td>
+						<!-- Итог для «Размер проекта, %» = 100% -->
+						<td class="plan__cell plan__cell--total">
+							<div class="plan__cell-inner" title="Суммарная доля">100%</div>
+						</td>
 					</tr>
 				</tfoot>
 			</table>
@@ -140,6 +177,7 @@
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
+		<!-- Диаграмма по группам: масштаб и цвет зависят от ЭФФЕКТИВНОЙ ёмкости -->
 		<div v-if="store.groups.length" class="plan__chart">
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">Загрузка по группам</h2>
@@ -181,26 +219,49 @@ import { useResourceStore } from '../stores/resource';
 const store = useResourceStore();
 onMounted(() => store.fetchAll());
 
+/** Общая доступная ёмкость = сумма эффективных ёмкостей всех групп */
 const totalCapacity = computed(() =>
-	store.groups.reduce((s, g) => s + (Number(g.capacityHours) || 0), 0),
+	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
 );
+
+/** Общая сумма часов, уходящих на поддержку */
+const totalSupport = computed(() =>
+	store.groups.reduce((s, g) => {
+		const raw = Number(g.capacityHours) || 0;
+		const eff = Number(store.effectiveCapacityById[g.id] || 0);
+		return s + Math.max(0, raw - eff);
+	}, 0),
+);
+
 const totalAllocated = computed(() => Number(store.grandTotal) || 0);
+
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
 		: 0,
 );
+
 const utilClass = computed(() => {
 	if (utilization.value > 100) return 'is-over';
 	if (utilization.value >= 90) return 'is-warn';
 	return 'is-ok';
 });
 
+/** Доля проекта от общего пула эффективной ёмкости (в %, 1 знак после запятой) */
+function projectShare(projectId: number): string {
+	const total = totalCapacity.value;
+	if (!total) return '0';
+	const row = store.rowTotalByProject(projectId);
+	const pct = (row / total) * 100;
+	return (Math.round(pct * 10) / 10).toString();
+}
+
+/* Прогресс в заголовках по группам — по эффективной ёмкости */
 type HeaderBar = { fillPct: number; fillColor: string };
 const headerBars = computed<Record<number, HeaderBar>>(() => {
 	const map: Record<number, HeaderBar> = {};
 	for (const g of store.groups) {
-		const capacity = Number(g.capacityHours) || 0;
+		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
 		const allocated = Number(store.colTotals[g.id] || 0);
 		let fillPct = 0;
 		let fillColor = 'var(--blue-600)';
@@ -227,9 +288,10 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
+/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы */
 const chartRows = computed(() => {
 	return store.groups.map((g) => {
-		const capacity = Number(g.capacityHours) || 0;
+		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
 		const allocated = Number(store.colTotals[g.id] || 0);
 
 		let fillPct = 0;
@@ -268,9 +330,10 @@ const chartRows = computed(() => {
 		margin-bottom: 16px;
 	}
 
+	/* KPI */
 	&__kpis {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(130px, 1fr));
+		grid-template-columns: repeat(6, minmax(130px, 1fr));
 		gap: 10px;
 		margin-bottom: 12px;
 	}
@@ -299,6 +362,20 @@ const chartRows = computed(() => {
 		display: flex;
 		align-items: center;
 	}
+
+	.plan__pill {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 2px 10px;
+		border-radius: 999px;
+		background: #ecfdf5;
+		border: 1px solid #bbf7d0;
+		color: #065f46;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
 	.plan__util-badge {
 		display: inline-flex;
 		align-items: center;
@@ -371,7 +448,22 @@ const chartRows = computed(() => {
 		justify-content: center;
 	}
 	&__cell-inner--left {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+
+		/* перенос очень длинных токенов без пробелов */
+		overflow-wrap: anywhere;
+		word-break: break-word;
+
+		height: auto;
+		min-height: var(--row-h);
+
+		align-items: flex-start;
 		justify-content: flex-start;
+		text-align: left;
+		line-height: 1.3;
+		padding: 8px 0;
 	}
 
 	tbody .plan__row:nth-child(odd) {
@@ -425,6 +517,7 @@ const chartRows = computed(() => {
 		opacity: 0.75;
 	}
 
+	/* микро-прогресс */
 	&__th-progress {
 		width: 100%;
 		height: 6px;
@@ -540,5 +633,16 @@ const chartRows = computed(() => {
 		white-space: nowrap;
 		text-align: right;
 	}
+}
+
+/* Жёстко снимаем «однострочность» у первой липкой колонки */
+.plan__sticky--left,
+.plan__th--left {
+	white-space: normal !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+}
+.plan__cell.plan__sticky--left {
+	height: auto;
 }
 </style>
