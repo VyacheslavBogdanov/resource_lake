@@ -4,13 +4,36 @@ import type { Project, Group, Allocation } from '../types/domain';
 
 type HoursByProject = Record<number, number>;
 
+const HIDDEN_GROUPS_STORAGE_KEY = 'resource_hidden_group_ids';
+
 export const useResourceStore = defineStore('resource', {
-	state: () => ({
-		projects: [] as Project[],
-		groups: [] as Group[],
-		allocations: [] as Allocation[],
-		loading: false as boolean,
-	}),
+	state: () => {
+		let hiddenGroupIds: number[] = [];
+
+		if (typeof window !== 'undefined') {
+			try {
+				const raw = localStorage.getItem(HIDDEN_GROUPS_STORAGE_KEY);
+				if (raw) {
+					const parsed = JSON.parse(raw);
+					if (Array.isArray(parsed)) {
+						hiddenGroupIds = parsed
+							.map((v) => Number(v))
+							.filter((v) => Number.isInteger(v));
+					}
+				}
+			} catch {
+				hiddenGroupIds = [];
+			}
+		}
+
+		return {
+			projects: [] as Project[],
+			groups: [] as Group[],
+			allocations: [] as Allocation[],
+			loading: false as boolean,
+			hiddenGroupIds,
+		};
+	},
 
 	getters: {
 		// значение в ячейке (проект × группа)
@@ -31,7 +54,9 @@ export const useResourceStore = defineStore('resource', {
 		// суммы по группам (колонки)
 		colTotals: (state): Record<number, number> => {
 			const m: Record<number, number> = {};
-			for (const a of state.allocations) m[a.groupId] = (m[a.groupId] || 0) + (a.hours || 0);
+			for (const a of state.allocations) {
+				m[a.groupId] = (m[a.groupId] || 0) + (a.hours || 0);
+			}
 			return m;
 		},
 
@@ -54,9 +79,33 @@ export const useResourceStore = defineStore('resource', {
 			}
 			return map;
 		},
+
+
+		visibleGroups(state): Group[] {
+			return state.groups.filter((g) => !state.hiddenGroupIds.includes(g.id));
+		},
+
+		
+		isGroupVisible:
+			(state) =>
+			(id: number): boolean =>
+				!state.hiddenGroupIds.includes(id),
 	},
 
 	actions: {
+
+		persistHiddenGroupIds() {
+			if (typeof window === 'undefined') return;
+			try {
+				localStorage.setItem(
+					HIDDEN_GROUPS_STORAGE_KEY,
+					JSON.stringify(this.hiddenGroupIds),
+				);
+			} catch {
+				
+			}
+		},
+
 		async fetchAll() {
 			this.loading = true;
 			const [projects, groups, allocations] = await Promise.all([
@@ -68,6 +117,11 @@ export const useResourceStore = defineStore('resource', {
 			this.groups = groups;
 			this.allocations = allocations;
 			this.loading = false;
+
+		
+			const validIds = new Set(this.groups.map((g) => g.id));
+			this.hiddenGroupIds = this.hiddenGroupIds.filter((id) => validIds.has(id));
+			this.persistHiddenGroupIds();
 		},
 
 		// ===================== Projects =====================
@@ -99,6 +153,7 @@ export const useResourceStore = defineStore('resource', {
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
 			await api.create<Group>('groups', { name, capacityHours, supportPercent });
 			this.groups = await api.list<Group>('groups');
+			// новые группы по умолчанию видимы
 		},
 
 		/**
@@ -143,9 +198,13 @@ export const useResourceStore = defineStore('resource', {
 			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
 			await api.remove('groups', id);
 			[this.groups, this.allocations] = await Promise.all([
-				api.list<Group>('groups'),
+				api.list<Group>('groups'),          // важно: Group, не Project
 				api.list<Allocation>('allocations'),
 			]);
+
+			
+			this.hiddenGroupIds = this.hiddenGroupIds.filter((gid) => gid !== id);
+			this.persistHiddenGroupIds();
 		},
 
 		// ===================== Allocations =====================
@@ -178,6 +237,15 @@ export const useResourceStore = defineStore('resource', {
 			}
 			await Promise.all(ops);
 			this.allocations = await api.list<Allocation>('allocations');
+		},
+
+	
+		setGroupVisibility(id: number, visible: boolean) {
+			const set = new Set(this.hiddenGroupIds);
+			if (!visible) set.add(id);
+			else set.delete(id);
+			this.hiddenGroupIds = Array.from(set);
+			this.persistHiddenGroupIds();
 		},
 	},
 });

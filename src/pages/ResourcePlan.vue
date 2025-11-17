@@ -13,35 +13,37 @@
 				<div class="plan__kpi-value">{{ store.groups.length }}</div>
 			</div>
 			<div class="plan__kpi">
-				<div class="plan__kpi-label">Общая ёмкость</div>
+				<div class="plan__kpi-label">Общая ёмкость, ч</div>
 				<div class="plan__kpi-value">{{ totalCapacity }}</div>
 			</div>
 			<div class="plan__kpi">
-				<div class="plan__kpi-label">Заложено</div>
+				<div class="plan__kpi-label">Заложено, ч</div>
 				<div class="plan__kpi-value">{{ totalAllocated }}</div>
 			</div>
 
 			<!-- Новый KPI: ресурсы в поддержке -->
 			<div class="plan__kpi plan__kpi--support">
-				<div class="plan__kpi-label">В поддержке</div>
+				<div class="plan__kpi-label">В поддержке, ч</div>
 				<div class="plan__kpi-value">
 					<span class="plan__pill plan__pill--support">{{ totalSupport }}</span>
 				</div>
 			</div>
 
 			<div class="plan__kpi plan__kpi--util">
-				<div class="plan__kpi-label">Утилизация</div>
+				<div class="plan__kpi-label">Утилизация, %</div>
 				<div class="plan__kpi-value">
 					<span :class="['plan__util-badge', utilClass]">{{ utilization }}%</span>
 				</div>
 			</div>
 		</div>
 
+		<!-- Верхняя таблица -->
 		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-					<col v-for="g in store.groups" :key="g.id" style="width: 12ch" />
+					<!-- показываем только видимые группы -->
+					<col v-for="g in visibleGroups" :key="g.id" style="width: 12ch" />
 					<col style="width: 16ch" />
 					<!-- Итого (по проекту) -->
 					<col style="width: 18ch" />
@@ -55,7 +57,7 @@
 						</th>
 
 						<th
-							v-for="g in store.groups"
+							v-for="g in visibleGroups"
 							:key="g.id"
 							class="plan__th"
 							:class="{
@@ -113,7 +115,7 @@
 						</th>
 
 						<td
-							v-for="g in store.groups"
+							v-for="g in visibleGroups"
 							:key="g.id"
 							class="plan__cell"
 							:class="{
@@ -148,7 +150,7 @@
 							<div class="plan__th-inner">Итого (по группе)</div>
 						</th>
 						<td
-							v-for="g in store.groups"
+							v-for="g in visibleGroups"
 							:key="g.id"
 							class="plan__cell plan__cell--footer"
 							:class="{
@@ -197,7 +199,17 @@
 
 			<div class="plan__bars">
 				<div v-for="row in chartRows" :key="row.id" class="plan__bar-row">
-					<div class="plan__bar-label" :title="row.name">{{ row.name }}</div>
+					<div class="plan__bar-label" :title="row.name">
+						<label class="plan__bar-label-inner">
+							<input
+								type="checkbox"
+								class="plan__bar-checkbox"
+								:checked="isGroupVisible(row.id)"
+								@change="onGroupToggle(row.id, $event)"
+							/>
+							<span>{{ row.name }}</span>
+						</label>
+					</div>
 					<div class="plan__bar-track" :title="`Ёмкость: ${row.capacity} ч`">
 						<div
 							class="plan__bar plan__bar--fill"
@@ -219,7 +231,22 @@ import { useResourceStore } from '../stores/resource';
 const store = useResourceStore();
 onMounted(() => store.fetchAll());
 
-/** Общая доступная ёмкость = сумма эффективных ёмкостей всех групп */
+
+const visibleGroups = computed(() => store.visibleGroups);
+
+
+function isGroupVisible(id: number): boolean {
+	return store.isGroupVisible(id);
+}
+
+
+function onGroupToggle(id: number, e: Event) {
+	const input = e.target as HTMLInputElement | null;
+	const checked = input?.checked ?? true;
+	store.setGroupVisibility(id, checked);
+}
+
+
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
 );
@@ -441,6 +468,13 @@ const chartRows = computed(() => {
 		gap: 4px;
 		padding: 8px 0;
 	}
+
+
+	&__th--left .plan__th-inner {
+		align-items: flex-start;
+		text-align: left;
+	}
+
 	&__cell-inner {
 		height: var(--row-h);
 		display: flex;
@@ -609,6 +643,16 @@ const chartRows = computed(() => {
 		text-overflow: ellipsis;
 	}
 
+	&__bar-label-inner {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	&__bar-checkbox {
+		cursor: pointer;
+	}
+
 	&__bar-track {
 		position: relative;
 		height: var(--bar-h);
@@ -623,7 +667,7 @@ const chartRows = computed(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease, background-color 0.2s ease;
+		transition: width 0.3s ease,	background-color 0.2s ease;
 	}
 
 	&__bar-value {

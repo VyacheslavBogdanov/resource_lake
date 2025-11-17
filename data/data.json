@@ -49,42 +49,6 @@
       "id": 8
     },
     {
-      "projectId": 1,
-      "groupId": 7,
-      "hours": 100,
-      "id": 9
-    },
-    {
-      "projectId": 2,
-      "groupId": 7,
-      "hours": 100,
-      "id": 10
-    },
-    {
-      "projectId": 3,
-      "groupId": 7,
-      "hours": 100,
-      "id": 11
-    },
-    {
-      "projectId": 4,
-      "groupId": 7,
-      "hours": 100,
-      "id": 12
-    },
-    {
-      "projectId": 5,
-      "groupId": 7,
-      "hours": 100,
-      "id": 13
-    },
-    {
-      "projectId": 2,
-      "groupId": 5,
-      "hours": 250,
-      "id": 14
-    },
-    {
       "projectId": 4,
       "groupId": 2,
       "hours": 500,
@@ -95,6 +59,18 @@
       "groupId": 2,
       "hours": 500,
       "id": 16
+    },
+    {
+      "projectId": 2,
+      "groupId": 5,
+      "hours": 1000,
+      "id": 17
+    },
+    {
+      "projectId": 5,
+      "groupId": 6,
+      "hours": 12000,
+      "id": 18
     }
   ]
 }
