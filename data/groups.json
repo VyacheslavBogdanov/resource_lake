@@ -36,9 +36,9 @@
       "id": 6
     },
     {
-      "name": "Карандаши",
-      "capacityHours": 1000,
-      "supportPercent": 7,
+      "name": "Люди",
+      "capacityHours": 10,
+      "supportPercent": 0,
       "id": 7
     }
   ]

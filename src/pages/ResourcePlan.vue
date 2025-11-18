@@ -28,7 +28,7 @@
 				<div class="plan__kpi-value">{{ totalAllocated }}</div>
 			</div>
 
-			<!-- Новый KPI: ресурсы в поддержке -->
+			<!-- KPI: ресурсы в поддержке -->
 			<div class="plan__kpi plan__kpi--support">
 				<div class="plan__kpi-label">В поддержке, ч</div>
 				<div class="plan__kpi-value">
@@ -44,17 +44,14 @@
 			</div>
 		</div>
 
-		<!-- Верхняя таблица -->
+		<!-- Таблица -->
 		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-					<!-- показываем только видимые группы -->
 					<col v-for="g in visibleGroups" :key="g.id" style="width: 12ch" />
 					<col style="width: 16ch" />
-					<!-- Итого (по проекту) -->
 					<col style="width: 18ch" />
-					<!-- Размер проекта, % -->
 				</colgroup>
 
 				<thead>
@@ -69,12 +66,12 @@
 							class="plan__th plan__th--sortable"
 							:class="{
 								'plan__th--over':
-									(store.colTotals[g.id] || 0) >
+									(activeColTotals[g.id] || 0) >
 									(store.effectiveCapacityById[g.id] || 0),
 								'plan__th--sorted':
 									sortState.field === 'group' && sortState.groupId === g.id,
 							}"
-							:title="`${g.name}: заложено ${store.colTotals[g.id] || 0} ч из ${
+							:title="`${g.name}: заложено ${activeColTotals[g.id] || 0} ч из ${
 								store.effectiveCapacityById[g.id] || 0
 							} ч (доступно)`"
 							@click="onGroupSort(g.id)"
@@ -122,7 +119,6 @@
 							</div>
 						</th>
 
-						<!-- Новый заголовок: Размер проекта, % -->
 						<th class="plan__th plan__th--total">
 							<div class="plan__th-inner" title="Доля проекта от общего пула">
 								Размер проекта, %
@@ -150,25 +146,24 @@
 							class="plan__cell"
 							:class="{
 								'plan__cell--over':
-									(store.colTotals[g.id] || 0) >
+									(activeColTotals[g.id] || 0) >
 									(store.effectiveCapacityById[g.id] || 0),
 							}"
 						>
 							<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
-								{{ store.valueByPair(p.id, g.id) }}
+								{{ cellDisplayValue(p.id, g.id, p.archived) }}
 							</div>
 						</td>
 
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" :title="`Итого по проекту ${p.name}`">
-								{{ store.rowTotalByProject(p.id) }}
+								{{ projectTotalDisplay(p.id, p.archived) }}
 							</div>
 						</td>
 
-						<!-- Новая ячейка: Размер проекта, % -->
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" :title="`Доля проекта ${p.name}`">
-								{{ projectShare(p.id) }}%
+								{{ projectShareDisplay(p.id, p.archived) }}
 							</div>
 						</td>
 					</tr>
@@ -185,20 +180,19 @@
 							class="plan__cell plan__cell--footer"
 							:class="{
 								'plan__cell--over':
-									(store.colTotals[g.id] || 0) >
+									(activeColTotals[g.id] || 0) >
 									(store.effectiveCapacityById[g.id] || 0),
 							}"
 						>
 							<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
-								{{ store.colTotals[g.id] || 0 }}
+								{{ activeColTotals[g.id] || 0 }}
 							</div>
 						</td>
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" title="Итог по всем проектам">
-								{{ store.grandTotal }}
+								{{ activeGrandTotal }}
 							</div>
 						</td>
-						<!-- Итог для «Размер проекта, %» = 100% -->
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" title="Суммарная доля">100%</div>
 						</td>
@@ -209,7 +203,7 @@
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
-		<!-- Диаграмма по группам: масштаб и цвет зависят от ЭФФЕКТИВНОЙ ёмкости -->
+		<!-- Диаграмма по группам -->
 		<div v-if="store.groups.length" class="plan__chart">
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">Загрузка по группам</h2>
@@ -259,7 +253,9 @@ import { onMounted, computed, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 
 const store = useResourceStore();
-onMounted(() => store.fetchAll());
+onMounted(() => {
+	store.fetchAll();
+});
 
 const visibleGroups = computed(() => store.visibleGroups);
 
@@ -273,7 +269,57 @@ function onGroupToggle(id: number, e: Event) {
 	store.setGroupVisibility(id, checked);
 }
 
+/** Только активные (не архивированные) проекты */
+const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
 
+/** Итоги по группам только по активным проектам */
+const activeColTotals = computed<Record<number, number>>(() => {
+	const totals: Record<number, number> = {};
+	const activeIds = new Set(activeProjects.value.map((p) => p.id));
+
+	for (const a of store.allocations) {
+		if (!activeIds.has(a.projectId)) continue;
+		const hours = Number(a.hours || 0);
+		if (!hours) continue;
+		totals[a.groupId] = (totals[a.groupId] || 0) + hours;
+	}
+	return totals;
+});
+
+/** Общий итог только по активным проектам */
+const activeGrandTotal = computed(() =>
+	Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
+);
+
+/** Числовое значение в ячейке для расчётов (архивные = 0) */
+function cellValue(projectId: number, groupId: number, archived?: boolean): number {
+	if (archived) return 0;
+	return store.valueByPair(projectId, groupId);
+}
+
+/** Значение в ячейке для отображения (архивные = '—') */
+function cellDisplayValue(
+	projectId: number,
+	groupId: number,
+	archived?: boolean,
+): string {
+	if (archived) return '—';
+	return String(cellValue(projectId, groupId, false));
+}
+
+/** Итог по проекту для расчётов (архивные = 0) */
+function projectTotalForLoad(projectId: number, archived?: boolean): number {
+	if (archived) return 0;
+	return store.rowTotalByProject(projectId);
+}
+
+/** Итог по проекту для отображения (архивные = '—') */
+function projectTotalDisplay(projectId: number, archived?: boolean): string {
+	if (archived) return '—';
+	return String(projectTotalForLoad(projectId, false));
+}
+
+/** Состояние сортировки */
 const sortState = ref<{
 	field: 'group' | 'total' | null;
 	groupId: number | null;
@@ -288,25 +334,33 @@ const sortedProjects = computed(() => {
 	const projects = [...store.projects];
 	const { field, groupId, direction } = sortState.value;
 
+
 	if (!field) return projects;
+
+	const active = projects.filter((p) => !p.archived);
+	const archived = projects.filter((p) => p.archived);
 
 	const factor = direction === 'asc' ? 1 : -1;
 
-	return projects.sort((a, b) => {
+	active.sort((a, b) => {
 		let aVal = 0;
 		let bVal = 0;
 
 		if (field === 'group' && groupId !== null) {
-			aVal = Number(store.valueByPair(a.id, groupId) ?? 0);
-			bVal = Number(store.valueByPair(b.id, groupId) ?? 0);
+		
+			aVal = cellValue(a.id, groupId, false);
+			bVal = cellValue(b.id, groupId, false);
 		} else if (field === 'total') {
-			aVal = Number(store.rowTotalByProject(a.id) ?? 0);
-			bVal = Number(store.rowTotalByProject(b.id) ?? 0);
+			aVal = projectTotalForLoad(a.id, false);
+			bVal = projectTotalForLoad(b.id, false);
 		}
 
 		if (aVal === bVal) return 0;
 		return aVal > bVal ? factor : -factor;
 	});
+
+
+	return [...active, ...archived];
 });
 
 function onGroupSort(id: number) {
@@ -331,6 +385,7 @@ function onTotalSort() {
 	}
 }
 
+/** Общая ёмкость по всем группам (эффективная) */
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
 );
@@ -344,8 +399,10 @@ const totalSupport = computed(() =>
 	}, 0),
 );
 
-const totalAllocated = computed(() => Number(store.grandTotal) || 0);
+/** Заложено только по активным проектам */
+const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
+/** Утилизация по активным проектам */
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
@@ -358,16 +415,22 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
-/** Доля проекта от общего пула эффективной ёмкости (в %, 1 знак после запятой) */
-function projectShare(projectId: number): string {
+/** Чистое числовое значение "размер проекта, %" для расчётов/CSV */
+function projectShareValue(projectId: number, archived?: boolean): string {
 	const total = totalCapacity.value;
-	if (!total) return '0';
-	const row = store.rowTotalByProject(projectId);
+	if (!total || archived) return '0';
+	const row = projectTotalForLoad(projectId, false);
 	const pct = (row / total) * 100;
 	return (Math.round(pct * 10) / 10).toString();
 }
 
-//Выгрузка CSV
+/** Значение "размер проекта" для отображения (с %, архивные = '—') */
+function projectShareDisplay(projectId: number, archived?: boolean): string {
+	if (archived) return '—';
+	return `${projectShareValue(projectId, false)}%`;
+}
+
+/** Экранирование значения для CSV */
 function csvValue(raw: unknown): string {
 	const str =
 		raw === null || raw === undefined
@@ -380,6 +443,7 @@ function csvValue(raw: unknown): string {
 	return `"${escaped}"`;
 }
 
+/** Выгрузка CSV с учётом сортировки и архивов (архивные дают 0) */
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
@@ -400,14 +464,14 @@ function exportCsv() {
 		cells.push(p.name);
 
 		for (const g of visibleGroups.value) {
-			const val = store.valueByPair(p.id, g.id);
+			const val = cellValue(p.id, g.id, p.archived);
 			cells.push(val ?? 0);
 		}
 
-		const rowTotal = store.rowTotalByProject(p.id);
+		const rowTotal = projectTotalForLoad(p.id, p.archived);
 		cells.push(rowTotal);
 
-		cells.push(projectShare(p.id));
+		cells.push(projectShareValue(p.id, p.archived));
 
 		rows.push(cells.map(csvValue).join(delimiter));
 	}
@@ -416,11 +480,11 @@ function exportCsv() {
 	footerCells.push('Итого (по группе)');
 
 	for (const g of visibleGroups.value) {
-		const total = store.colTotals[g.id] || 0;
+		const total = activeColTotals.value[g.id] || 0;
 		footerCells.push(total);
 	}
 
-	footerCells.push(store.grandTotal || 0);
+	footerCells.push(activeGrandTotal.value || 0);
 	footerCells.push('100');
 
 	rows.push(footerCells.map(csvValue).join(delimiter));
@@ -441,14 +505,13 @@ function exportCsv() {
 	URL.revokeObjectURL(url);
 }
 
-
-/* Прогресс в заголовках по группам — по эффективной ёмкости */
+/* Прогресс в заголовках по группам — по эффективной ёмкости и ТОЛЬКО активным проектам */
 type HeaderBar = { fillPct: number; fillColor: string };
 const headerBars = computed<Record<number, HeaderBar>>(() => {
 	const map: Record<number, HeaderBar> = {};
 	for (const g of store.groups) {
 		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
-		const allocated = Number(store.colTotals[g.id] || 0);
+		const allocated = Number(activeColTotals.value[g.id] || 0);
 		let fillPct = 0;
 		let fillColor = 'var(--blue-600)';
 
@@ -474,11 +537,11 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
-/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы */
+/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы, allocated = только активные проекты */
 const chartRows = computed(() => {
 	return store.groups.map((g) => {
 		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
-		const allocated = Number(store.colTotals[g.id] || 0);
+		const allocated = Number(activeColTotals.value[g.id] || 0);
 
 		let fillPct = 0;
 		let fillColor = 'var(--blue-600)';
@@ -578,20 +641,20 @@ const chartRows = computed(() => {
 		background: #e7f3ff;
 		color: #0a1a2b;
 		font-size: 13px;
-	}
 
-	.plan__util-badge.is-ok {
-		background: #e7f3ff;
-		border-color: #cfe1ff;
-	}
-	.plan__util-badge.is-warn {
-		background: #fff7e6;
-		border-color: #ffe1a6;
-	}
-	.plan__util-badge.is-over {
-		background: #fff1f0;
-		border-color: #ffc9c7;
-		color: #a40000;
+		&.is-ok {
+			background: #e7f3ff;
+			border-color: #cfe1ff;
+		}
+		&.is-warn {
+			background: #fff7e6;
+			border-color: #ffe1a6;
+		}
+		&.is-over {
+			background: #fff1f0;
+			border-color: #ffc9c7;
+			color: #a40000;
+		}
 	}
 
 	/* Таблица */
@@ -650,14 +713,10 @@ const chartRows = computed(() => {
 		white-space: normal;
 		overflow: visible;
 		text-overflow: clip;
-
-		/* перенос очень длинных токенов без пробелов */
 		overflow-wrap: anywhere;
 		word-break: break-word;
-
 		height: auto;
 		min-height: var(--row-h);
-
 		align-items: flex-start;
 		justify-content: flex-start;
 		text-align: left;
@@ -716,7 +775,6 @@ const chartRows = computed(() => {
 		opacity: 0.75;
 	}
 
-	/* сортировка */
 	&__th--sortable {
 		cursor: pointer;
 	}
@@ -842,7 +900,7 @@ const chartRows = computed(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease, background-color 0.2s ease;
+		transition: width 0.3s ease,	background-color 0.2s ease;
 	}
 
 	&__bar-value {
@@ -854,7 +912,7 @@ const chartRows = computed(() => {
 	}
 }
 
-/* Жёстко снимаем «однострочность» у первой липкой колонки */
+/* Снимаем однострочность у первой липкой колонки */
 .plan__sticky--left,
 .plan__th--left {
 	white-space: normal !important;

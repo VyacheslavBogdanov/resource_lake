@@ -1,39 +1,34 @@
 {
   "projects": [
     {
-      "name": "Проект «Ветрянная мельница»",
-      "archived": true,
+      "name": "Проект 1",
+      "archived": false,
       "id": 1
     },
     {
-      "name": "Проект «Лучший друг»",
+      "name": "Проект 2",
       "archived": true,
       "id": 2
     },
     {
-      "name": "Проект №3",
-      "archived": false,
+      "name": "Проект 3",
+      "archived": true,
       "id": 3
     },
     {
-      "name": "Проект №4",
-      "archived": false,
+      "name": "Проект 4",
+      "archived": true,
       "id": 4
     },
     {
-      "name": "Проект №5",
-      "archived": false,
+      "name": "Проект 5",
+      "archived": true,
       "id": 5
     },
     {
       "name": "Проект 6",
-      "archived": false,
+      "archived": true,
       "id": 6
-    },
-    {
-      "name": "Проект 7",
-      "archived": false,
-      "id": 7
     }
   ]
 }
