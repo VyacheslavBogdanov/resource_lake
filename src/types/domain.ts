@@ -2,6 +2,7 @@ export interface Project {
 	id: number;
 	name: string;
 	archived?: boolean;
+	url?: string;
 }
 
 export interface Group {

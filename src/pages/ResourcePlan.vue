@@ -3,7 +3,11 @@
 		<h1 class="plan__title">Ресурсный план</h1>
 
 		<div class="plan__toolbar">
-			<button type="button" @click="exportCsv">
+			<button
+				type="button"
+				class="plan__btn plan__btn--primary"
+				@click="exportCsv"
+			>
 				Выгрузить в CSV
 			</button>
 
@@ -26,20 +30,20 @@
 						<input
 							type="radio"
 							class="plan__mode-input"
-							value="quarterSplit"
+							value="quarterSingle"
 							v-model="viewMode"
 						/>
-						<span class="plan__mode-label">Квартально (4 колонки)</span>
+						<span class="plan__mode-label">По квартально</span>
 					</label>
 
 					<label class="plan__mode">
 						<input
 							type="radio"
 							class="plan__mode-input"
-							value="quarterSingle"
+							value="quarterSplit"
 							v-model="viewMode"
 						/>
-						<span class="plan__mode-label">По квартально</span>
+						<span class="plan__mode-label">Квартально (4 колонки)</span>
 					</label>
 
 					<div
@@ -97,7 +101,10 @@
 		</div>
 
 		<!-- Таблица -->
-		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
+		<div
+			class="plan__table-wrapper"
+			v-if="store.projects.length && store.groups.length"
+		>
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
@@ -125,7 +132,7 @@
 
 				<thead>
 					<!-- Первая строка заголовка -->
-                    <tr class="plan__head-row">
+					<tr class="plan__head-row">
 						<th
 							class="plan__th plan__th--sticky plan__th--left"
 							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
@@ -133,6 +140,7 @@
 							<div class="plan__th-inner" title="Проект">Проект</div>
 						</th>
 
+						<!-- Заголовки групп для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<th
 								v-for="g in visibleGroups"
@@ -177,18 +185,48 @@
 							</th>
 						</template>
 
-					
+						<!-- Шапка для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<th
 								v-for="g in visibleGroups"
 								:key="'g-span-' + g.id"
-								class="plan__th plan__th--group-span"
+								class="plan__th plan__th--group-span plan__th--sortable"
+								:class="{
+									'plan__th--over':
+										(activeColTotals[g.id] || 0) >
+										(store.effectiveCapacityById[g.id] || 0),
+									'plan__th--sorted':
+										sortState.field === 'group' && sortState.groupId === g.id,
+								}"
 								:colspan="4"
+								:title="groupHeaderTitle(g.id)"
+								@click="onGroupSort(g.id)"
 							>
 								<div class="plan__th-inner">
 									<span class="plan__th-name" :title="g.name">
 										{{ g.name }}
+										<span
+											v-if="
+												sortState.field === 'group' &&
+												sortState.groupId === g.id
+											"
+											class="plan__sort-icon"
+										>
+											{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+										</span>
 									</span>
+									<small class="plan__capacity">
+										доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
+									</small>
+									<div class="plan__th-progress" aria-hidden="true">
+										<div
+											class="plan__th-progress-bar"
+											:style="{
+												width: headerBars[g.id]?.fillPct + '%',
+												background: headerBars[g.id]?.fillColor,
+											}"
+										></div>
+									</div>
 								</div>
 							</th>
 						</template>
@@ -222,7 +260,7 @@
 						</th>
 					</tr>
 
-				
+					<!-- Вторая строка заголовка для квартального режима -->
 					<tr
 						v-if="viewMode === 'quarterSplit'"
 						class="plan__head-row plan__head-row--quarters"
@@ -249,12 +287,25 @@
 						:class="{ 'plan__row--archived': p.archived }"
 					>
 						<th class="plan__cell plan__sticky plan__sticky--left">
-							<div class="plan__cell-inner plan__cell-inner--left" :title="p.name">
-								{{ p.name }}
+							<div class="plan__cell-inner plan__cell-inner--left">
+								<div class="plan__project-header">
+									<span class="plan__project-name" :title="p.name">
+										{{ p.name }}
+									</span>
+
+									<button
+										v-if="projectUrl(p)"
+										type="button"
+										class="plan__btn plan__btn--outline plan__open-link"
+										@click="openProjectUrl(p)"
+									>
+										Открыть в новом окне
+									</button>
+								</div>
 							</div>
 						</th>
 
-				
+						<!-- Ячейки по группам для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
 								v-for="g in visibleGroups"
@@ -275,7 +326,7 @@
 							</td>
 						</template>
 
-					
+						<!-- Ячейки по кварталам для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<template v-for="g in visibleGroups" :key="'row-g-' + g.id">
 								<td
@@ -313,7 +364,7 @@
 							<div class="plan__th-inner">Итого (по группе)</div>
 						</th>
 
-						
+						<!-- Футер для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
 								v-for="g in visibleGroups"
@@ -334,7 +385,7 @@
 							</td>
 						</template>
 
-						
+						<!-- Футер для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<template v-for="g in visibleGroups" :key="'foot-g-' + g.id">
 								<td
@@ -377,7 +428,8 @@
 						Перерасход
 					</span>
 					<span class="plan__legend-item">
-						<i class="plan__legend-swatch plan__legend-swatch--alloc"></i> Заложено
+						<i class="plan__legend-swatch plan__legend-swatch--alloc"></i>
+						Заложено
 					</span>
 					<span class="plan__legend-item">
 						<i class="plan__legend-swatch plan__legend-swatch--cap"></i> Ёмкость
@@ -405,7 +457,9 @@
 							:title="`Заложено: ${row.allocated} ч`"
 						></div>
 					</div>
-					<div class="plan__bar-value">{{ row.allocated }} / {{ row.capacity }} ч</div>
+					<div class="plan__bar-value">
+						{{ row.allocated }} / {{ row.capacity }} ч
+					</div>
 				</div>
 			</div>
 		</div>
@@ -447,10 +501,10 @@ function onGroupToggle(id: number, e: Event) {
 	store.setGroupVisibility(id, checked);
 }
 
-
+/** Только активные (не архивированные) проекты */
 const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
 
-
+/** Итоги по группам только по активным проектам (годовой итог) */
 const activeColTotals = computed<Record<number, number>>(() => {
 	const totals: Record<number, number> = {};
 	const activeIds = new Set(activeProjects.value.map((p) => p.id));
@@ -463,7 +517,6 @@ const activeColTotals = computed<Record<number, number>>(() => {
 	}
 	return totals;
 });
-
 
 function groupQuarterTotal(groupId: number, quarter: Quarter): number {
 	let sum = 0;
@@ -481,15 +534,12 @@ function groupQuarterTotal(groupId: number, quarter: Quarter): number {
 	return sum;
 }
 
-
 function groupFooterValue(groupId: number): number {
 	if (viewMode.value === 'quarterSingle') {
 		return groupQuarterTotal(groupId, selectedQuarter.value);
 	}
-	
 	return activeColTotals.value[groupId] || 0;
 }
-
 
 const activeGrandTotal = computed(() => {
 	if (viewMode.value === 'quarterSingle') {
@@ -501,7 +551,6 @@ const activeGrandTotal = computed(() => {
 	}
 	return Object.values(activeColTotals.value).reduce((s, v) => s + v, 0);
 });
-
 
 function getQuarterCell(
 	projectId: number,
@@ -522,7 +571,6 @@ function getQuarterCell(
 	return Number(val || 0);
 }
 
-
 function cellValue(
 	projectId: number,
 	groupId: number,
@@ -534,7 +582,6 @@ function cellValue(
 		return getQuarterCell(projectId, groupId, selectedQuarter.value);
 	}
 
-	
 	return store.valueByPair(projectId, groupId);
 }
 
@@ -547,7 +594,6 @@ function cellDisplayValue(
 	return String(cellValue(projectId, groupId, false));
 }
 
-
 function cellQuarterDisplayValue(
 	projectId: number,
 	groupId: number,
@@ -557,7 +603,6 @@ function cellQuarterDisplayValue(
 	if (archived) return '—';
 	return String(getQuarterCell(projectId, groupId, quarter, false));
 }
-
 
 function projectQuarterTotal(projectId: number, quarter: Quarter): number {
 	let sum = 0;
@@ -575,7 +620,6 @@ function projectQuarterTotal(projectId: number, quarter: Quarter): number {
 	return sum;
 }
 
-
 function projectTotalForLoad(projectId: number, archived?: boolean): number {
 	if (archived) return 0;
 
@@ -583,7 +627,6 @@ function projectTotalForLoad(projectId: number, archived?: boolean): number {
 		return projectQuarterTotal(projectId, selectedQuarter.value);
 	}
 
-	// общий и квартально-4 — годовой итог
 	return store.rowTotalByProject(projectId);
 }
 
@@ -601,7 +644,6 @@ const sortState = ref<{
 	groupId: null,
 	direction: 'asc',
 });
-
 
 const sortedProjects = computed(() => {
 	const projects = [...store.projects];
@@ -633,10 +675,6 @@ const sortedProjects = computed(() => {
 });
 
 function onGroupSort(id: number) {
-	if (viewMode.value === 'quarterSplit') {
-		
-		return;
-	}
 	if (sortState.value.field === 'group' && sortState.value.groupId === id) {
 		sortState.value.direction =
 			sortState.value.direction === 'asc' ? 'desc' : 'asc';
@@ -658,7 +696,6 @@ function onTotalSort() {
 	}
 }
 
-
 function groupHeaderTitle(groupId: number): string {
 	const g = store.groups.find((x) => x.id === groupId);
 	if (!g) return '';
@@ -674,12 +711,12 @@ function groupHeaderTitle(groupId: number): string {
 	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
 }
 
-
+/** Общая ёмкость по всем группам (эффективная) */
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
 );
 
-
+/** Общая сумма часов, уходящих на поддержку */
 const totalSupport = computed(() =>
 	store.groups.reduce((s, g) => {
 		const raw = Number(g.capacityHours) || 0;
@@ -688,10 +725,10 @@ const totalSupport = computed(() =>
 	}, 0),
 );
 
-
+/** Заложено только по активным проектам (по текущему режиму) */
 const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
-
+/** Утилизация по активным проектам */
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
@@ -704,7 +741,6 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
-
 function projectShareValue(projectId: number, archived?: boolean): string {
 	const total = totalCapacity.value;
 	if (!total || archived) return '0';
@@ -713,13 +749,12 @@ function projectShareValue(projectId: number, archived?: boolean): string {
 	return (Math.round(pct * 10) / 10).toString();
 }
 
-
 function projectShareDisplay(projectId: number, archived?: boolean): string {
 	if (archived) return '—';
 	return `${projectShareValue(projectId, false)}%`;
 }
 
-
+/** Нормализация строки для CSV */
 function csvValue(raw: unknown): string {
 	const str =
 		raw === null || raw === undefined
@@ -732,7 +767,24 @@ function csvValue(raw: unknown): string {
 	return `"${escaped}"`;
 }
 
+/** Вспомогательные функции для ссылки на проект */
 
+function projectUrl(p: { url?: string }): string | null {
+	const raw = (p.url ?? '').trim();
+	if (!raw) return null;
+	if (/^https?:\/\//i.test(raw)) {
+		return raw;
+	}
+	return `https://${raw}`;
+}
+
+function openProjectUrl(p: { url?: string }) {
+	const url = projectUrl(p);
+	if (!url) return;
+	window.open(url, '_blank', 'noopener');
+}
+
+/** Выгрузка CSV с учётом текущего режима */
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
@@ -800,7 +852,7 @@ function exportCsv() {
 			cells.push(rowTotal);
 
 			const totalCap = totalCapacity.value || 1;
-			const pct = p.archived ? 0 : Math.round(((rowTotal / totalCap) * 1000)) / 10;
+			const pct = p.archived ? 0 : Math.round((rowTotal / totalCap) * 1000) / 10;
 			cells.push(String(pct));
 
 			rows.push(cells.map(csvValue).join(delimiter));
@@ -948,11 +1000,11 @@ const chartRows = computed(() => {
 	--row-h: 44px;
 	--th-h: 64px;
 	--bar-h: 14px;
+	--ctl-h: 32px;
 
 	&__title {
 		margin-bottom: 8px;
 	}
-
 
 	&__toolbar {
 		margin-bottom: 12px;
@@ -1012,6 +1064,40 @@ const chartRows = computed(() => {
 		font-size: 13px;
 	}
 
+	/* Кнопки */
+	&__btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: var(--ctl-h);
+		padding: 0 12px;
+		border: 1px solid #cfe1ff;
+		border-radius: 8px;
+		background: #fff;
+		cursor: pointer;
+		font: inherit;
+		font-size: 13px;
+
+		&:hover {
+			background: #f4f8ff;
+		}
+	}
+
+	&__btn--primary {
+		background: var(--blue-600);
+		color: #fff;
+		border-color: var(--blue-600);
+
+		&:hover {
+			background: #1d4ed8;
+		}
+	}
+
+	&__btn--outline {
+		background: #fff;
+		color: #0a1a2b;
+	}
+
 	/* KPI */
 	&__kpis {
 		display: grid;
@@ -1019,6 +1105,7 @@ const chartRows = computed(() => {
 		gap: 10px;
 		margin-bottom: 12px;
 	}
+
 	&__kpi {
 		background: #fff;
 		border: 1px solid #e6eef7;
@@ -1030,16 +1117,19 @@ const chartRows = computed(() => {
 		flex-direction: column;
 		justify-content: center;
 	}
+
 	&__kpi-label {
 		font-size: 12px;
 		color: #6b7280;
 		margin-bottom: 4px;
 	}
+
 	&__kpi-value {
 		font-size: 18px;
 		font-weight: 700;
 		color: #0a1a2b;
 	}
+
 	&__kpi--util .plan__kpi-value {
 		display: flex;
 		align-items: center;
@@ -1091,20 +1181,22 @@ const chartRows = computed(() => {
 		box-shadow: var(--shadow);
 		border-radius: 12px;
 	}
+
 	&__table {
-		width: 100%;
+		width: max-content;
+		min-width: 100%;
 		border-collapse: separate;
 		border-spacing: 0;
-		table-layout: fixed;
 		border-radius: 12px;
 		overflow: hidden;
-		
 	}
-    &__table th + th,
+
+	&__table th + th,
 	&__table th + td,
 	&__table td + td {
-		border-left: 1px solid #d7dbe0; 
+		border-left: 1px solid #d7dbe0;
 	}
+
 	.plan__head-row {
 		background: var(--blue-100, #eef5ff);
 	}
@@ -1149,6 +1241,7 @@ const chartRows = computed(() => {
 		align-items: center;
 		justify-content: center;
 	}
+
 	&__cell-inner--left {
 		white-space: normal;
 		overflow: visible;
@@ -1157,16 +1250,39 @@ const chartRows = computed(() => {
 		word-break: break-word;
 		height: auto;
 		min-height: var(--row-h);
-		align-items: flex-start;
+		align-items: stretch;
 		justify-content: flex-start;
 		text-align: left;
 		line-height: 1.3;
 		padding: 8px 0;
 	}
 
+	&__project-header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 25px;
+		width: 100%;
+	}
+
+	&__project-name {
+		font-weight: 500;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__open-link {
+		height: 28px;
+		padding: 0 10px;
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
 	tbody .plan__row:nth-child(odd) {
 		background: #fbfdff;
 	}
+
 	tbody .plan__row:hover {
 		background: #f2f7ff;
 	}
@@ -1191,9 +1307,11 @@ const chartRows = computed(() => {
 		font-weight: 700;
 		background: #f3f7ff;
 	}
+
 	&__cell--footer {
 		font-weight: 600;
 	}
+
 	&__row--archived {
 		opacity: 0.72;
 	}
@@ -1210,6 +1328,7 @@ const chartRows = computed(() => {
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+
 	&__capacity {
 		color: #446;
 		opacity: 0.75;
@@ -1237,6 +1356,7 @@ const chartRows = computed(() => {
 		border-radius: 999px;
 		overflow: hidden;
 	}
+
 	&__th-progress-bar {
 		height: 100%;
 		width: 0%;
@@ -1258,6 +1378,7 @@ const chartRows = computed(() => {
 		padding: 14px;
 		border-radius: 12px;
 	}
+
 	&__chart-head {
 		display: flex;
 		align-items: center;
@@ -1265,6 +1386,7 @@ const chartRows = computed(() => {
 		gap: 12px;
 		margin-bottom: 8px;
 	}
+
 	&__chart-title {
 		font-size: 18px;
 		margin: 0;
@@ -1275,6 +1397,7 @@ const chartRows = computed(() => {
 		gap: 14px;
 		flex-wrap: wrap;
 	}
+
 	&__legend-item {
 		display: inline-flex;
 		align-items: center;
@@ -1282,18 +1405,22 @@ const chartRows = computed(() => {
 		color: #334155;
 		font-size: 13px;
 	}
+
 	&__legend-swatch {
 		width: 14px;
 		height: 10px;
 		border-radius: 3px;
 		display: inline-block;
 	}
+
 	&__legend-swatch--alloc {
 		background: var(--blue-600);
 	}
+
 	&__legend-swatch--cap {
 		background: #cfe1ff;
 	}
+
 	&__legend-swatch--overspending {
 		background: rgb(239, 68, 68);
 	}
@@ -1312,6 +1439,7 @@ const chartRows = computed(() => {
 		gap: 10px;
 		min-height: 32px;
 	}
+
 	&__bar-label {
 		font-size: 14px;
 		color: #0a1a2b;
@@ -1338,6 +1466,7 @@ const chartRows = computed(() => {
 		border-radius: 999px;
 		overflow: hidden;
 	}
+
 	&__bar {
 		position: absolute;
 		top: 0;
@@ -1363,8 +1492,8 @@ const chartRows = computed(() => {
 	overflow: visible !important;
 	text-overflow: clip !important;
 }
+
 .plan__cell.plan__sticky--left {
 	height: auto;
 }
 </style>
-

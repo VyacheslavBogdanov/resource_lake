@@ -163,25 +163,43 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Projects =====================
-		async addProject(name: string) {
-			await api.create<Project>('projects', { name, archived: false });
-			this.projects = await api.list<Project>('projects');
-		},
+	async addProject(name: string, url?: string) {
+	const payload: Partial<Project> = {
+		name,
+		archived: false,
+	};
 
-		async toggleArchiveProject(id: number, archived: boolean) {
-			await api.update<Project>('projects', id, { archived });
-			this.projects = await api.list<Project>('projects');
-		},
+	if (typeof url === 'string') {
+		payload.url = url.trim();      
+	}
 
-		async deleteProject(id: number) {
-			const related = this.allocations.filter((a) => a.projectId === id);
-			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
-			await api.remove('projects', id);
-			[this.projects, this.allocations] = await Promise.all([
-				api.list<Project>('projects'),
-				api.list<Allocation>('allocations'),
-			]);
-		},
+	await api.create<Project>('projects', payload);
+	this.projects = await api.list<Project>('projects');
+},
+     async toggleArchiveProject(id: number, archived: boolean) {
+    await api.update<Project>('projects', id, { archived });
+    this.projects = await api.list<Project>('projects');
+  },
+
+  async updateProjectUrl(id: number, url: string) {
+	const trimmed = (url ?? '').trim();
+
+	// всегда обновляем поле url; если строка пустая — кладём пустую строку
+	const body: Partial<Project> = { url: trimmed || '' };
+
+	await api.update<Project>('projects', id, body);
+	this.projects = await api.list<Project>('projects');
+},
+
+  async deleteProject(id: number) {
+    const related = this.allocations.filter((a) => a.projectId === id);
+    await Promise.all(related.map((a) => api.remove('allocations', a.id)));
+    await api.remove('projects', id);
+    [this.projects, this.allocations] = await Promise.all([
+      api.list<Project>('projects'),
+      api.list<Allocation>('allocations'),
+    ]);
+  },
 
 		// ===================== Groups =====================
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
