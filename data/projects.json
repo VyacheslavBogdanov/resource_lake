@@ -65,6 +65,12 @@
       "archived": false,
       "url": "http://localhost:5173/projects",
       "id": 12
+    },
+    {
+      "name": "Проект 12",
+      "archived": false,
+      "url": "https://ya.ru/",
+      "id": 13
     }
   ]
 }

@@ -65,7 +65,6 @@
 				>
 					<td class="manage__cell manage__cell--left">{{ p.name }}</td>
 
-					<!-- Всего, ч -->
 					<td class="manage__cell">
 						<input
 							class="manage__input"
@@ -77,7 +76,6 @@
 						/>
 					</td>
 
-					<!-- Кварталы -->
 					<td class="manage__cell">
 						<input
 							class="manage__input manage__input--quarter"
@@ -153,11 +151,6 @@ onMounted(() => {
 	store.fetchAll();
 });
 
-/**
- * При смене группы инициализируем буфер:
- * - если в allocation есть q1..q4 → берём их (и считаем total как сумму)
- * - иначе total берём из store.valueByPair и равномерно делим на 4
- */
 watch(selectedGroupId, () => {
 	buffer.value = {};
 	if (!selectedGroupId.value) return;
@@ -201,7 +194,6 @@ function groupName(id: number) {
 	return store.groups.find((g) => g.id === id)?.name ?? '';
 }
 
-/** Гарантируем, что для проекта есть объект в буфере и возвращаем его */
 function rowBuffer(projectId: number): RowBuffer {
 	if (!buffer.value[projectId]) {
 		buffer.value[projectId] = {
@@ -215,7 +207,7 @@ function rowBuffer(projectId: number): RowBuffer {
 	return buffer.value[projectId];
 }
 
-/** Вводим общее количество часов → равномерно заполняем кварталы */
+
 function onTotalInput(projectId: number) {
 	const row = rowBuffer(projectId);
 	const total = Number(row.total) || 0;
@@ -227,7 +219,7 @@ function onTotalInput(projectId: number) {
 	row.q4 = part;
 }
 
-/** Вводим по кварталам → пересчитываем "Итого" как сумму кварталов */
+
 function onQuarterInput(projectId: number) {
 	const row = rowBuffer(projectId);
 	const q1 = Number(row.q1) || 0;
@@ -279,8 +271,6 @@ async function saveAll() {
 	}
 
 	await store.batchSetAllocationsForGroup(gId, payload);
-
-	// selectedGroupId и buffer не трогаем — чтобы значения в таблице не пересчитывались
 	showSuccess();
 }
 </script>
