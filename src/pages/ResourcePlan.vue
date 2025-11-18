@@ -1,6 +1,13 @@
 <template>
 	<section class="plan">
 		<h1 class="plan__title">Ресурсный план</h1>
+		<button type="button" @click="exportCsv">
+			Выгрузить в CSV
+		</button>
+		<div
+			class="plan__actions"
+			v-if="store.projects.length && store.groups.length"
+		></div>
 
 		<!-- KPI -->
 		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
@@ -59,18 +66,29 @@
 						<th
 							v-for="g in visibleGroups"
 							:key="g.id"
-							class="plan__th"
+							class="plan__th plan__th--sortable"
 							:class="{
 								'plan__th--over':
 									(store.colTotals[g.id] || 0) >
 									(store.effectiveCapacityById[g.id] || 0),
+								'plan__th--sorted':
+									sortState.field === 'group' && sortState.groupId === g.id,
 							}"
 							:title="`${g.name}: заложено ${store.colTotals[g.id] || 0} ч из ${
 								store.effectiveCapacityById[g.id] || 0
 							} ч (доступно)`"
+							@click="onGroupSort(g.id)"
 						>
 							<div class="plan__th-inner">
-								<span class="plan__th-name" :title="g.name">{{ g.name }}</span>
+								<span class="plan__th-name" :title="g.name">
+									{{ g.name }}
+									<span
+										v-if="sortState.field === 'group' && sortState.groupId === g.id"
+										class="plan__sort-icon"
+									>
+										{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+									</span>
+								</span>
 								<small class="plan__capacity">
 									доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
 								</small>
@@ -86,9 +104,21 @@
 							</div>
 						</th>
 
-						<th class="plan__th plan__th--total">
+						<th
+							class="plan__th plan__th--total plan__th--sortable"
+							:class="{ 'plan__th--sorted': sortState.field === 'total' }"
+							@click="onTotalSort"
+						>
 							<div class="plan__th-inner" title="Итого (по проекту)">
-								Итого (по проекту)
+								<span>
+									Итого (по проекту)
+									<span
+										v-if="sortState.field === 'total'"
+										class="plan__sort-icon"
+									>
+										{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+									</span>
+								</span>
 							</div>
 						</th>
 
@@ -103,7 +133,7 @@
 
 				<tbody>
 					<tr
-						v-for="p in store.projects"
+						v-for="p in sortedProjects"
 						:key="p.id"
 						class="plan__row"
 						:class="{ 'plan__row--archived': p.archived }"
@@ -225,20 +255,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 
 const store = useResourceStore();
 onMounted(() => store.fetchAll());
 
-
 const visibleGroups = computed(() => store.visibleGroups);
-
 
 function isGroupVisible(id: number): boolean {
 	return store.isGroupVisible(id);
 }
-
 
 function onGroupToggle(id: number, e: Event) {
 	const input = e.target as HTMLInputElement | null;
@@ -246,6 +273,63 @@ function onGroupToggle(id: number, e: Event) {
 	store.setGroupVisibility(id, checked);
 }
 
+
+const sortState = ref<{
+	field: 'group' | 'total' | null;
+	groupId: number | null;
+	direction: 'asc' | 'desc';
+}>({
+	field: null,
+	groupId: null,
+	direction: 'asc',
+});
+
+const sortedProjects = computed(() => {
+	const projects = [...store.projects];
+	const { field, groupId, direction } = sortState.value;
+
+	if (!field) return projects;
+
+	const factor = direction === 'asc' ? 1 : -1;
+
+	return projects.sort((a, b) => {
+		let aVal = 0;
+		let bVal = 0;
+
+		if (field === 'group' && groupId !== null) {
+			aVal = Number(store.valueByPair(a.id, groupId) ?? 0);
+			bVal = Number(store.valueByPair(b.id, groupId) ?? 0);
+		} else if (field === 'total') {
+			aVal = Number(store.rowTotalByProject(a.id) ?? 0);
+			bVal = Number(store.rowTotalByProject(b.id) ?? 0);
+		}
+
+		if (aVal === bVal) return 0;
+		return aVal > bVal ? factor : -factor;
+	});
+});
+
+function onGroupSort(id: number) {
+	if (sortState.value.field === 'group' && sortState.value.groupId === id) {
+		sortState.value.direction =
+			sortState.value.direction === 'asc' ? 'desc' : 'asc';
+	} else {
+		sortState.value.field = 'group';
+		sortState.value.groupId = id;
+		sortState.value.direction = 'asc';
+	}
+}
+
+function onTotalSort() {
+	if (sortState.value.field === 'total') {
+		sortState.value.direction =
+			sortState.value.direction === 'asc' ? 'desc' : 'asc';
+	} else {
+		sortState.value.field = 'total';
+		sortState.value.groupId = null;
+		sortState.value.direction = 'asc';
+	}
+}
 
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
@@ -282,6 +366,81 @@ function projectShare(projectId: number): string {
 	const pct = (row / total) * 100;
 	return (Math.round(pct * 10) / 10).toString();
 }
+
+//Выгрузка CSV
+function csvValue(raw: unknown): string {
+	const str =
+		raw === null || raw === undefined
+			? ''
+			: String(raw)
+					.replace(/\r\n|\n|\r/g, ' ')
+					.trim();
+
+	const escaped = str.replace(/"/g, '""');
+	return `"${escaped}"`;
+}
+
+function exportCsv() {
+	if (!store.projects.length || !store.groups.length) return;
+
+	const delimiter = ',';
+	const rows: string[] = [];
+
+	const header = [
+		'Проект',
+		...visibleGroups.value.map((g) => g.name),
+		'Итого (по проекту)',
+		'Размер проекта, %',
+	];
+	rows.push(header.map(csvValue).join(delimiter));
+
+	for (const p of sortedProjects.value) {
+		const cells: (string | number)[] = [];
+
+		cells.push(p.name);
+
+		for (const g of visibleGroups.value) {
+			const val = store.valueByPair(p.id, g.id);
+			cells.push(val ?? 0);
+		}
+
+		const rowTotal = store.rowTotalByProject(p.id);
+		cells.push(rowTotal);
+
+		cells.push(projectShare(p.id));
+
+		rows.push(cells.map(csvValue).join(delimiter));
+	}
+
+	const footerCells: (string | number)[] = [];
+	footerCells.push('Итого (по группе)');
+
+	for (const g of visibleGroups.value) {
+		const total = store.colTotals[g.id] || 0;
+		footerCells.push(total);
+	}
+
+	footerCells.push(store.grandTotal || 0);
+	footerCells.push('100');
+
+	rows.push(footerCells.map(csvValue).join(delimiter));
+
+	const csvContent = '\uFEFF' + rows.join('\r\n');
+
+	const blob = new Blob([csvContent], {
+		type: 'text/csv;charset=utf-8;',
+	});
+
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement('a');
+	link.href = url;
+	link.download = 'resource-plan.csv';
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	URL.revokeObjectURL(url);
+}
+
 
 /* Прогресс в заголовках по группам — по эффективной ёмкости */
 type HeaderBar = { fillPct: number; fillColor: string };
@@ -357,6 +516,12 @@ const chartRows = computed(() => {
 		margin-bottom: 16px;
 	}
 
+	&__actions {
+		margin: 0 0 12px;
+		display: flex;
+		justify-content: flex-end;
+	}
+
 	/* KPI */
 	&__kpis {
 		display: grid;
@@ -414,6 +579,7 @@ const chartRows = computed(() => {
 		color: #0a1a2b;
 		font-size: 13px;
 	}
+
 	.plan__util-badge.is-ok {
 		background: #e7f3ff;
 		border-color: #cfe1ff;
@@ -468,7 +634,6 @@ const chartRows = computed(() => {
 		gap: 4px;
 		padding: 8px 0;
 	}
-
 
 	&__th--left .plan__th-inner {
 		align-items: flex-start;
@@ -549,6 +714,16 @@ const chartRows = computed(() => {
 	&__capacity {
 		color: #446;
 		opacity: 0.75;
+	}
+
+	/* сортировка */
+	&__th--sortable {
+		cursor: pointer;
+	}
+
+	.plan__sort-icon {
+		margin-left: 4px;
+		font-size: 11px;
 	}
 
 	/* микро-прогресс */
@@ -667,7 +842,7 @@ const chartRows = computed(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease,	background-color 0.2s ease;
+		transition: width 0.3s ease, background-color 0.2s ease;
 	}
 
 	&__bar-value {

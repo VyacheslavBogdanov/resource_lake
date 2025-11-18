@@ -3,18 +3,27 @@ import { api } from '../services/http';
 import type { Project, Group, Allocation } from '../types/domain';
 
 type HoursByProject = Record<number, number>;
+type HiddenGroupIdsStorage = number[];
 
 const HIDDEN_GROUPS_STORAGE_KEY = 'resource_hidden_group_ids';
 
+interface ResourceState {
+	projects: Project[];
+	groups: Group[];
+	allocations: Allocation[];
+	loading: boolean;
+	hiddenGroupIds: HiddenGroupIdsStorage;
+}
+
 export const useResourceStore = defineStore('resource', {
-	state: () => {
-		let hiddenGroupIds: number[] = [];
+	state: (): ResourceState => {
+		let hiddenGroupIds: HiddenGroupIdsStorage = [];
 
 		if (typeof window !== 'undefined') {
 			try {
 				const raw = localStorage.getItem(HIDDEN_GROUPS_STORAGE_KEY);
 				if (raw) {
-					const parsed = JSON.parse(raw);
+					const parsed = JSON.parse(raw) as unknown;
 					if (Array.isArray(parsed)) {
 						hiddenGroupIds = parsed
 							.map((v) => Number(v))
@@ -27,10 +36,10 @@ export const useResourceStore = defineStore('resource', {
 		}
 
 		return {
-			projects: [] as Project[],
-			groups: [] as Group[],
-			allocations: [] as Allocation[],
-			loading: false as boolean,
+			projects: [],
+			groups: [],
+			allocations: [],
+			loading: false,
 			hiddenGroupIds,
 		};
 	},
@@ -61,8 +70,8 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// общий итог по всем проектам
-		grandTotal(): number {
-			return this.allocations.reduce((s, a) => s + (a.hours || 0), 0);
+		grandTotal(state): number {
+			return state.allocations.reduce((s, a) => s + (a.hours || 0), 0);
 		},
 
 		/**
@@ -80,12 +89,10 @@ export const useResourceStore = defineStore('resource', {
 			return map;
 		},
 
-
 		visibleGroups(state): Group[] {
 			return state.groups.filter((g) => !state.hiddenGroupIds.includes(g.id));
 		},
 
-		
 		isGroupVisible:
 			(state) =>
 			(id: number): boolean =>
@@ -93,35 +100,34 @@ export const useResourceStore = defineStore('resource', {
 	},
 
 	actions: {
-
 		persistHiddenGroupIds() {
 			if (typeof window === 'undefined') return;
 			try {
-				localStorage.setItem(
-					HIDDEN_GROUPS_STORAGE_KEY,
-					JSON.stringify(this.hiddenGroupIds),
-				);
+				const payload: HiddenGroupIdsStorage = this.hiddenGroupIds;
+				localStorage.setItem(HIDDEN_GROUPS_STORAGE_KEY, JSON.stringify(payload));
 			} catch {
-				
+				// ignore
 			}
 		},
 
 		async fetchAll() {
 			this.loading = true;
-			const [projects, groups, allocations] = await Promise.all([
-				api.list<Project>('projects'),
-				api.list<Group>('groups'),
-				api.list<Allocation>('allocations'),
-			]);
-			this.projects = projects;
-			this.groups = groups;
-			this.allocations = allocations;
-			this.loading = false;
+			try {
+				const [projects, groups, allocations] = await Promise.all([
+					api.list<Project>('projects'),
+					api.list<Group>('groups'),
+					api.list<Allocation>('allocations'),
+				]);
+				this.projects = projects;
+				this.groups = groups;
+				this.allocations = allocations;
 
-		
-			const validIds = new Set(this.groups.map((g) => g.id));
-			this.hiddenGroupIds = this.hiddenGroupIds.filter((id) => validIds.has(id));
-			this.persistHiddenGroupIds();
+				const validIds = new Set(this.groups.map((g) => g.id));
+				this.hiddenGroupIds = this.hiddenGroupIds.filter((id) => validIds.has(id));
+				this.persistHiddenGroupIds();
+			} finally {
+				this.loading = false;
+			}
 		},
 
 		// ===================== Projects =====================
@@ -198,11 +204,10 @@ export const useResourceStore = defineStore('resource', {
 			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
 			await api.remove('groups', id);
 			[this.groups, this.allocations] = await Promise.all([
-				api.list<Group>('groups'),          // важно: Group, не Project
+				api.list<Group>('groups'),
 				api.list<Allocation>('allocations'),
 			]);
 
-			
 			this.hiddenGroupIds = this.hiddenGroupIds.filter((gid) => gid !== id);
 			this.persistHiddenGroupIds();
 		},
@@ -239,7 +244,6 @@ export const useResourceStore = defineStore('resource', {
 			this.allocations = await api.list<Allocation>('allocations');
 		},
 
-	
 		setGroupVisibility(id: number, visible: boolean) {
 			const set = new Set(this.hiddenGroupIds);
 			if (!visible) set.add(id);

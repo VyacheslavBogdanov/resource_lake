@@ -34,6 +34,12 @@
       "capacityHours": 20000,
       "supportPercent": 1,
       "id": 6
+    },
+    {
+      "name": "Карандаши",
+      "capacityHours": 1000,
+      "supportPercent": 7,
+      "id": 7
     }
   ]
 }
