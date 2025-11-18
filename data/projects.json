@@ -7,17 +7,17 @@
     },
     {
       "name": "Проект 2",
-      "archived": true,
+      "archived": false,
       "id": 2
     },
     {
       "name": "Проект 3",
-      "archived": true,
+      "archived": false,
       "id": 3
     },
     {
       "name": "Проект 4",
-      "archived": true,
+      "archived": false,
       "id": 4
     },
     {

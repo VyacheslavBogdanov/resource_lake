@@ -1,13 +1,65 @@
 <template>
 	<section class="plan">
 		<h1 class="plan__title">Ресурсный план</h1>
-		<button type="button" @click="exportCsv">
-			Выгрузить в CSV
-		</button>
-		<div
-			class="plan__actions"
-			v-if="store.projects.length && store.groups.length"
-		></div>
+
+		<div class="plan__toolbar">
+			<button type="button" @click="exportCsv">
+				Выгрузить в CSV
+			</button>
+
+			<div
+				class="plan__actions"
+				v-if="store.projects.length && store.groups.length"
+			>
+				<div class="plan__view-modes">
+					<label class="plan__mode">
+						<input
+							type="radio"
+							class="plan__mode-input"
+							value="total"
+							v-model="viewMode"
+						/>
+						<span class="plan__mode-label">Общий</span>
+					</label>
+
+					<label class="plan__mode">
+						<input
+							type="radio"
+							class="plan__mode-input"
+							value="quarterSplit"
+							v-model="viewMode"
+						/>
+						<span class="plan__mode-label">Квартально (4 колонки)</span>
+					</label>
+
+					<label class="plan__mode">
+						<input
+							type="radio"
+							class="plan__mode-input"
+							value="quarterSingle"
+							v-model="viewMode"
+						/>
+						<span class="plan__mode-label">По квартально</span>
+					</label>
+
+					<div
+						v-if="viewMode === 'quarterSingle'"
+						class="plan__quarter-picker"
+					>
+						<span>Квартал:</span>
+						<select
+							v-model.number="selectedQuarter"
+							class="plan__quarter-select"
+						>
+							<option :value="1">1 кв</option>
+							<option :value="2">2 кв</option>
+							<option :value="3">3 кв</option>
+							<option :value="4">4 кв</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- KPI -->
 		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
@@ -49,62 +101,103 @@
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-					<col v-for="g in visibleGroups" :key="g.id" style="width: 12ch" />
+					<!-- динамические колонки по режиму -->
+					<template v-if="viewMode !== 'quarterSplit'">
+						<col
+							v-for="g in visibleGroups"
+							:key="'col-' + g.id"
+							style="width: 12ch"
+						/>
+					</template>
+					<template v-else>
+						<template v-for="g in visibleGroups" :key="'colg-' + g.id">
+							<col
+								v-for="q in quarterNumbers"
+								:key="`col-${g.id}-${q}`"
+								style="width: 10ch"
+							/>
+						</template>
+					</template>
+
 					<col style="width: 16ch" />
 					<col style="width: 18ch" />
 				</colgroup>
 
 				<thead>
-					<tr class="plan__head-row">
-						<th class="plan__th plan__th--sticky plan__th--left">
+					<!-- Первая строка заголовка -->
+                    <tr class="plan__head-row">
+						<th
+							class="plan__th plan__th--sticky plan__th--left"
+							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
+						>
 							<div class="plan__th-inner" title="Проект">Проект</div>
 						</th>
 
-						<th
-							v-for="g in visibleGroups"
-							:key="g.id"
-							class="plan__th plan__th--sortable"
-							:class="{
-								'plan__th--over':
-									(activeColTotals[g.id] || 0) >
-									(store.effectiveCapacityById[g.id] || 0),
-								'plan__th--sorted':
-									sortState.field === 'group' && sortState.groupId === g.id,
-							}"
-							:title="`${g.name}: заложено ${activeColTotals[g.id] || 0} ч из ${
-								store.effectiveCapacityById[g.id] || 0
-							} ч (доступно)`"
-							@click="onGroupSort(g.id)"
-						>
-							<div class="plan__th-inner">
-								<span class="plan__th-name" :title="g.name">
-									{{ g.name }}
-									<span
-										v-if="sortState.field === 'group' && sortState.groupId === g.id"
-										class="plan__sort-icon"
-									>
-										{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+						<template v-if="viewMode !== 'quarterSplit'">
+							<th
+								v-for="g in visibleGroups"
+								:key="g.id"
+								class="plan__th plan__th--sortable"
+								:class="{
+									'plan__th--over':
+										(activeColTotals[g.id] || 0) >
+										(store.effectiveCapacityById[g.id] || 0),
+									'plan__th--sorted':
+										sortState.field === 'group' && sortState.groupId === g.id,
+								}"
+								:title="groupHeaderTitle(g.id)"
+								@click="onGroupSort(g.id)"
+							>
+								<div class="plan__th-inner">
+									<span class="plan__th-name" :title="g.name">
+										{{ g.name }}
+										<span
+											v-if="
+												sortState.field === 'group' &&
+												sortState.groupId === g.id
+											"
+											class="plan__sort-icon"
+										>
+											{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+										</span>
 									</span>
-								</span>
-								<small class="plan__capacity">
-									доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
-								</small>
-								<div class="plan__th-progress" aria-hidden="true">
-									<div
-										class="plan__th-progress-bar"
-										:style="{
-											width: headerBars[g.id]?.fillPct + '%',
-											background: headerBars[g.id]?.fillColor,
-										}"
-									></div>
+									<small class="plan__capacity">
+										доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
+									</small>
+									<div class="plan__th-progress" aria-hidden="true">
+										<div
+											class="plan__th-progress-bar"
+											:style="{
+												width: headerBars[g.id]?.fillPct + '%',
+												background: headerBars[g.id]?.fillColor,
+											}"
+										></div>
+									</div>
 								</div>
-							</div>
-						</th>
+							</th>
+						</template>
+
+					
+						<template v-else>
+							<th
+								v-for="g in visibleGroups"
+								:key="'g-span-' + g.id"
+								class="plan__th plan__th--group-span"
+								:colspan="4"
+							>
+								<div class="plan__th-inner">
+									<span class="plan__th-name" :title="g.name">
+										{{ g.name }}
+									</span>
+								</div>
+							</th>
+						</template>
 
 						<th
 							class="plan__th plan__th--total plan__th--sortable"
 							:class="{ 'plan__th--sorted': sortState.field === 'total' }"
 							@click="onTotalSort"
+							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
 						>
 							<div class="plan__th-inner" title="Итого (по проекту)">
 								<span>
@@ -119,11 +212,32 @@
 							</div>
 						</th>
 
-						<th class="plan__th plan__th--total">
+						<th
+							class="plan__th plan__th--total"
+							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
+						>
 							<div class="plan__th-inner" title="Доля проекта от общего пула">
 								Размер проекта, %
 							</div>
 						</th>
+					</tr>
+
+				
+					<tr
+						v-if="viewMode === 'quarterSplit'"
+						class="plan__head-row plan__head-row--quarters"
+					>
+						<template v-for="g in visibleGroups" :key="'qrow-' + g.id">
+							<th
+								v-for="q in quarterNumbers"
+								:key="`q-${g.id}-${q}`"
+								class="plan__th plan__th--quarter"
+							>
+								<div class="plan__th-inner">
+									<span class="plan__capacity">{{ quarterLabel[q] }}</span>
+								</div>
+							</th>
+						</template>
 					</tr>
 				</thead>
 
@@ -140,20 +254,44 @@
 							</div>
 						</th>
 
-						<td
-							v-for="g in visibleGroups"
-							:key="g.id"
-							class="plan__cell"
-							:class="{
-								'plan__cell--over':
-									(activeColTotals[g.id] || 0) >
-									(store.effectiveCapacityById[g.id] || 0),
-							}"
-						>
-							<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
-								{{ cellDisplayValue(p.id, g.id, p.archived) }}
-							</div>
-						</td>
+				
+						<template v-if="viewMode !== 'quarterSplit'">
+							<td
+								v-for="g in visibleGroups"
+								:key="g.id"
+								class="plan__cell"
+								:class="{
+									'plan__cell--over':
+										(activeColTotals[g.id] || 0) >
+										(store.effectiveCapacityById[g.id] || 0),
+								}"
+							>
+								<div
+									class="plan__cell-inner"
+									:title="`${p.name} • ${g.name}`"
+								>
+									{{ cellDisplayValue(p.id, g.id, p.archived) }}
+								</div>
+							</td>
+						</template>
+
+					
+						<template v-else>
+							<template v-for="g in visibleGroups" :key="'row-g-' + g.id">
+								<td
+									v-for="q in quarterNumbers"
+									:key="`cell-${p.id}-${g.id}-${q}`"
+									class="plan__cell"
+								>
+									<div
+										class="plan__cell-inner"
+										:title="`${p.name} • ${g.name} • ${quarterLabel[q]}`"
+									>
+										{{ cellQuarterDisplayValue(p.id, g.id, q, p.archived) }}
+									</div>
+								</td>
+							</template>
+						</template>
 
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" :title="`Итого по проекту ${p.name}`">
@@ -174,20 +312,46 @@
 						<th class="plan__th plan__th--sticky plan__th--left">
 							<div class="plan__th-inner">Итого (по группе)</div>
 						</th>
-						<td
-							v-for="g in visibleGroups"
-							:key="g.id"
-							class="plan__cell plan__cell--footer"
-							:class="{
-								'plan__cell--over':
-									(activeColTotals[g.id] || 0) >
-									(store.effectiveCapacityById[g.id] || 0),
-							}"
-						>
-							<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
-								{{ activeColTotals[g.id] || 0 }}
-							</div>
-						</td>
+
+						
+						<template v-if="viewMode !== 'quarterSplit'">
+							<td
+								v-for="g in visibleGroups"
+								:key="g.id"
+								class="plan__cell plan__cell--footer"
+								:class="{
+									'plan__cell--over':
+										(activeColTotals[g.id] || 0) >
+										(store.effectiveCapacityById[g.id] || 0),
+								}"
+							>
+								<div
+									class="plan__cell-inner"
+									:title="`Итого по группе ${g.name}`"
+								>
+									{{ groupFooterValue(g.id) || 0 }}
+								</div>
+							</td>
+						</template>
+
+						
+						<template v-else>
+							<template v-for="g in visibleGroups" :key="'foot-g-' + g.id">
+								<td
+									v-for="q in quarterNumbers"
+									:key="`foot-${g.id}-${q}`"
+									class="plan__cell plan__cell--footer"
+								>
+									<div
+										class="plan__cell-inner"
+										:title="`Итого по группе ${g.name}, ${quarterLabel[q]}`"
+									>
+										{{ groupQuarterTotal(g.id, q) || 0 }}
+									</div>
+								</td>
+							</template>
+						</template>
+
 						<td class="plan__cell plan__cell--total">
 							<div class="plan__cell-inner" title="Итог по всем проектам">
 								{{ activeGrandTotal }}
@@ -252,10 +416,24 @@
 import { onMounted, computed, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 
+type ViewMode = 'total' | 'quarterSingle' | 'quarterSplit';
+const quarterNumbers = [1, 2, 3, 4] as const;
+type Quarter = (typeof quarterNumbers)[number];
+
+const quarterLabel: Record<number, string> = {
+	1: '1 кв',
+	2: '2 кв',
+	3: '3 кв',
+	4: '4 кв',
+};
+
 const store = useResourceStore();
 onMounted(() => {
 	store.fetchAll();
 });
+
+const viewMode = ref<ViewMode>('total');
+const selectedQuarter = ref<Quarter>(1);
 
 const visibleGroups = computed(() => store.visibleGroups);
 
@@ -269,10 +447,10 @@ function onGroupToggle(id: number, e: Event) {
 	store.setGroupVisibility(id, checked);
 }
 
-/** Только активные (не архивированные) проекты */
+
 const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
 
-/** Итоги по группам только по активным проектам */
+
 const activeColTotals = computed<Record<number, number>>(() => {
 	const totals: Record<number, number> = {};
 	const activeIds = new Set(activeProjects.value.map((p) => p.id));
@@ -286,18 +464,80 @@ const activeColTotals = computed<Record<number, number>>(() => {
 	return totals;
 });
 
-/** Общий итог только по активным проектам */
-const activeGrandTotal = computed(() =>
-	Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
-);
 
-/** Числовое значение в ячейке для расчётов (архивные = 0) */
-function cellValue(projectId: number, groupId: number, archived?: boolean): number {
+function groupQuarterTotal(groupId: number, quarter: Quarter): number {
+	let sum = 0;
+	for (const p of activeProjects.value) {
+		const q = store.quarterByPair(p.id, groupId);
+		if (!q) continue;
+		let val = 0;
+		if (quarter === 1) val = q.q1 ?? 0;
+		else if (quarter === 2) val = q.q2 ?? 0;
+		else if (quarter === 3) val = q.q3 ?? 0;
+		else val = q.q4 ?? 0;
+		if (!val) continue;
+		sum += Number(val);
+	}
+	return sum;
+}
+
+
+function groupFooterValue(groupId: number): number {
+	if (viewMode.value === 'quarterSingle') {
+		return groupQuarterTotal(groupId, selectedQuarter.value);
+	}
+	
+	return activeColTotals.value[groupId] || 0;
+}
+
+
+const activeGrandTotal = computed(() => {
+	if (viewMode.value === 'quarterSingle') {
+		let s = 0;
+		for (const g of visibleGroups.value) {
+			s += groupFooterValue(g.id);
+		}
+		return s;
+	}
+	return Object.values(activeColTotals.value).reduce((s, v) => s + v, 0);
+});
+
+
+function getQuarterCell(
+	projectId: number,
+	groupId: number,
+	quarter: Quarter,
+	archived?: boolean,
+): number {
 	if (archived) return 0;
+	const q = store.quarterByPair(projectId, groupId);
+	if (!q) return 0;
+
+	let val = 0;
+	if (quarter === 1) val = q.q1 ?? 0;
+	else if (quarter === 2) val = q.q2 ?? 0;
+	else if (quarter === 3) val = q.q3 ?? 0;
+	else val = q.q4 ?? 0;
+
+	return Number(val || 0);
+}
+
+
+function cellValue(
+	projectId: number,
+	groupId: number,
+	archived?: boolean,
+): number {
+	if (archived) return 0;
+
+	if (viewMode.value === 'quarterSingle') {
+		return getQuarterCell(projectId, groupId, selectedQuarter.value);
+	}
+
+	
 	return store.valueByPair(projectId, groupId);
 }
 
-/** Значение в ячейке для отображения (архивные = '—') */
 function cellDisplayValue(
 	projectId: number,
 	groupId: number,
@@ -307,19 +547,51 @@ function cellDisplayValue(
 	return String(cellValue(projectId, groupId, false));
 }
 
-/** Итог по проекту для расчётов (архивные = 0) */
+
+function cellQuarterDisplayValue(
+	projectId: number,
+	groupId: number,
+	quarter: Quarter,
+	archived?: boolean,
+): string {
+	if (archived) return '—';
+	return String(getQuarterCell(projectId, groupId, quarter, false));
+}
+
+
+function projectQuarterTotal(projectId: number, quarter: Quarter): number {
+	let sum = 0;
+	for (const g of store.groups) {
+		const q = store.quarterByPair(projectId, g.id);
+		if (!q) continue;
+		let val = 0;
+		if (quarter === 1) val = q.q1 ?? 0;
+		else if (quarter === 2) val = q.q2 ?? 0;
+		else if (quarter === 3) val = q.q3 ?? 0;
+		else val = q.q4 ?? 0;
+		if (!val) continue;
+		sum += Number(val);
+	}
+	return sum;
+}
+
+
 function projectTotalForLoad(projectId: number, archived?: boolean): number {
 	if (archived) return 0;
+
+	if (viewMode.value === 'quarterSingle') {
+		return projectQuarterTotal(projectId, selectedQuarter.value);
+	}
+
+	// общий и квартально-4 — годовой итог
 	return store.rowTotalByProject(projectId);
 }
 
-/** Итог по проекту для отображения (архивные = '—') */
 function projectTotalDisplay(projectId: number, archived?: boolean): string {
 	if (archived) return '—';
 	return String(projectTotalForLoad(projectId, false));
 }
 
-/** Состояние сортировки */
 const sortState = ref<{
 	field: 'group' | 'total' | null;
 	groupId: number | null;
@@ -330,16 +602,15 @@ const sortState = ref<{
 	direction: 'asc',
 });
 
+
 const sortedProjects = computed(() => {
 	const projects = [...store.projects];
 	const { field, groupId, direction } = sortState.value;
-
 
 	if (!field) return projects;
 
 	const active = projects.filter((p) => !p.archived);
 	const archived = projects.filter((p) => p.archived);
-
 	const factor = direction === 'asc' ? 1 : -1;
 
 	active.sort((a, b) => {
@@ -347,7 +618,6 @@ const sortedProjects = computed(() => {
 		let bVal = 0;
 
 		if (field === 'group' && groupId !== null) {
-		
 			aVal = cellValue(a.id, groupId, false);
 			bVal = cellValue(b.id, groupId, false);
 		} else if (field === 'total') {
@@ -359,11 +629,14 @@ const sortedProjects = computed(() => {
 		return aVal > bVal ? factor : -factor;
 	});
 
-
 	return [...active, ...archived];
 });
 
 function onGroupSort(id: number) {
+	if (viewMode.value === 'quarterSplit') {
+		
+		return;
+	}
 	if (sortState.value.field === 'group' && sortState.value.groupId === id) {
 		sortState.value.direction =
 			sortState.value.direction === 'asc' ? 'desc' : 'asc';
@@ -385,12 +658,28 @@ function onTotalSort() {
 	}
 }
 
-/** Общая ёмкость по всем группам (эффективная) */
+
+function groupHeaderTitle(groupId: number): string {
+	const g = store.groups.find((x) => x.id === groupId);
+	if (!g) return '';
+	const base = g.name;
+	const allocated = activeColTotals.value[groupId] || 0;
+	const capacity = store.effectiveCapacityById[groupId] || 0;
+
+	if (viewMode.value === 'quarterSingle') {
+		const quarterTotal = groupQuarterTotal(groupId, selectedQuarter.value);
+		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная ёмкость ${capacity} ч)`;
+	}
+
+	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
+}
+
+
 const totalCapacity = computed(() =>
 	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
 );
 
-/** Общая сумма часов, уходящих на поддержку */
+
 const totalSupport = computed(() =>
 	store.groups.reduce((s, g) => {
 		const raw = Number(g.capacityHours) || 0;
@@ -399,10 +688,10 @@ const totalSupport = computed(() =>
 	}, 0),
 );
 
-/** Заложено только по активным проектам */
+
 const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
-/** Утилизация по активным проектам */
+
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
@@ -415,22 +704,22 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
-/** Чистое числовое значение "размер проекта, %" для расчётов/CSV */
+
 function projectShareValue(projectId: number, archived?: boolean): string {
 	const total = totalCapacity.value;
 	if (!total || archived) return '0';
-	const row = projectTotalForLoad(projectId, false);
+	const row = projectTotalForLoad(projectId, archived);
 	const pct = (row / total) * 100;
 	return (Math.round(pct * 10) / 10).toString();
 }
 
-/** Значение "размер проекта" для отображения (с %, архивные = '—') */
+
 function projectShareDisplay(projectId: number, archived?: boolean): string {
 	if (archived) return '—';
 	return `${projectShareValue(projectId, false)}%`;
 }
 
-/** Экранирование значения для CSV */
+
 function csvValue(raw: unknown): string {
 	const str =
 		raw === null || raw === undefined
@@ -443,51 +732,136 @@ function csvValue(raw: unknown): string {
 	return `"${escaped}"`;
 }
 
-/** Выгрузка CSV с учётом сортировки и архивов (архивные дают 0) */
+
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
 	const delimiter = ',';
 	const rows: string[] = [];
+	const projects = sortedProjects.value;
 
-	const header = [
-		'Проект',
-		...visibleGroups.value.map((g) => g.name),
-		'Итого (по проекту)',
-		'Размер проекта, %',
-	];
-	rows.push(header.map(csvValue).join(delimiter));
+	if (viewMode.value === 'total') {
+		// === РЕЖИМ "ОБЩИЙ" ===
+		const header = [
+			'Проект',
+			...visibleGroups.value.map((g) => g.name),
+			'Итого (по проекту)',
+			'Размер проекта, %',
+		];
+		rows.push(header.map(csvValue).join(delimiter));
 
-	for (const p of sortedProjects.value) {
-		const cells: (string | number)[] = [];
+		for (const p of projects) {
+			const cells: (string | number)[] = [];
+			cells.push(p.name);
 
-		cells.push(p.name);
+			for (const g of visibleGroups.value) {
+				const val = p.archived ? 0 : store.valueByPair(p.id, g.id);
+				cells.push(val ?? 0);
+			}
 
-		for (const g of visibleGroups.value) {
-			const val = cellValue(p.id, g.id, p.archived);
-			cells.push(val ?? 0);
+			const rowTotal = p.archived ? 0 : store.rowTotalByProject(p.id);
+			cells.push(rowTotal);
+			cells.push(projectShareValue(p.id, p.archived));
+
+			rows.push(cells.map(csvValue).join(delimiter));
 		}
 
-		const rowTotal = projectTotalForLoad(p.id, p.archived);
-		cells.push(rowTotal);
+		const footerCells: (string | number)[] = [];
+		footerCells.push('Итого (по группе)');
+		for (const g of visibleGroups.value) {
+			footerCells.push(activeColTotals.value[g.id] || 0);
+		}
+		footerCells.push(
+			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
+		);
+		footerCells.push('100');
+		rows.push(footerCells.map(csvValue).join(delimiter));
+	} else if (viewMode.value === 'quarterSingle') {
+		// === РЕЖИМ "ПО КВАРТАЛЬНО"  ===
+		const q = selectedQuarter.value;
+		const header = [
+			'Проект',
+			...visibleGroups.value.map((g) => `${g.name} (${quarterLabel[q]})`),
+			`Итого (по проекту, ${quarterLabel[q]})`,
+			`Размер проекта, %, ${quarterLabel[q]}`,
+		];
+		rows.push(header.map(csvValue).join(delimiter));
 
-		cells.push(projectShareValue(p.id, p.archived));
+		for (const p of projects) {
+			const cells: (string | number)[] = [];
+			cells.push(p.name);
 
-		rows.push(cells.map(csvValue).join(delimiter));
+			for (const g of visibleGroups.value) {
+				const val = getQuarterCell(p.id, g.id, q, p.archived);
+				cells.push(val ?? 0);
+			}
+
+			const rowTotal = p.archived ? 0 : projectQuarterTotal(p.id, q);
+			cells.push(rowTotal);
+
+			const totalCap = totalCapacity.value || 1;
+			const pct = p.archived ? 0 : Math.round(((rowTotal / totalCap) * 1000)) / 10;
+			cells.push(String(pct));
+
+			rows.push(cells.map(csvValue).join(delimiter));
+		}
+
+		const footerCells: (string | number)[] = [];
+		footerCells.push('Итого (по группе)');
+		for (const g of visibleGroups.value) {
+			footerCells.push(groupQuarterTotal(g.id, q) || 0);
+		}
+		let grand = 0;
+		for (const g of visibleGroups.value) {
+			grand += groupQuarterTotal(g.id, q) || 0;
+		}
+		footerCells.push(grand);
+		footerCells.push('100');
+		rows.push(footerCells.map(csvValue).join(delimiter));
+	} else {
+		// === РЕЖИМ "КВАРТАЛЬНО (4 КОЛОНКИ)" ===
+		const header: string[] = ['Проект'];
+
+		for (const g of visibleGroups.value) {
+			for (const q of quarterNumbers) {
+				header.push(`${g.name} (${quarterLabel[q]})`);
+			}
+		}
+		header.push('Итого (по проекту)');
+		header.push('Размер проекта, % (общий)');
+		rows.push(header.map(csvValue).join(delimiter));
+
+		for (const p of projects) {
+			const cells: (string | number)[] = [];
+			cells.push(p.name);
+
+			for (const g of visibleGroups.value) {
+				for (const q of quarterNumbers) {
+					const val = getQuarterCell(p.id, g.id, q, p.archived);
+					cells.push(val ?? 0);
+				}
+			}
+
+			const rowTotal = p.archived ? 0 : store.rowTotalByProject(p.id);
+			cells.push(rowTotal);
+			cells.push(projectShareValue(p.id, p.archived));
+
+			rows.push(cells.map(csvValue).join(delimiter));
+		}
+
+		const footerCells: (string | number)[] = [];
+		footerCells.push('Итого (по группе)');
+		for (const g of visibleGroups.value) {
+			for (const q of quarterNumbers) {
+				footerCells.push(groupQuarterTotal(g.id, q) || 0);
+			}
+		}
+		footerCells.push(
+			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
+		);
+		footerCells.push('100');
+		rows.push(footerCells.map(csvValue).join(delimiter));
 	}
-
-	const footerCells: (string | number)[] = [];
-	footerCells.push('Итого (по группе)');
-
-	for (const g of visibleGroups.value) {
-		const total = activeColTotals.value[g.id] || 0;
-		footerCells.push(total);
-	}
-
-	footerCells.push(activeGrandTotal.value || 0);
-	footerCells.push('100');
-
-	rows.push(footerCells.map(csvValue).join(delimiter));
 
 	const csvContent = '\uFEFF' + rows.join('\r\n');
 
@@ -537,7 +911,7 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
-/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы, allocated = только активные проекты */
+/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы, allocated = только активные проекты (годовой итог) */
 const chartRows = computed(() => {
 	return store.groups.map((g) => {
 		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
@@ -576,13 +950,66 @@ const chartRows = computed(() => {
 	--bar-h: 14px;
 
 	&__title {
-		margin-bottom: 16px;
+		margin-bottom: 8px;
+	}
+
+
+	&__toolbar {
+		margin-bottom: 12px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
 	}
 
 	&__actions {
-		margin: 0 0 12px;
+		margin: 0;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: flex-start;
+	}
+
+	&__view-modes {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+	}
+
+	&__mode {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 10px;
+		border-radius: 999px;
+		background: #f3f7ff;
+		border: 1px solid #dbe7ff;
+		font-size: 13px;
+		cursor: pointer;
+	}
+
+	&__mode-input {
+		cursor: pointer;
+		accent-color: var(--blue-600);
+	}
+
+	&__mode-label {
+		white-space: nowrap;
+	}
+
+	&__quarter-picker {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin-left: 12px;
+		font-size: 13px;
+	}
+
+	&__quarter-select {
+		padding: 4px 8px;
+		border-radius: 6px;
+		border: 1px solid #cfe1ff;
+		background: #fff;
+		font-size: 13px;
 	}
 
 	/* KPI */
@@ -671,10 +1098,19 @@ const chartRows = computed(() => {
 		table-layout: fixed;
 		border-radius: 12px;
 		overflow: hidden;
+		
 	}
-
+    &__table th + th,
+	&__table th + td,
+	&__table td + td {
+		border-left: 1px solid #d7dbe0; 
+	}
 	.plan__head-row {
 		background: var(--blue-100, #eef5ff);
+	}
+
+	.plan__head-row--quarters {
+		background: var(--blue-50, #f5f7ff);
 	}
 
 	&__th,
@@ -701,6 +1137,10 @@ const chartRows = computed(() => {
 	&__th--left .plan__th-inner {
 		align-items: flex-start;
 		text-align: left;
+	}
+
+	&__th--group-span .plan__th-inner {
+		height: auto;
 	}
 
 	&__cell-inner {
@@ -777,6 +1217,10 @@ const chartRows = computed(() => {
 
 	&__th--sortable {
 		cursor: pointer;
+	}
+
+	&__th--quarter {
+		cursor: default;
 	}
 
 	.plan__sort-icon {
@@ -900,7 +1344,7 @@ const chartRows = computed(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease,	background-color 0.2s ease;
+		transition: width 0.3s ease, background-color 0.2s ease;
 	}
 
 	&__bar-value {
@@ -912,7 +1356,7 @@ const chartRows = computed(() => {
 	}
 }
 
-/* Снимаем однострочность у первой липкой колонки */
+/* Первая липкая колонка — многострочная */
 .plan__sticky--left,
 .plan__th--left {
 	white-space: normal !important;
@@ -923,3 +1367,4 @@ const chartRows = computed(() => {
 	height: auto;
 }
 </style>
+

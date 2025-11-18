@@ -2,22 +2,28 @@ import { defineStore } from 'pinia';
 import { api } from '../services/http';
 import type { Project, Group, Allocation } from '../types/domain';
 
-type HoursByProject = Record<number, number>;
-type HiddenGroupIdsStorage = number[];
-
 const HIDDEN_GROUPS_STORAGE_KEY = 'resource_hidden_group_ids';
 
-interface ResourceState {
+type AllocationPayload = {
+	hours: number;
+	q1?: number;
+	q2?: number;
+	q3?: number;
+	q4?: number;
+};
+type AllocationPayloadByProject = Record<number, AllocationPayload>;
+
+type ResourceState = {
 	projects: Project[];
 	groups: Group[];
 	allocations: Allocation[];
 	loading: boolean;
-	hiddenGroupIds: HiddenGroupIdsStorage;
-}
+	hiddenGroupIds: number[];
+};
 
 export const useResourceStore = defineStore('resource', {
 	state: (): ResourceState => {
-		let hiddenGroupIds: HiddenGroupIdsStorage = [];
+		let hiddenGroupIds: number[] = [];
 
 		if (typeof window !== 'undefined') {
 			try {
@@ -45,14 +51,23 @@ export const useResourceStore = defineStore('resource', {
 	},
 
 	getters: {
-		// значение в ячейке (проект × группа)
+		// все allocations по неархивным проектам
+		activeAllocations(state): Allocation[] {
+			const archivedIds = new Set(
+				state.projects.filter((p) => p.archived).map((p) => p.id),
+			);
+			return state.allocations.filter((a) => !archivedIds.has(a.projectId));
+		},
+
+		// значение в ячейке (проект × группа) — общее количество часов
 		valueByPair:
 			(state) =>
 			(projectId: number, groupId: number): number =>
-				state.allocations.find((a) => a.projectId === projectId && a.groupId === groupId)
-					?.hours ?? 0,
+				state.allocations.find(
+					(a) => a.projectId === projectId && a.groupId === groupId,
+				)?.hours ?? 0,
 
-		// сумма по проекту (строка)
+		// сумма по проекту (строка) — тоже только по неархивным
 		rowTotalByProject:
 			(state) =>
 			(projectId: number): number =>
@@ -60,24 +75,21 @@ export const useResourceStore = defineStore('resource', {
 					.filter((a) => a.projectId === projectId)
 					.reduce((s, a) => s + (a.hours || 0), 0),
 
-		// суммы по группам (колонки)
-		colTotals: (state): Record<number, number> => {
+		// суммы по группам (колонки) — без архивных проектов
+		colTotals(): Record<number, number> {
 			const m: Record<number, number> = {};
-			for (const a of state.allocations) {
+			for (const a of this.activeAllocations) {
 				m[a.groupId] = (m[a.groupId] || 0) + (a.hours || 0);
 			}
 			return m;
 		},
 
-		// общий итог по всем проектам
-		grandTotal(state): number {
-			return state.allocations.reduce((s, a) => s + (a.hours || 0), 0);
+	
+		grandTotal(): number {
+			return this.activeAllocations.reduce((s, a) => s + (a.hours || 0), 0);
 		},
 
-		/**
-		 * Эффективная ёмкость по id группы:
-		 * capacityHours * (1 - supportPercent/100), обрезано к [0, +∞)
-		 */
+		
 		effectiveCapacityById(state): Record<number, number> {
 			const map: Record<number, number> = {};
 			for (const g of state.groups) {
@@ -97,16 +109,36 @@ export const useResourceStore = defineStore('resource', {
 			(state) =>
 			(id: number): boolean =>
 				!state.hiddenGroupIds.includes(id),
+
+		
+		quarterByPair:
+			(state) =>
+			(projectId: number, groupId: number) => {
+				const a = state.allocations.find(
+					(x) => x.projectId === projectId && x.groupId === groupId,
+				);
+				if (!a) return null;
+
+				const q1 = a.q1 ?? 0;
+				const q2 = a.q2 ?? 0;
+				const q3 = a.q3 ?? 0;
+				const q4 = a.q4 ?? 0;
+
+				if (!q1 && !q2 && !q3 && !q4) return null;
+				return { q1, q2, q3, q4 };
+			},
 	},
 
 	actions: {
 		persistHiddenGroupIds() {
 			if (typeof window === 'undefined') return;
 			try {
-				const payload: HiddenGroupIdsStorage = this.hiddenGroupIds;
-				localStorage.setItem(HIDDEN_GROUPS_STORAGE_KEY, JSON.stringify(payload));
+				localStorage.setItem(
+					HIDDEN_GROUPS_STORAGE_KEY,
+					JSON.stringify(this.hiddenGroupIds),
+				);
 			} catch {
-				// ignore
+				
 			}
 		},
 
@@ -152,23 +184,11 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Groups =====================
-		/**
-		 * Добавление группы. supportPercent — опционально, по умолчанию 0.
-		 * Сохранится в json-server как поле supportPercent.
-		 */
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
 			await api.create<Group>('groups', { name, capacityHours, supportPercent });
 			this.groups = await api.list<Group>('groups');
-			// новые группы по умолчанию видимы
 		},
 
-		/**
-		 * Частичное обновление группы (name / capacityHours / supportPercent).
-		 * Все значения валидируются/нормализуются:
-		 * - name.trim() не пустой
-		 * - capacityHours >= 0
-		 * - supportPercent в пределах [0,100]
-		 */
 		async updateGroup(
 			id: number,
 			patch: { name?: string; capacityHours?: number; supportPercent?: number },
@@ -213,6 +233,8 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Allocations =====================
+
+		
 		async setAllocation(projectId: number, groupId: number, hours: number) {
 			const existing = this.allocations.find(
 				(a) => a.projectId === projectId && a.groupId === groupId,
@@ -225,21 +247,47 @@ export const useResourceStore = defineStore('resource', {
 			this.allocations = await api.list<Allocation>('allocations');
 		},
 
-		async batchSetAllocationsForGroup(groupId: number, hoursByProject: HoursByProject) {
+		
+		async batchSetAllocationsForGroup(
+			groupId: number,
+			payloadByProject: AllocationPayloadByProject,
+		) {
 			const ops: Promise<unknown>[] = [];
+
 			for (const p of this.projects) {
-				const hours = Number(hoursByProject[p.id] || 0);
+				const payload = payloadByProject[p.id];
+
+				const hours = payload ? Number(payload.hours || 0) : 0;
+				const q1 = payload?.q1 ?? 0;
+				const q2 = payload?.q2 ?? 0;
+				const q3 = payload?.q3 ?? 0;
+				const q4 = payload?.q4 ?? 0;
+
+				const patch: Partial<Allocation> = {
+					hours,
+					q1,
+					q2,
+					q3,
+					q4,
+				};
+
 				const existing = this.allocations.find(
 					(a) => a.projectId === p.id && a.groupId === groupId,
 				);
+
 				if (existing) {
-					ops.push(api.update<Allocation>('allocations', existing.id, { hours }));
-				} else if (hours > 0) {
+					ops.push(api.update<Allocation>('allocations', existing.id, patch));
+				} else if (hours > 0 || q1 || q2 || q3 || q4) {
 					ops.push(
-						api.create<Allocation>('allocations', { projectId: p.id, groupId, hours }),
+						api.create<Allocation>('allocations', {
+							projectId: p.id,
+							groupId,
+							...patch,
+						}),
 					);
 				}
 			}
+
 			await Promise.all(ops);
 			this.allocations = await api.list<Allocation>('allocations');
 		},
