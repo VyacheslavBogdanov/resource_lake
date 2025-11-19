@@ -7,38 +7,33 @@
     },
     {
       "name": "Проект «Лучший друг»",
-      "archived": false,
+      "archived": true,
       "id": 2
     },
     {
       "name": "Проект №3",
-      "archived": false,
+      "archived": true,
       "id": 3
     },
     {
       "name": "Проект №4",
-      "archived": false,
+      "archived": true,
       "id": 4
     },
     {
       "name": "Проект №5",
-      "archived": false,
+      "archived": true,
       "id": 5
     },
     {
       "name": "Проект 6",
-      "archived": false,
+      "archived": true,
       "id": 6
     },
     {
       "name": "Проект 7",
-      "archived": false,
+      "archived": true,
       "id": 7
-    },
-    {
-      "name": "Проекттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттт",
-      "archived": false,
-      "id": 8
     }
   ]
 }
