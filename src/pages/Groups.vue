@@ -1,4 +1,5 @@
-=<script setup lang="ts">
+=
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 import type { Group } from '../types/domain';
@@ -337,7 +338,7 @@ async function removeGroup(g: Group) {
 	cursor: pointer;
 
 	&:hover {
-		background: #f4f8ff;
+		background: #1d4ed8;
 	}
 
 	&--primary {

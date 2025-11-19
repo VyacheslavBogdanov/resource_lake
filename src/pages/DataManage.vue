@@ -40,16 +40,11 @@
 			</transition>
 		</div>
 
-		<table
-			class="manage__table"
-			v-if="selectedGroupId && store.projects.length"
-		>
+		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
 			<thead>
 				<tr>
 					<th class="manage__th manage__th--left">Проект</th>
-					<th class="manage__th">
-						Всего, ч ({{ groupName(selectedGroupId) }})
-					</th>
+					<th class="manage__th">Всего, ч ({{ groupName(selectedGroupId) }})</th>
 					<th class="manage__th">1 кв</th>
 					<th class="manage__th">2 кв</th>
 					<th class="manage__th">3 кв</th>
@@ -120,9 +115,7 @@
 			</tbody>
 		</table>
 
-		<p v-else class="manage__empty">
-			Выберите группу, чтобы редактировать распределение.
-		</p>
+		<p v-else class="manage__empty">Выберите группу, чтобы редактировать распределение.</p>
 	</section>
 </template>
 
@@ -207,7 +200,6 @@ function rowBuffer(projectId: number): RowBuffer {
 	return buffer.value[projectId];
 }
 
-
 function onTotalInput(projectId: number) {
 	const row = rowBuffer(projectId);
 	const total = Number(row.total) || 0;
@@ -218,7 +210,6 @@ function onTotalInput(projectId: number) {
 	row.q3 = part;
 	row.q4 = part;
 }
-
 
 function onQuarterInput(projectId: number) {
 	const row = rowBuffer(projectId);
@@ -431,6 +422,10 @@ async function saveAll() {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+
+	&:hover {
+		background: #1d4ed8;
+	}
 
 	&--primary {
 		background: var(--blue-600);

@@ -3,18 +3,11 @@
 		<h1 class="plan__title">Ресурсный план</h1>
 
 		<div class="plan__toolbar">
-			<button
-				type="button"
-				class="plan__btn plan__btn--primary"
-				@click="exportCsv"
-			>
+			<button type="button" class="plan__btn plan__btn--primary" @click="exportCsv">
 				Выгрузить в CSV
 			</button>
 
-			<div
-				class="plan__actions"
-				v-if="store.projects.length && store.groups.length"
-			>
+			<div class="plan__actions" v-if="store.projects.length && store.groups.length">
 				<div class="plan__view-modes">
 					<label class="plan__mode">
 						<input
@@ -46,15 +39,9 @@
 						<span class="plan__mode-label">Квартально (4 колонки)</span>
 					</label>
 
-					<div
-						v-if="viewMode === 'quarterSingle'"
-						class="plan__quarter-picker"
-					>
+					<div v-if="viewMode === 'quarterSingle'" class="plan__quarter-picker">
 						<span>Квартал:</span>
-						<select
-							v-model.number="selectedQuarter"
-							class="plan__quarter-select"
-						>
+						<select v-model.number="selectedQuarter" class="plan__quarter-select">
 							<option :value="1">1 кв</option>
 							<option :value="2">2 кв</option>
 							<option :value="3">3 кв</option>
@@ -101,20 +88,13 @@
 		</div>
 
 		<!-- Таблица -->
-		<div
-			class="plan__table-wrapper"
-			v-if="store.projects.length && store.groups.length"
-		>
+		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
 					<!-- динамические колонки по режиму -->
 					<template v-if="viewMode !== 'quarterSplit'">
-						<col
-							v-for="g in visibleGroups"
-							:key="'col-' + g.id"
-							style="width: 12ch"
-						/>
+						<col v-for="g in visibleGroups" :key="'col-' + g.id" style="width: 12ch" />
 					</template>
 					<template v-else>
 						<template v-for="g in visibleGroups" :key="'colg-' + g.id">
@@ -317,10 +297,7 @@
 										(store.effectiveCapacityById[g.id] || 0),
 								}"
 							>
-								<div
-									class="plan__cell-inner"
-									:title="`${p.name} • ${g.name}`"
-								>
+								<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
 									{{ cellDisplayValue(p.id, g.id, p.archived) }}
 								</div>
 							</td>
@@ -376,10 +353,7 @@
 										(store.effectiveCapacityById[g.id] || 0),
 								}"
 							>
-								<div
-									class="plan__cell-inner"
-									:title="`Итого по группе ${g.name}`"
-								>
+								<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
 									{{ groupFooterValue(g.id) || 0 }}
 								</div>
 							</td>
@@ -457,9 +431,7 @@
 							:title="`Заложено: ${row.allocated} ч`"
 						></div>
 					</div>
-					<div class="plan__bar-value">
-						{{ row.allocated }} / {{ row.capacity }} ч
-					</div>
+					<div class="plan__bar-value">{{ row.allocated }} / {{ row.capacity }} ч</div>
 				</div>
 			</div>
 		</div>
@@ -571,11 +543,7 @@ function getQuarterCell(
 	return Number(val || 0);
 }
 
-function cellValue(
-	projectId: number,
-	groupId: number,
-	archived?: boolean,
-): number {
+function cellValue(projectId: number, groupId: number, archived?: boolean): number {
 	if (archived) return 0;
 
 	if (viewMode.value === 'quarterSingle') {
@@ -585,11 +553,7 @@ function cellValue(
 	return store.valueByPair(projectId, groupId);
 }
 
-function cellDisplayValue(
-	projectId: number,
-	groupId: number,
-	archived?: boolean,
-): string {
+function cellDisplayValue(projectId: number, groupId: number, archived?: boolean): string {
 	if (archived) return '—';
 	return String(cellValue(projectId, groupId, false));
 }
@@ -676,8 +640,7 @@ const sortedProjects = computed(() => {
 
 function onGroupSort(id: number) {
 	if (sortState.value.field === 'group' && sortState.value.groupId === id) {
-		sortState.value.direction =
-			sortState.value.direction === 'asc' ? 'desc' : 'asc';
+		sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
 	} else {
 		sortState.value.field = 'group';
 		sortState.value.groupId = id;
@@ -687,8 +650,7 @@ function onGroupSort(id: number) {
 
 function onTotalSort() {
 	if (sortState.value.field === 'total') {
-		sortState.value.direction =
-			sortState.value.direction === 'asc' ? 'desc' : 'asc';
+		sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
 	} else {
 		sortState.value.field = 'total';
 		sortState.value.groupId = null;
@@ -823,9 +785,7 @@ function exportCsv() {
 		for (const g of visibleGroups.value) {
 			footerCells.push(activeColTotals.value[g.id] || 0);
 		}
-		footerCells.push(
-			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
-		);
+		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else if (viewMode.value === 'quarterSingle') {
@@ -908,9 +868,7 @@ function exportCsv() {
 				footerCells.push(groupQuarterTotal(g.id, q) || 0);
 			}
 		}
-		footerCells.push(
-			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
-		);
+		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	}

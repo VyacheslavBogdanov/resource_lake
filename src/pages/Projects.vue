@@ -20,11 +20,11 @@
 
 		<table class="projects__table" v-if="store.projects.length">
 			<colgroup>
-		            <col style="width: 40%" />
-		            <col style="width: 20%" />
-		            <col style="width: 20%" />
-		            <col style="width: 35%" />
-	             </colgroup>
+				<col style="width: 40%" />
+				<col style="width: 20%" />
+				<col style="width: 20%" />
+				<col style="width: 35%" />
+			</colgroup>
 
 			<thead>
 				<tr>
@@ -169,19 +169,18 @@ async function saveUrl(projectId: number) {
 		font: inherit;
 	}
 
-	
-  &__url-input {
-    min-width: 160px;
-    max-width: 260px;
-    width: 220px;
-    flex: 0 0 auto;
-    height: var(--ctl-h);
-    padding: 0 10px;
-    border: 1px solid #cfe1ff;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font: inherit;
-  }
+	&__url-input {
+		min-width: 160px;
+		max-width: 260px;
+		width: 220px;
+		flex: 0 0 auto;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid #cfe1ff;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font: inherit;
+	}
 
 	&__table {
 		width: 100%;
@@ -299,7 +298,7 @@ async function saveUrl(projectId: number) {
 	cursor: pointer;
 
 	&:hover {
-		background: #f4f8ff;
+		background: #1d4ed8;
 	}
 
 	&--archive {
