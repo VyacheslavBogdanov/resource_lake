@@ -2,6 +2,7 @@ export interface Project {
 	id: number;
 	name: string;
 	archived?: boolean;
+	url?: string;
 }
 
 export interface Group {
@@ -16,4 +17,8 @@ export interface Allocation {
 	projectId: number;
 	groupId: number;
 	hours: number;
+	q1?: number;
+	q2?: number;
+	q3?: number;
+	q4?: number;
 }
