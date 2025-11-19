@@ -40,11 +40,20 @@
 			</transition>
 		</div>
 
-		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
+		<table
+			class="manage__table"
+			v-if="selectedGroupId && store.projects.length"
+		>
 			<thead>
 				<tr>
 					<th class="manage__th manage__th--left">Проект</th>
-					<th class="manage__th">Часы ({{ groupName(selectedGroupId) }})</th>
+					<th class="manage__th">
+						Всего, ч ({{ groupName(selectedGroupId) }})
+					</th>
+					<th class="manage__th">1 кв</th>
+					<th class="manage__th">2 кв</th>
+					<th class="manage__th">3 кв</th>
+					<th class="manage__th">4 кв</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -55,20 +64,65 @@
 					:class="{ 'manage__row--archived': p.archived }"
 				>
 					<td class="manage__cell manage__cell--left">{{ p.name }}</td>
+
 					<td class="manage__cell">
 						<input
 							class="manage__input"
 							type="number"
 							min="0"
 							:disabled="p.archived"
-							v-model.number="buffer[p.id]"
+							v-model.number="rowBuffer(p.id).total"
+							@input="onTotalInput(p.id)"
+						/>
+					</td>
+
+					<td class="manage__cell">
+						<input
+							class="manage__input manage__input--quarter"
+							type="number"
+							min="0"
+							:disabled="p.archived"
+							v-model.number="rowBuffer(p.id).q1"
+							@input="onQuarterInput(p.id)"
+						/>
+					</td>
+					<td class="manage__cell">
+						<input
+							class="manage__input manage__input--quarter"
+							type="number"
+							min="0"
+							:disabled="p.archived"
+							v-model.number="rowBuffer(p.id).q2"
+							@input="onQuarterInput(p.id)"
+						/>
+					</td>
+					<td class="manage__cell">
+						<input
+							class="manage__input manage__input--quarter"
+							type="number"
+							min="0"
+							:disabled="p.archived"
+							v-model.number="rowBuffer(p.id).q3"
+							@input="onQuarterInput(p.id)"
+						/>
+					</td>
+					<td class="manage__cell">
+						<input
+							class="manage__input manage__input--quarter"
+							type="number"
+							min="0"
+							:disabled="p.archived"
+							v-model.number="rowBuffer(p.id).q4"
+							@input="onQuarterInput(p.id)"
 						/>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 
-		<p v-else class="manage__empty">Выберите группу, чтобы редактировать распределение.</p>
+		<p v-else class="manage__empty">
+			Выберите группу, чтобы редактировать распределение.
+		</p>
 	</section>
 </template>
 
@@ -79,21 +133,56 @@ import { useResourceStore } from '../stores/resource';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
-const buffer = ref<Record<number, number>>({});
+
+type RowBuffer = {
+	total: number;
+	q1: number;
+	q2: number;
+	q3: number;
+	q4: number;
+};
+
+const buffer = ref<Record<number, RowBuffer>>({});
 
 const showSaved = ref(false);
 let hideTimer: number | null = null;
 
-onMounted(() => store.fetchAll());
+onMounted(() => {
+	store.fetchAll();
+});
 
 watch(selectedGroupId, () => {
 	buffer.value = {};
 	if (!selectedGroupId.value) return;
+
+	const gId = selectedGroupId.value;
+
 	for (const p of store.projects) {
-		buffer.value[p.id] = store.valueByPair(p.id, selectedGroupId.value);
+		const quarters = store.quarterByPair(p.id, gId);
+		if (quarters) {
+			const total = quarters.q1 + quarters.q2 + quarters.q3 + quarters.q4;
+			buffer.value[p.id] = {
+				total,
+				q1: quarters.q1,
+				q2: quarters.q2,
+				q3: quarters.q3,
+				q4: quarters.q4,
+			};
+		} else {
+			const total = store.valueByPair(p.id, gId);
+			const perQuarter = total ? total / 4 : 0;
+			buffer.value[p.id] = {
+				total,
+				q1: perQuarter,
+				q2: perQuarter,
+				q3: perQuarter,
+				q4: perQuarter,
+			};
+		}
 	}
 });
 
+/** Опции селекта по группам */
 const groupOptions = computed(() =>
 	store.groups.map((g) => ({
 		value: g.id,
@@ -103,6 +192,42 @@ const groupOptions = computed(() =>
 
 function groupName(id: number) {
 	return store.groups.find((g) => g.id === id)?.name ?? '';
+}
+
+function rowBuffer(projectId: number): RowBuffer {
+	if (!buffer.value[projectId]) {
+		buffer.value[projectId] = {
+			total: 0,
+			q1: 0,
+			q2: 0,
+			q3: 0,
+			q4: 0,
+		};
+	}
+	return buffer.value[projectId];
+}
+
+
+function onTotalInput(projectId: number) {
+	const row = rowBuffer(projectId);
+	const total = Number(row.total) || 0;
+	const part = total / 4;
+
+	row.q1 = part;
+	row.q2 = part;
+	row.q3 = part;
+	row.q4 = part;
+}
+
+
+function onQuarterInput(projectId: number) {
+	const row = rowBuffer(projectId);
+	const q1 = Number(row.q1) || 0;
+	const q2 = Number(row.q2) || 0;
+	const q3 = Number(row.q3) || 0;
+	const q4 = Number(row.q4) || 0;
+
+	row.total = q1 + q2 + q3 + q4;
 }
 
 function showSuccess() {
@@ -115,12 +240,37 @@ onBeforeUnmount(() => {
 	if (hideTimer) window.clearTimeout(hideTimer);
 });
 
+type AllocationPayload = {
+	hours: number;
+	q1?: number;
+	q2?: number;
+	q3?: number;
+	q4?: number;
+};
+
 async function saveAll() {
 	if (!selectedGroupId.value) return;
-	await store.batchSetAllocationsForGroup(selectedGroupId.value, buffer.value);
-	const cur = selectedGroupId.value;
-	selectedGroupId.value = 0;
-	selectedGroupId.value = cur;
+	const gId = selectedGroupId.value;
+
+	const payload: Record<number, AllocationPayload> = {};
+
+	for (const p of store.projects) {
+		const row = buffer.value[p.id];
+		if (!row) {
+			payload[p.id] = { hours: 0 };
+			continue;
+		}
+
+		payload[p.id] = {
+			hours: Number(row.total) || 0,
+			q1: Number(row.q1) || 0,
+			q2: Number(row.q2) || 0,
+			q3: Number(row.q3) || 0,
+			q4: Number(row.q4) || 0,
+		};
+	}
+
+	await store.batchSetAllocationsForGroup(gId, payload);
 	showSuccess();
 }
 </script>
@@ -191,7 +341,7 @@ async function saveAll() {
 
 	&__th--left,
 	&__cell--left {
-		text-align: center;
+		text-align: left;
 	}
 
 	tbody .manage__row:nth-child(odd) {
@@ -236,6 +386,10 @@ async function saveAll() {
 		font-variant-numeric: tabular-nums;
 	}
 
+	&__input--quarter {
+		width: 110px;
+	}
+
 	&__input:focus-visible {
 		outline: none;
 		border-color: var(--blue-600);
@@ -247,9 +401,6 @@ async function saveAll() {
 		-webkit-appearance: none;
 		margin: 0;
 	}
-	// &__input[type='number'] {
-	// 	-moz-appearance: textfield;
-	// }
 
 	&__row--archived {
 		opacity: 0.6;
@@ -285,6 +436,11 @@ async function saveAll() {
 		background: var(--blue-600);
 		color: #fff;
 		border-color: var(--blue-600);
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: default;
 	}
 }
 </style>

@@ -24,24 +24,22 @@
       "id": 4
     },
     {
-      "name": "rg5",
-      "capacityHours": 300,
+      "name": "Смешарики",
+      "capacityHours": 1000,
+      "supportPercent": 50,
       "id": 5
     },
     {
-      "name": "rg6",
-      "capacityHours": 500,
+      "name": "Фиксики",
+      "capacityHours": 20000,
+      "supportPercent": 1,
       "id": 6
     },
     {
-      "name": "rg7",
-      "capacityHours": 700,
+      "name": "Люди",
+      "capacityHours": 10,
+      "supportPercent": 0,
       "id": 7
-    },
-    {
-      "name": "rg8",
-      "capacityHours": 99,
-      "id": 8
     }
   ]
 }

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+=<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
 import type { Group } from '../types/domain';
