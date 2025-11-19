@@ -1,76 +1,42 @@
 {
-	"projects": [
-		{
-			"name": "Проект 1",
-			"archived": true,
-			"id": 1,
-			"url": "ya.ru/"
-		},
-		{
-			"name": "Проект 2",
-			"archived": false,
-			"id": 2,
-			"url": "ya.ru/"
-		},
-		{
-			"name": "Проект 3",
-			"archived": false,
-			"id": 3,
-			"url": "ya.ru/"
-		},
-		{
-			"name": "Проект 4",
-			"archived": false,
-			"id": 4,
-			"url": "ya.ru/"
-		},
-		{
-			"name": "Проект 5",
-			"archived": false,
-			"id": 5,
-			"url": ""
-		},
-		{
-			"name": "Проект 6",
-			"archived": false,
-			"id": 6,
-			"url": ""
-		},
-		{
-			"name": "Проект 7",
-			"archived": false,
-			"id": 7,
-			"url": "localhost:5173/projects"
-		},
-		{
-			"name": "Проект 8",
-			"archived": false,
-			"url": "",
-			"id": 8
-		},
-		{
-			"name": "Проект 9",
-			"archived": false,
-			"url": "http://localhost:5173/projects",
-			"id": 9
-		},
-		{
-			"name": "Проект 10",
-			"archived": false,
-			"url": "http://localhost:5173/projects",
-			"id": 11
-		},
-		{
-			"name": "Проект 11",
-			"archived": false,
-			"url": "http://localhost:5173/projects",
-			"id": 12
-		},
-		{
-			"name": "Проект 12",
-			"archived": false,
-			"url": "https://ya.ru/",
-			"id": 13
-		}
-	]
+  "projects": [
+    {
+      "name": "Проект «Ветрянная мельница»",
+      "archived": false,
+      "id": 1,
+      "url": "teccode.ru"
+    },
+    {
+      "name": "Проект «Лучший друг»",
+      "archived": true,
+      "id": 2,
+      "url": ""
+    },
+    {
+      "name": "Проект №3",
+      "archived": true,
+      "id": 3,
+      "url": ""
+    },
+    {
+      "name": "Проект №4",
+      "archived": true,
+      "id": 4
+    },
+    {
+      "name": "Проект №5",
+      "archived": true,
+      "id": 5
+    },
+    {
+      "name": "Проект 6",
+      "archived": true,
+      "id": 6
+    },
+    {
+      "name": "Проект 7",
+      "archived": true,
+      "id": 7
+    }
+  ]
 }
