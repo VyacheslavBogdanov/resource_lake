@@ -297,10 +297,6 @@ async function saveUrl(projectId: number) {
 	background: #fff;
 	cursor: pointer;
 
-	&:hover {
-		background: #1d4ed8;
-	}
-
 	&--archive {
 		min-width: 150px;
 		text-align: center;

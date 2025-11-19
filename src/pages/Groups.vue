@@ -337,10 +337,6 @@ async function removeGroup(g: Group) {
 	background: #fff;
 	cursor: pointer;
 
-	&:hover {
-		background: #1d4ed8;
-	}
-
 	&--primary {
 		background: var(--blue-600);
 		color: #fff;

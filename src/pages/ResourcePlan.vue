@@ -1035,20 +1035,12 @@ const chartRows = computed(() => {
 		cursor: pointer;
 		font: inherit;
 		font-size: 13px;
-
-		&:hover {
-			background: #f4f8ff;
-		}
 	}
 
 	&__btn--primary {
 		background: var(--blue-600);
 		color: #fff;
 		border-color: var(--blue-600);
-
-		&:hover {
-			background: #1d4ed8;
-		}
 	}
 
 	&__btn--outline {

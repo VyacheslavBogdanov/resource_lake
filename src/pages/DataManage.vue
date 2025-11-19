@@ -423,10 +423,6 @@ async function saveAll() {
 	align-items: center;
 	justify-content: center;
 
-	&:hover {
-		background: #1d4ed8;
-	}
-
 	&--primary {
 		background: var(--blue-600);
 		color: #fff;
