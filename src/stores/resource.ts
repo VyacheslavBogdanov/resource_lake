@@ -67,7 +67,7 @@ export const useResourceStore = defineStore('resource', {
 					(a) => a.projectId === projectId && a.groupId === groupId,
 				)?.hours ?? 0,
 
-		// сумма по проекту (строка) — тоже только по неархивным
+		// сумма по проекту (строка)
 		rowTotalByProject:
 			(state) =>
 			(projectId: number): number =>
@@ -84,12 +84,10 @@ export const useResourceStore = defineStore('resource', {
 			return m;
 		},
 
-	
 		grandTotal(): number {
 			return this.activeAllocations.reduce((s, a) => s + (a.hours || 0), 0);
 		},
 
-		
 		effectiveCapacityById(state): Record<number, number> {
 			const map: Record<number, number> = {};
 			for (const g of state.groups) {
@@ -110,7 +108,7 @@ export const useResourceStore = defineStore('resource', {
 			(id: number): boolean =>
 				!state.hiddenGroupIds.includes(id),
 
-		
+	
 		quarterByPair:
 			(state) =>
 			(projectId: number, groupId: number) => {
@@ -163,43 +161,53 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Projects =====================
-	async addProject(name: string, url?: string) {
-	const payload: Partial<Project> = {
-		name,
-		archived: false,
-	};
+		async addProject(name: string, url?: string) {
+			const payload: Partial<Project> = {
+				name,
+				archived: false,
+			};
 
-	if (typeof url === 'string') {
-		payload.url = url.trim();      
-	}
+			if (typeof url === 'string') {
+				payload.url = url.trim();
+			}
 
-	await api.create<Project>('projects', payload);
-	this.projects = await api.list<Project>('projects');
-},
-     async toggleArchiveProject(id: number, archived: boolean) {
-    await api.update<Project>('projects', id, { archived });
-    this.projects = await api.list<Project>('projects');
-  },
+			await api.create<Project>('projects', payload);
+			this.projects = await api.list<Project>('projects');
+		},
 
-  async updateProjectUrl(id: number, url: string) {
-	const trimmed = (url ?? '').trim();
+		async toggleArchiveProject(id: number, archived: boolean) {
+			await api.update<Project>('projects', id, { archived });
+			this.projects = await api.list<Project>('projects');
+		},
 
-	// всегда обновляем поле url; если строка пустая — кладём пустую строку
-	const body: Partial<Project> = { url: trimmed || '' };
+		async updateProjectUrl(id: number, url: string) {
+			const trimmed = (url ?? '').trim();
 
-	await api.update<Project>('projects', id, body);
-	this.projects = await api.list<Project>('projects');
-},
+			// всегда обновляем поле url; если строка пустая — кладём пустую строку
+			const body: Partial<Project> = { url: trimmed || '' };
 
-  async deleteProject(id: number) {
-    const related = this.allocations.filter((a) => a.projectId === id);
-    await Promise.all(related.map((a) => api.remove('allocations', a.id)));
-    await api.remove('projects', id);
-    [this.projects, this.allocations] = await Promise.all([
-      api.list<Project>('projects'),
-      api.list<Allocation>('allocations'),
-    ]);
-  },
+			await api.update<Project>('projects', id, body);
+			this.projects = await api.list<Project>('projects');
+		},
+
+		async updateProjectName(id: number, name: string) {
+			const trimmed = (name ?? '').trim();
+			if (!trimmed) {
+				throw new Error('Название проекта не может быть пустым');
+			}
+			await api.update<Project>('projects', id, { name: trimmed });
+			this.projects = await api.list<Project>('projects');
+		},
+
+		async deleteProject(id: number) {
+			const related = this.allocations.filter((a) => a.projectId === id);
+			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
+			await api.remove('projects', id);
+			[this.projects, this.allocations] = await Promise.all([
+				api.list<Project>('projects'),
+				api.list<Allocation>('allocations'),
+			]);
+		},
 
 		// ===================== Groups =====================
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
@@ -211,7 +219,11 @@ export const useResourceStore = defineStore('resource', {
 			id: number,
 			patch: { name?: string; capacityHours?: number; supportPercent?: number },
 		) {
-			const body: { name?: string; capacityHours?: number; supportPercent?: number } = {};
+			const body: {
+				name?: string;
+				capacityHours?: number;
+				supportPercent?: number;
+			} = {};
 
 			if (typeof patch.name === 'string') {
 				const name = patch.name.trim();
@@ -251,8 +263,6 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Allocations =====================
-
-		
 		async setAllocation(projectId: number, groupId: number, hours: number) {
 			const existing = this.allocations.find(
 				(a) => a.projectId === projectId && a.groupId === groupId,
@@ -265,7 +275,6 @@ export const useResourceStore = defineStore('resource', {
 			this.allocations = await api.list<Allocation>('allocations');
 		},
 
-		
 		async batchSetAllocationsForGroup(
 			groupId: number,
 			payloadByProject: AllocationPayloadByProject,

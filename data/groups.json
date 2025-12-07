@@ -21,12 +21,13 @@
     {
       "name": "Дев опсы",
       "capacityHours": 33,
-      "id": 4
+      "id": 4,
+      "supportPercent": 0
     },
     {
       "name": "Смешарики",
       "capacityHours": 1000,
-      "supportPercent": 50,
+      "supportPercent": 20,
       "id": 5
     },
     {
@@ -40,6 +41,18 @@
       "capacityHours": 10,
       "supportPercent": 0,
       "id": 7
+    },
+    {
+      "name": "Лушчие",
+      "capacityHours": 150,
+      "supportPercent": 0,
+      "id": 8
+    },
+    {
+      "name": "Малыши",
+      "capacityHours": 1,
+      "supportPercent": 1,
+      "id": 9
     }
   ]
 }

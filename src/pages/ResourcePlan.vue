@@ -63,7 +63,7 @@
 				<div class="plan__kpi-value">{{ store.groups.length }}</div>
 			</div>
 			<div class="plan__kpi">
-				<div class="plan__kpi-label">Общая ёмкость, ч</div>
+				<div class="plan__kpi-label">Общая емкость, ч</div>
 				<div class="plan__kpi-value">{{ totalCapacity }}</div>
 			</div>
 			<div class="plan__kpi">
@@ -92,7 +92,7 @@
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-					<!-- динамические колонки по режиму -->
+					
 					<template v-if="viewMode !== 'quarterSplit'">
 						<col v-for="g in visibleGroups" :key="'col-' + g.id" style="width: 12ch" />
 					</template>
@@ -127,9 +127,8 @@
 								:key="g.id"
 								class="plan__th plan__th--sortable"
 								:class="{
-									'plan__th--over':
-										(activeColTotals[g.id] || 0) >
-										(store.effectiveCapacityById[g.id] || 0),
+									'plan__th--over': isYearOverCapacity(g.id),
+									'plan__th--over-bg': isYearOverCapacity(g.id),
 									'plan__th--sorted':
 										sortState.field === 'group' && sortState.groupId === g.id,
 								}"
@@ -150,7 +149,7 @@
 										</span>
 									</span>
 									<small class="plan__capacity">
-										доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
+										доступно: {{ roundInt(store.effectiveCapacityById[g.id]) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -172,9 +171,8 @@
 								:key="'g-span-' + g.id"
 								class="plan__th plan__th--group-span plan__th--sortable"
 								:class="{
-									'plan__th--over':
-										(activeColTotals[g.id] || 0) >
-										(store.effectiveCapacityById[g.id] || 0),
+									'plan__th--over': isYearOverCapacity(g.id),
+									'plan__th--over-bg': isYearOverCapacity(g.id),
 									'plan__th--sorted':
 										sortState.field === 'group' && sortState.groupId === g.id,
 								}"
@@ -196,7 +194,7 @@
 										</span>
 									</span>
 									<small class="plan__capacity">
-										доступно: {{ store.effectiveCapacityById[g.id] || 0 }} ч
+										доступно: {{ roundInt(store.effectiveCapacityById[g.id]) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -250,6 +248,10 @@
 								v-for="q in quarterNumbers"
 								:key="`q-${g.id}-${q}`"
 								class="plan__th plan__th--quarter"
+								:class="{
+									'plan__th--over': isYearOverCapacity(g.id),
+									'plan__th--over-bg': isYearOverCapacity(g.id),
+								}"
 							>
 								<div class="plan__th-inner">
 									<span class="plan__capacity">{{ quarterLabel[q] }}</span>
@@ -292,9 +294,8 @@
 								:key="g.id"
 								class="plan__cell"
 								:class="{
-									'plan__cell--over':
-										(activeColTotals[g.id] || 0) >
-										(store.effectiveCapacityById[g.id] || 0),
+									'plan__cell--over': isYearOverCapacity(g.id),
+									'plan__cell--over-bg': isYearOverCapacity(g.id),
 								}"
 							>
 								<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
@@ -310,6 +311,10 @@
 									v-for="q in quarterNumbers"
 									:key="`cell-${p.id}-${g.id}-${q}`"
 									class="plan__cell"
+									:class="{
+										'plan__cell--over': isYearOverCapacity(g.id),
+										'plan__cell--over-bg': isYearOverCapacity(g.id),
+									}"
 								>
 									<div
 										class="plan__cell-inner"
@@ -348,9 +353,8 @@
 								:key="g.id"
 								class="plan__cell plan__cell--footer"
 								:class="{
-									'plan__cell--over':
-										(activeColTotals[g.id] || 0) >
-										(store.effectiveCapacityById[g.id] || 0),
+									'plan__cell--over': isYearOverCapacity(g.id),
+									'plan__cell--over-bg': isYearOverCapacity(g.id),
 								}"
 							>
 								<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
@@ -366,6 +370,10 @@
 									v-for="q in quarterNumbers"
 									:key="`foot-${g.id}-${q}`"
 									class="plan__cell plan__cell--footer"
+									:class="{
+										'plan__cell--over': isYearOverCapacity(g.id),
+										'plan__cell--over-bg': isYearOverCapacity(g.id),
+									}"
 								>
 									<div
 										class="plan__cell-inner"
@@ -395,7 +403,16 @@
 		<!-- Диаграмма по группам -->
 		<div v-if="store.groups.length" class="plan__chart">
 			<div class="plan__chart-head">
-				<h2 class="plan__chart-title">Загрузка по группам</h2>
+				<h2 class="plan__chart-title">
+					<label class="plan__bar-label-inner">
+						<input
+							type="checkbox"
+							class="plan__bar-checkbox"
+							v-model="allGroupsChecked"
+						/>
+						<span>Загрузка по группам</span>
+					</label>
+				</h2>
 				<div class="plan__legend">
 					<span class="plan__legend-item">
 						<i class="plan__legend-swatch plan__legend-swatch--overspending"></i>
@@ -406,7 +423,7 @@
 						Заложено
 					</span>
 					<span class="plan__legend-item">
-						<i class="plan__legend-swatch plan__legend-swatch--cap"></i> Ёмкость
+						<i class="plan__legend-swatch plan__legend-swatch--cap"></i> Емкость
 					</span>
 				</div>
 			</div>
@@ -424,14 +441,19 @@
 							<span>{{ row.name }}</span>
 						</label>
 					</div>
-					<div class="plan__bar-track" :title="`Ёмкость: ${row.capacity} ч`">
+					<div
+						class="plan__bar-track"
+						:title="`емкость: ${roundInt(row.capacity)} ч`"
+					>
 						<div
 							class="plan__bar plan__bar--fill"
 							:style="{ width: row.fillPct + '%', background: row.fillColor }"
-							:title="`Заложено: ${row.allocated} ч`"
+							:title="`Заложено: ${roundInt(row.allocated)} ч`"
 						></div>
 					</div>
-					<div class="plan__bar-value">{{ row.allocated }} / {{ row.capacity }} ч</div>
+					<div class="plan__bar-value">
+						{{ roundInt(row.allocated) }} / {{ roundInt(row.capacity) }} ч
+					</div>
 				</div>
 			</div>
 		</div>
@@ -462,6 +484,25 @@ const viewMode = ref<ViewMode>('total');
 const selectedQuarter = ref<Quarter>(1);
 
 const visibleGroups = computed(() => store.visibleGroups);
+
+function roundInt(value: unknown): number {
+	const n = Number(value);
+	if (!Number.isFinite(n)) return 0;
+	return Math.round(n);
+}
+
+
+const allGroupsChecked = computed({
+	get(): boolean {
+		if (!store.groups.length) return false;
+		return store.groups.every((g) => store.isGroupVisible(g.id));
+	},
+	set(value: boolean) {
+		for (const g of store.groups) {
+			store.setGroupVisibility(g.id, value);
+		}
+	},
+});
 
 function isGroupVisible(id: number): boolean {
 	return store.isGroupVisible(id);
@@ -663,34 +704,43 @@ function groupHeaderTitle(groupId: number): string {
 	if (!g) return '';
 	const base = g.name;
 	const allocated = activeColTotals.value[groupId] || 0;
-	const capacity = store.effectiveCapacityById[groupId] || 0;
+	const capacity = store.effectiveCapacityById[g.id] || 0;
 
 	if (viewMode.value === 'quarterSingle') {
 		const quarterTotal = groupQuarterTotal(groupId, selectedQuarter.value);
-		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная ёмкость ${capacity} ч)`;
+		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)`;
 	}
 
 	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
 }
 
-/** Общая ёмкость по всем группам (эффективная) */
-const totalCapacity = computed(() =>
-	store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0),
-);
+function isYearOverCapacity(groupId: number): boolean {
+	const capacity = Number(store.effectiveCapacityById[groupId] || 0);
+	const allocated = Number(activeColTotals.value[groupId] || 0);
+	if (capacity <= 0) return allocated > 0;
+	return allocated > capacity;
+}
 
-/** Общая сумма часов, уходящих на поддержку */
-const totalSupport = computed(() =>
-	store.groups.reduce((s, g) => {
+const totalCapacity = computed(() => {
+	const sum = store.groups.reduce(
+		(s, g) => s + (store.effectiveCapacityById[g.id] || 0),
+		0,
+	);
+	return roundInt(sum);
+});
+
+const totalSupport = computed(() => {
+	const sum = store.groups.reduce((s, g) => {
 		const raw = Number(g.capacityHours) || 0;
 		const eff = Number(store.effectiveCapacityById[g.id] || 0);
 		return s + Math.max(0, raw - eff);
-	}, 0),
-);
+	}, 0);
+	return roundInt(sum);
+});
 
-/** Заложено только по активным проектам (по текущему режиму) */
 const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
-/** Утилизация по активным проектам */
+/** Утилизация по активным проектам (уже целое %) */
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
@@ -703,12 +753,13 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
+/** Размер проекта, % — ОКРУГЛЯЕМ ДО ЦЕЛОГО */
 function projectShareValue(projectId: number, archived?: boolean): string {
 	const total = totalCapacity.value;
 	if (!total || archived) return '0';
 	const row = projectTotalForLoad(projectId, archived);
 	const pct = (row / total) * 100;
-	return (Math.round(pct * 10) / 10).toString();
+	return String(roundInt(pct));
 }
 
 function projectShareDisplay(projectId: number, archived?: boolean): string {
@@ -716,7 +767,7 @@ function projectShareDisplay(projectId: number, archived?: boolean): string {
 	return `${projectShareValue(projectId, false)}%`;
 }
 
-/** Нормализация строки для CSV */
+
 function csvValue(raw: unknown): string {
 	const str =
 		raw === null || raw === undefined
@@ -729,7 +780,6 @@ function csvValue(raw: unknown): string {
 	return `"${escaped}"`;
 }
 
-/** Вспомогательные функции для ссылки на проект */
 
 function projectUrl(p: { url?: string }): string | null {
 	const raw = (p.url ?? '').trim();
@@ -750,7 +800,8 @@ function openProjectUrl(p: { url?: string }) {
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
-	const delimiter = ',';
+	// разделитель для русского Excel
+	const delimiter = ';';
 	const rows: string[] = [];
 	const projects = sortedProjects.value;
 
@@ -785,7 +836,9 @@ function exportCsv() {
 		for (const g of visibleGroups.value) {
 			footerCells.push(activeColTotals.value[g.id] || 0);
 		}
-		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
+		footerCells.push(
+			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
+		);
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else if (viewMode.value === 'quarterSingle') {
@@ -812,7 +865,7 @@ function exportCsv() {
 			cells.push(rowTotal);
 
 			const totalCap = totalCapacity.value || 1;
-			const pct = p.archived ? 0 : Math.round((rowTotal / totalCap) * 1000) / 10;
+			const pct = p.archived ? 0 : roundInt((rowTotal / totalCap) * 100);
 			cells.push(String(pct));
 
 			rows.push(cells.map(csvValue).join(delimiter));
@@ -868,7 +921,9 @@ function exportCsv() {
 				footerCells.push(groupQuarterTotal(g.id, q) || 0);
 			}
 		}
-		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
+		footerCells.push(
+			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
+		);
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	}
@@ -1266,10 +1321,17 @@ const chartRows = computed(() => {
 		opacity: 0.72;
 	}
 
+	/* индикатор перерасхода по году */
 	&__th--over,
 	&__cell--over {
-		background: #fff1f0;
 		color: #a40000;
+		font-weight: 600;
+	}
+
+	/* лёгкий фон — для колонок с перерасходом */
+	&__th--over-bg,
+	&__cell--over-bg {
+		background: #f8e9e9;
 	}
 
 	&__th-name {

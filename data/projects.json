@@ -1,42 +1,56 @@
 {
   "projects": [
     {
-      "name": "Проект «Ветрянная мельница»",
+      "name": "Проект 1",
       "archived": false,
-      "id": 1,
-      "url": "teccode.ru"
-    },
-    {
-      "name": "Проект «Лучший друг»",
-      "archived": true,
       "id": 2,
       "url": ""
     },
     {
-      "name": "Проект №3",
-      "archived": true,
-      "id": 3,
+      "name": "Проект 5",
+      "archived": false,
+      "id": 5,
       "url": ""
     },
     {
-      "name": "Проект №4",
-      "archived": true,
-      "id": 4
-    },
-    {
-      "name": "Проект №5",
-      "archived": true,
-      "id": 5
-    },
-    {
-      "name": "Проект 6",
-      "archived": true,
+      "name": "Проект 9",
+      "archived": false,
       "id": 6
     },
     {
-      "name": "Проект 7",
-      "archived": true,
+      "name": "Проект 10",
+      "archived": false,
       "id": 7
+    },
+    {
+      "name": "Проект 11",
+      "archived": false,
+      "url": "",
+      "id": 8
+    },
+    {
+      "name": "Проект 15",
+      "archived": false,
+      "url": "",
+      "id": 9
+    },
+    {
+      "name": "Проект 13",
+      "archived": false,
+      "url": "",
+      "id": 10
+    },
+    {
+      "name": "Проект 14",
+      "archived": false,
+      "url": "",
+      "id": 11
+    },
+    {
+      "name": "Проект 12",
+      "archived": false,
+      "url": "",
+      "id": 12
     }
   ]
 }
