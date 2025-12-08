@@ -52,7 +52,31 @@
 				>
 					<td class="projects__cell projects__cell--left">
 						<div class="projects__cell-inner">
-							<span class="projects__text" :title="p.name">{{ p.name }}</span>
+							
+							<template v-if="editingId === p.id">
+								<input
+									ref="nameInputRef"
+									class="projects__name-input"
+									type="text"
+									v-model.trim="editingName"
+									@keydown.enter.prevent="saveName(p.id)"
+									@keydown.esc.prevent="cancelEdit"
+									@blur="onNameBlur(p.id)"
+								/>
+							</template>
+
+							
+							<template v-else>
+								<span class="projects__text" :title="p.name">{{ p.name }}</span>
+								<button
+									type="button"
+									class="projects__edit-btn"
+									title="Переименовать проект"
+									@click="startEdit(p)"
+								>
+									🖉
+								</button>
+							</template>
 						</div>
 					</td>
 
@@ -98,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, nextTick } from 'vue';
 import { useResourceStore } from '../stores/resource';
 import type { Project } from '../types/domain';
 
@@ -108,10 +132,17 @@ onMounted(() => store.fetchAll());
 const newName = ref('');
 const newUrl = ref('');
 
-/** локальные черновики ссылок по id проекта */
+
 const urlDrafts = ref<Record<number, string>>({});
 
-/** когда приходят проекты из стора – инициализируем черновики */
+
+const editingId = ref<number | null>(null);
+const editingName = ref('');
+
+
+const nameInputRef = ref<HTMLInputElement[] | null>(null);
+
+
 watch(
 	() => store.projects,
 	(projects) => {
@@ -136,10 +167,65 @@ async function removeProject(p: Project) {
 	await store.deleteProject(p.id);
 }
 
-/** сохраняем ссылку для существующего проекта по blur */
+
 async function saveUrl(projectId: number) {
 	const url = (urlDrafts.value[projectId] || '').trim();
 	await store.updateProjectUrl(projectId, url);
+}
+
+
+async function startEdit(p: Project) {
+	editingId.value = p.id;
+	editingName.value = p.name ?? '';
+
+	await nextTick();
+
+
+	const el = nameInputRef.value?.[0];
+	if (el) {
+		el.focus();
+		el.select();
+	}
+}
+
+
+function cancelEdit() {
+	editingId.value = null;
+	editingName.value = '';
+}
+
+
+async function saveName(projectId: number) {
+	const project = store.projects.find((x) => x.id === projectId);
+	if (!project) {
+		cancelEdit();
+		return;
+	}
+
+	const name = editingName.value.trim();
+	const original = project.name ?? '';
+
+
+	if (!name) {
+		editingName.value = original;
+		cancelEdit();
+		return;
+	}
+
+	
+	if (name === original) {
+		cancelEdit();
+		return;
+	}
+
+	await store.updateProjectName(projectId, name);
+	cancelEdit();
+}
+
+
+async function onNameBlur(projectId: number) {
+	if (editingId.value !== projectId) return;
+	await saveName(projectId);
 }
 </script>
 
@@ -256,6 +342,44 @@ async function saveUrl(projectId: number) {
 		outline: none;
 		border-color: var(--blue-600);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+	}
+
+	&__name-input {
+		width: 100%;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid #cfe1ff;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font-size: 13px;
+	}
+
+	&__name-input:focus-visible {
+		outline: none;
+		border-color: var(--blue-600);
+		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+	}
+
+
+	&__edit-btn {
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		width: 24px;
+		height: 24px;
+		border-radius: 999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		line-height: 1;
+		color: #667;
+		padding: 0;
+
+		&:hover {
+			background: #eef3ff;
+			color: #123;
+		}
 	}
 
 	&__empty {

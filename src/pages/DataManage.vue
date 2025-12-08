@@ -65,6 +65,7 @@
 							class="manage__input"
 							type="number"
 							min="0"
+							step="1"
 							:disabled="p.archived"
 							v-model.number="rowBuffer(p.id).total"
 							@input="onTotalInput(p.id)"
@@ -76,6 +77,7 @@
 							class="manage__input manage__input--quarter"
 							type="number"
 							min="0"
+							step="1"
 							:disabled="p.archived"
 							v-model.number="rowBuffer(p.id).q1"
 							@input="onQuarterInput(p.id)"
@@ -86,6 +88,7 @@
 							class="manage__input manage__input--quarter"
 							type="number"
 							min="0"
+							step="1"
 							:disabled="p.archived"
 							v-model.number="rowBuffer(p.id).q2"
 							@input="onQuarterInput(p.id)"
@@ -96,6 +99,7 @@
 							class="manage__input manage__input--quarter"
 							type="number"
 							min="0"
+							step="1"
 							:disabled="p.archived"
 							v-model.number="rowBuffer(p.id).q3"
 							@input="onQuarterInput(p.id)"
@@ -106,6 +110,7 @@
 							class="manage__input manage__input--quarter"
 							type="number"
 							min="0"
+							step="1"
 							:disabled="p.archived"
 							v-model.number="rowBuffer(p.id).q4"
 							@input="onQuarterInput(p.id)"
@@ -144,6 +149,30 @@ onMounted(() => {
 	store.fetchAll();
 });
 
+
+function roundInt(value: unknown): number {
+	const n = Number(value) || 0;
+	return Math.round(n);
+}
+
+
+function splitTotalToQuarters(total: number): [number, number, number, number] {
+	total = roundInt(total);
+	if (total <= 0) return [0, 0, 0, 0];
+
+	const base = Math.floor(total / 4);
+	let remainder = total - base * 4; // 0..3
+
+	const parts = [base, base, base, base];
+	let i = 0;
+	while (remainder > 0 && i < 4) {
+		parts[i]++;
+		remainder--;
+		i++;
+	}
+	return [parts[0], parts[1], parts[2], parts[3]];
+}
+
 watch(selectedGroupId, () => {
 	buffer.value = {};
 	if (!selectedGroupId.value) return;
@@ -153,24 +182,21 @@ watch(selectedGroupId, () => {
 	for (const p of store.projects) {
 		const quarters = store.quarterByPair(p.id, gId);
 		if (quarters) {
-			const total = quarters.q1 + quarters.q2 + quarters.q3 + quarters.q4;
-			buffer.value[p.id] = {
-				total,
-				q1: quarters.q1,
-				q2: quarters.q2,
-				q3: quarters.q3,
-				q4: quarters.q4,
-			};
+			// округляем то, что пришло из стора
+			const q1 = roundInt(quarters.q1);
+			const q2 = roundInt(quarters.q2);
+			const q3 = roundInt(quarters.q3);
+			const q4 = roundInt(quarters.q4);
+			const total = q1 + q2 + q3 + q4;
+
+			buffer.value[p.id] = { total, q1, q2, q3, q4 };
 		} else {
-			const total = store.valueByPair(p.id, gId);
-			const perQuarter = total ? total / 4 : 0;
-			buffer.value[p.id] = {
-				total,
-				q1: perQuarter,
-				q2: perQuarter,
-				q3: perQuarter,
-				q4: perQuarter,
-			};
+			// есть только hours — делим по кварталам в целых
+			const totalRaw = store.valueByPair(p.id, gId);
+			const total = roundInt(totalRaw);
+			const [q1, q2, q3, q4] = splitTotalToQuarters(total);
+
+			buffer.value[p.id] = { total, q1, q2, q3, q4 };
 		}
 	}
 });
@@ -179,7 +205,7 @@ watch(selectedGroupId, () => {
 const groupOptions = computed(() =>
 	store.groups.map((g) => ({
 		value: g.id,
-		label: `${g.name} (ёмкость ${g.capacityHours})`,
+		label: `${g.name} (емкость ${g.capacityHours})`,
 	})),
 );
 
@@ -200,25 +226,30 @@ function rowBuffer(projectId: number): RowBuffer {
 	return buffer.value[projectId];
 }
 
+
 function onTotalInput(projectId: number) {
 	const row = rowBuffer(projectId);
-	const total = Number(row.total) || 0;
-	const part = total / 4;
 
-	row.q1 = part;
-	row.q2 = part;
-	row.q3 = part;
-	row.q4 = part;
+	const total = roundInt(row.total);
+	row.total = total;
+
+	const [q1, q2, q3, q4] = splitTotalToQuarters(total);
+	row.q1 = q1;
+	row.q2 = q2;
+	row.q3 = q3;
+	row.q4 = q4;
 }
+
 
 function onQuarterInput(projectId: number) {
 	const row = rowBuffer(projectId);
-	const q1 = Number(row.q1) || 0;
-	const q2 = Number(row.q2) || 0;
-	const q3 = Number(row.q3) || 0;
-	const q4 = Number(row.q4) || 0;
 
-	row.total = q1 + q2 + q3 + q4;
+	row.q1 = roundInt(row.q1);
+	row.q2 = roundInt(row.q2);
+	row.q3 = roundInt(row.q3);
+	row.q4 = roundInt(row.q4);
+
+	row.total = row.q1 + row.q2 + row.q3 + row.q4;
 }
 
 function showSuccess() {
@@ -253,11 +284,11 @@ async function saveAll() {
 		}
 
 		payload[p.id] = {
-			hours: Number(row.total) || 0,
-			q1: Number(row.q1) || 0,
-			q2: Number(row.q2) || 0,
-			q3: Number(row.q3) || 0,
-			q4: Number(row.q4) || 0,
+			hours: roundInt(row.total),
+			q1: roundInt(row.q1),
+			q2: roundInt(row.q2),
+			q3: roundInt(row.q3),
+			q4: roundInt(row.q4),
 		};
 	}
 

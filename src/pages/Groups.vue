@@ -1,4 +1,3 @@
-=
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
@@ -18,15 +17,26 @@ const saving = ref(false);
 
 onMounted(() => store.fetchAll());
 
+
+function roundInt(value: unknown): number {
+	const n = Number(value) || 0;
+	return Math.round(n);
+}
+
 async function addGroup() {
-	const cap = Number(newCap.value ?? 0);
-	const sp = Number(newSupport.value ?? 0);
+	const name = newName.value.trim();
+	let cap = roundInt(newCap.value);
+	let sp = roundInt(newSupport.value);
 
-	if (!newName.value.trim()) return;
+	if (!name) return;
 	if (!Number.isFinite(cap) || cap < 0) return;
-	if (!Number.isFinite(sp) || sp < 0 || sp > 100) return;
 
-	await store.addGroup(newName.value.trim(), cap, sp);
+	// ограничиваем поддержку 0–100
+	if (!Number.isFinite(sp)) sp = 0;
+	if (sp < 0) sp = 0;
+	if (sp > 100) sp = 100;
+
+	await store.addGroup(name, cap, sp);
 	newName.value = '';
 	newCap.value = null;
 	newSupport.value = 0;
@@ -35,26 +45,32 @@ async function addGroup() {
 function startEdit(g: Group) {
 	editingId.value = g.id;
 	editName.value = g.name;
-	editCap.value = g.capacityHours;
-	editSupport.value = g.supportPercent ?? 0;
+
+	editCap.value = roundInt(g.capacityHours);
+	editSupport.value = roundInt(g.supportPercent ?? 0);
 }
 
 async function saveEdit(g: Group) {
 	if (editingId.value !== g.id) return;
 
 	const name = editName.value.trim();
-	const cap = Number(editCap.value ?? 0);
-	const sp = Number(editSupport.value ?? 0);
+	let cap = roundInt(editCap.value);
+	let sp = roundInt(editSupport.value);
 
 	if (!name) {
 		alert('Название не может быть пустым');
 		return;
 	}
 	if (!Number.isFinite(cap) || cap < 0) {
-		alert('Ёмкость должна быть числом ≥ 0');
+		alert('Емкость должна быть числом ≥ 0');
 		return;
 	}
-	if (!Number.isFinite(sp) || sp < 0 || sp > 100) {
+
+	if (!Number.isFinite(sp)) {
+		alert('Процент поддержки должен быть числом');
+		return;
+	}
+	if (sp < 0 || sp > 100) {
 		alert('Процент поддержки должен быть в диапазоне 0–100');
 		return;
 	}
@@ -90,7 +106,8 @@ async function removeGroup(g: Group) {
 				v-model.number="newCap"
 				type="number"
 				min="0"
-				placeholder="Часы (ёмкость)"
+				step="1"
+				placeholder="Часы (емкость)"
 				required
 			/>
 			<input
@@ -99,6 +116,7 @@ async function removeGroup(g: Group) {
 				type="number"
 				min="0"
 				max="100"
+				step="1"
 				placeholder="% в поддержке"
 				title="Процент ресурсов, уходящих на поддержку (0–100)"
 			/>
@@ -119,7 +137,7 @@ async function removeGroup(g: Group) {
 						<div class="groups__cell-inner">Название</div>
 					</th>
 					<th class="groups__th">
-						<div class="groups__cell-inner">Ёмкость (ч·ч)</div>
+						<div class="groups__cell-inner">Емкость (ч·ч)</div>
 					</th>
 					<th class="groups__th">
 						<div class="groups__cell-inner">% в поддержке</div>
@@ -164,6 +182,7 @@ async function removeGroup(g: Group) {
 									class="groups__input groups__input--num groups__input--inline"
 									type="number"
 									min="0"
+									step="1"
 									v-model.number="editCap"
 									:disabled="saving"
 									@keydown.enter.prevent="saveEdit(g)"
@@ -171,7 +190,8 @@ async function removeGroup(g: Group) {
 								/>
 							</template>
 							<template v-else>
-								<span class="groups__text">{{ g.capacityHours }}</span>
+							
+								<span class="groups__text">{{ Math.round(g.capacityHours) }}</span>
 							</template>
 						</div>
 					</td>
@@ -188,6 +208,7 @@ async function removeGroup(g: Group) {
 									type="number"
 									min="0"
 									max="100"
+									step="1"
 									v-model.number="editSupport"
 									:disabled="saving"
 									@keydown.enter.prevent="saveEdit(g)"
@@ -196,7 +217,9 @@ async function removeGroup(g: Group) {
 								/>
 							</template>
 							<template v-else>
-								<span class="groups__text">{{ g.supportPercent ?? 0 }}%</span>
+								<span class="groups__text">
+									{{ Math.round(g.supportPercent ?? 0) }}%
+								</span>
 							</template>
 						</div>
 					</td>
@@ -234,6 +257,7 @@ async function removeGroup(g: Group) {
 		<p v-else class="groups__empty">Пока нет групп ресурсов.</p>
 	</section>
 </template>
+
 
 <style scoped lang="scss">
 .groups {
