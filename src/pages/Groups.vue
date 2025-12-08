@@ -17,7 +17,6 @@ const saving = ref(false);
 
 onMounted(() => store.fetchAll());
 
-
 function roundInt(value: unknown): number {
 	const n = Number(value) || 0;
 	return Math.round(n);
@@ -190,7 +189,6 @@ async function removeGroup(g: Group) {
 								/>
 							</template>
 							<template v-else>
-							
 								<span class="groups__text">{{ Math.round(g.capacityHours) }}</span>
 							</template>
 						</div>
@@ -257,7 +255,6 @@ async function removeGroup(g: Group) {
 		<p v-else class="groups__empty">Пока нет групп ресурсов.</p>
 	</section>
 </template>
-
 
 <style scoped lang="scss">
 .groups {

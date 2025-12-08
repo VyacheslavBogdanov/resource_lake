@@ -92,7 +92,7 @@
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
 					<col style="width: 28ch" />
-					
+
 					<template v-if="viewMode !== 'quarterSplit'">
 						<col v-for="g in visibleGroups" :key="'col-' + g.id" style="width: 12ch" />
 					</template>
@@ -149,7 +149,8 @@
 										</span>
 									</span>
 									<small class="plan__capacity">
-										доступно: {{ roundInt(store.effectiveCapacityById[g.id]) }} ч
+										доступно:
+										{{ roundInt(store.effectiveCapacityById[g.id]) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -194,7 +195,8 @@
 										</span>
 									</span>
 									<small class="plan__capacity">
-										доступно: {{ roundInt(store.effectiveCapacityById[g.id]) }} ч
+										доступно:
+										{{ roundInt(store.effectiveCapacityById[g.id]) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -441,10 +443,7 @@
 							<span>{{ row.name }}</span>
 						</label>
 					</div>
-					<div
-						class="plan__bar-track"
-						:title="`емкость: ${roundInt(row.capacity)} ч`"
-					>
+					<div class="plan__bar-track" :title="`емкость: ${roundInt(row.capacity)} ч`">
 						<div
 							class="plan__bar plan__bar--fill"
 							:style="{ width: row.fillPct + '%', background: row.fillColor }"
@@ -490,7 +489,6 @@ function roundInt(value: unknown): number {
 	if (!Number.isFinite(n)) return 0;
 	return Math.round(n);
 }
-
 
 const allGroupsChecked = computed({
 	get(): boolean {
@@ -722,10 +720,7 @@ function isYearOverCapacity(groupId: number): boolean {
 }
 
 const totalCapacity = computed(() => {
-	const sum = store.groups.reduce(
-		(s, g) => s + (store.effectiveCapacityById[g.id] || 0),
-		0,
-	);
+	const sum = store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0);
 	return roundInt(sum);
 });
 
@@ -767,7 +762,6 @@ function projectShareDisplay(projectId: number, archived?: boolean): string {
 	return `${projectShareValue(projectId, false)}%`;
 }
 
-
 function csvValue(raw: unknown): string {
 	const str =
 		raw === null || raw === undefined
@@ -779,7 +773,6 @@ function csvValue(raw: unknown): string {
 	const escaped = str.replace(/"/g, '""');
 	return `"${escaped}"`;
 }
-
 
 function projectUrl(p: { url?: string }): string | null {
 	const raw = (p.url ?? '').trim();
@@ -836,9 +829,7 @@ function exportCsv() {
 		for (const g of visibleGroups.value) {
 			footerCells.push(activeColTotals.value[g.id] || 0);
 		}
-		footerCells.push(
-			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
-		);
+		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else if (viewMode.value === 'quarterSingle') {
@@ -921,9 +912,7 @@ function exportCsv() {
 				footerCells.push(groupQuarterTotal(g.id, q) || 0);
 			}
 		}
-		footerCells.push(
-			Object.values(activeColTotals.value).reduce((s, v) => s + v, 0),
-		);
+		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	}

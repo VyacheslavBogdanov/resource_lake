@@ -149,12 +149,10 @@ onMounted(() => {
 	store.fetchAll();
 });
 
-
 function roundInt(value: unknown): number {
 	const n = Number(value) || 0;
 	return Math.round(n);
 }
-
 
 function splitTotalToQuarters(total: number): [number, number, number, number] {
 	total = roundInt(total);
@@ -226,7 +224,6 @@ function rowBuffer(projectId: number): RowBuffer {
 	return buffer.value[projectId];
 }
 
-
 function onTotalInput(projectId: number) {
 	const row = rowBuffer(projectId);
 
@@ -239,7 +236,6 @@ function onTotalInput(projectId: number) {
 	row.q3 = q3;
 	row.q4 = q4;
 }
-
 
 function onQuarterInput(projectId: number) {
 	const row = rowBuffer(projectId);

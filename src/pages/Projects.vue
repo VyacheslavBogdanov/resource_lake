@@ -52,7 +52,6 @@
 				>
 					<td class="projects__cell projects__cell--left">
 						<div class="projects__cell-inner">
-							
 							<template v-if="editingId === p.id">
 								<input
 									ref="nameInputRef"
@@ -65,7 +64,6 @@
 								/>
 							</template>
 
-							
 							<template v-else>
 								<span class="projects__text" :title="p.name">{{ p.name }}</span>
 								<button
@@ -132,16 +130,12 @@ onMounted(() => store.fetchAll());
 const newName = ref('');
 const newUrl = ref('');
 
-
 const urlDrafts = ref<Record<number, string>>({});
-
 
 const editingId = ref<number | null>(null);
 const editingName = ref('');
 
-
 const nameInputRef = ref<HTMLInputElement[] | null>(null);
-
 
 watch(
 	() => store.projects,
@@ -167,19 +161,16 @@ async function removeProject(p: Project) {
 	await store.deleteProject(p.id);
 }
 
-
 async function saveUrl(projectId: number) {
 	const url = (urlDrafts.value[projectId] || '').trim();
 	await store.updateProjectUrl(projectId, url);
 }
-
 
 async function startEdit(p: Project) {
 	editingId.value = p.id;
 	editingName.value = p.name ?? '';
 
 	await nextTick();
-
 
 	const el = nameInputRef.value?.[0];
 	if (el) {
@@ -188,12 +179,10 @@ async function startEdit(p: Project) {
 	}
 }
 
-
 function cancelEdit() {
 	editingId.value = null;
 	editingName.value = '';
 }
-
 
 async function saveName(projectId: number) {
 	const project = store.projects.find((x) => x.id === projectId);
@@ -205,14 +194,12 @@ async function saveName(projectId: number) {
 	const name = editingName.value.trim();
 	const original = project.name ?? '';
 
-
 	if (!name) {
 		editingName.value = original;
 		cancelEdit();
 		return;
 	}
 
-	
 	if (name === original) {
 		cancelEdit();
 		return;
@@ -221,7 +208,6 @@ async function saveName(projectId: number) {
 	await store.updateProjectName(projectId, name);
 	cancelEdit();
 }
-
 
 async function onNameBlur(projectId: number) {
 	if (editingId.value !== projectId) return;
@@ -359,7 +345,6 @@ async function onNameBlur(projectId: number) {
 		border-color: var(--blue-600);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 	}
-
 
 	&__edit-btn {
 		border: none;
