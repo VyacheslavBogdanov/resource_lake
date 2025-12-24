@@ -2,6 +2,18 @@ import { defineStore } from 'pinia';
 import { api } from '../services/http';
 import type { Project, Group, Allocation } from '../types/domain';
 
+function orderValue(p: Project): number {
+	return Number.isFinite(p.order) ? Number(p.order) : Number.MAX_SAFE_INTEGER;
+}
+
+function sortProjectsForView(list: Project[]): Project[] {
+	return [...list].sort((a, b) => {
+		const diff = orderValue(a) - orderValue(b);
+		if (diff !== 0) return diff;
+		return a.id - b.id;
+	});
+}
+
 const HIDDEN_GROUPS_STORAGE_KEY = 'resource_hidden_group_ids';
 
 type AllocationPayload = {
@@ -53,9 +65,7 @@ export const useResourceStore = defineStore('resource', {
 	getters: {
 		// все allocations по неархивным проектам
 		activeAllocations(state): Allocation[] {
-			const archivedIds = new Set(
-				state.projects.filter((p) => p.archived).map((p) => p.id),
-			);
+			const archivedIds = new Set(state.projects.filter((p) => p.archived).map((p) => p.id));
 			return state.allocations.filter((a) => !archivedIds.has(a.projectId));
 		},
 
@@ -63,9 +73,8 @@ export const useResourceStore = defineStore('resource', {
 		valueByPair:
 			(state) =>
 			(projectId: number, groupId: number): number =>
-				state.allocations.find(
-					(a) => a.projectId === projectId && a.groupId === groupId,
-				)?.hours ?? 0,
+				state.allocations.find((a) => a.projectId === projectId && a.groupId === groupId)
+					?.hours ?? 0,
 
 		// сумма по проекту (строка)
 		rowTotalByProject:
@@ -108,23 +117,20 @@ export const useResourceStore = defineStore('resource', {
 			(id: number): boolean =>
 				!state.hiddenGroupIds.includes(id),
 
-	
-		quarterByPair:
-			(state) =>
-			(projectId: number, groupId: number) => {
-				const a = state.allocations.find(
-					(x) => x.projectId === projectId && x.groupId === groupId,
-				);
-				if (!a) return null;
+		quarterByPair: (state) => (projectId: number, groupId: number) => {
+			const a = state.allocations.find(
+				(x) => x.projectId === projectId && x.groupId === groupId,
+			);
+			if (!a) return null;
 
-				const q1 = a.q1 ?? 0;
-				const q2 = a.q2 ?? 0;
-				const q3 = a.q3 ?? 0;
-				const q4 = a.q4 ?? 0;
+			const q1 = a.q1 ?? 0;
+			const q2 = a.q2 ?? 0;
+			const q3 = a.q3 ?? 0;
+			const q4 = a.q4 ?? 0;
 
-				if (!q1 && !q2 && !q3 && !q4) return null;
-				return { q1, q2, q3, q4 };
-			},
+			if (!q1 && !q2 && !q3 && !q4) return null;
+			return { q1, q2, q3, q4 };
+		},
 	},
 
 	actions: {
@@ -135,9 +141,7 @@ export const useResourceStore = defineStore('resource', {
 					HIDDEN_GROUPS_STORAGE_KEY,
 					JSON.stringify(this.hiddenGroupIds),
 				);
-			} catch {
-				
-			}
+			} catch {}
 		},
 
 		async fetchAll() {
@@ -148,7 +152,7 @@ export const useResourceStore = defineStore('resource', {
 					api.list<Group>('groups'),
 					api.list<Allocation>('allocations'),
 				]);
-				this.projects = projects;
+				this.projects = sortProjectsForView(projects);
 				this.groups = groups;
 				this.allocations = allocations;
 
@@ -161,23 +165,37 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Projects =====================
-		async addProject(name: string, url?: string) {
+		async addProject(name: string, url?: string, customer?: string, projectType?: string) {
 			const payload: Partial<Project> = {
 				name,
 				archived: false,
 			};
 
+			const currentMaxOrder = this.projects.reduce(
+				(max, p) => Math.max(max, Number.isFinite(p.order) ? Number(p.order) : -1),
+				-1,
+			);
+			payload.order = currentMaxOrder + 1;
+
 			if (typeof url === 'string') {
 				payload.url = url.trim();
 			}
+			if (typeof customer === 'string') {
+				payload.customer = customer.trim();
+			}
+			if (typeof projectType === 'string') {
+				payload.projectType = projectType.trim();
+			}
 
 			await api.create<Project>('projects', payload);
-			this.projects = await api.list<Project>('projects');
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
 		},
 
 		async toggleArchiveProject(id: number, archived: boolean) {
 			await api.update<Project>('projects', id, { archived });
-			this.projects = await api.list<Project>('projects');
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
 		},
 
 		async updateProjectUrl(id: number, url: string) {
@@ -187,7 +205,8 @@ export const useResourceStore = defineStore('resource', {
 			const body: Partial<Project> = { url: trimmed || '' };
 
 			await api.update<Project>('projects', id, body);
-			this.projects = await api.list<Project>('projects');
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
 		},
 
 		async updateProjectName(id: number, name: string) {
@@ -196,17 +215,67 @@ export const useResourceStore = defineStore('resource', {
 				throw new Error('Название проекта не может быть пустым');
 			}
 			await api.update<Project>('projects', id, { name: trimmed });
-			this.projects = await api.list<Project>('projects');
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
+		},
+
+		async updateProjectCustomer(id: number, customer: string) {
+			const trimmed = (customer ?? '').trim();
+			const body: Partial<Project> = { customer: trimmed || '' };
+			await api.update<Project>('projects', id, body);
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
+		},
+
+		async updateProjectType(id: number, projectType: string) {
+			const trimmed = (projectType ?? '').trim();
+			const body: Partial<Project> = { projectType: trimmed || '' };
+			await api.update<Project>('projects', id, body);
+			const projects = await api.list<Project>('projects');
+			this.projects = sortProjectsForView(projects);
 		},
 
 		async deleteProject(id: number) {
 			const related = this.allocations.filter((a) => a.projectId === id);
 			await Promise.all(related.map((a) => api.remove('allocations', a.id)));
 			await api.remove('projects', id);
-			[this.projects, this.allocations] = await Promise.all([
+			const [projects, allocations] = await Promise.all([
 				api.list<Project>('projects'),
 				api.list<Allocation>('allocations'),
 			]);
+			this.projects = sortProjectsForView(projects);
+			this.allocations = allocations;
+		},
+
+		async reorderProjects(orderedIds: number[]) {
+			const existing = new Map(this.projects.map((p) => [p.id, p]));
+			const updates: Promise<unknown>[] = [];
+
+			let orderCounter = 0;
+			for (const id of orderedIds) {
+				const p = existing.get(id);
+				if (!p) continue;
+				if (p.order !== orderCounter) {
+					updates.push(api.update<Project>('projects', id, { order: orderCounter }));
+					p.order = orderCounter;
+				}
+				orderCounter += 1;
+				existing.delete(id);
+			}
+
+			for (const p of existing.values()) {
+				if (p.order !== orderCounter) {
+					updates.push(api.update<Project>('projects', p.id, { order: orderCounter }));
+					p.order = orderCounter;
+				}
+				orderCounter += 1;
+			}
+
+			if (updates.length) {
+				await Promise.all(updates);
+			}
+
+			this.projects = sortProjectsForView(this.projects);
 		},
 
 		// ===================== Groups =====================

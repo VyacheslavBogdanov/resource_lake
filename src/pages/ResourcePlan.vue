@@ -273,7 +273,7 @@
 						<th class="plan__cell plan__sticky plan__sticky--left">
 							<div class="plan__cell-inner plan__cell-inner--left">
 								<div class="plan__project-header">
-									<span class="plan__project-name" :title="p.name">
+									<span class="plan__project-name" :title="projectHoverTitle(p)">
 										{{ p.name }}
 									</span>
 
@@ -462,6 +462,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue';
 import { useResourceStore } from '../stores/resource';
+import type { Project } from '../types/domain';
 
 type ViewMode = 'total' | 'quarterSingle' | 'quarterSplit';
 const quarterNumbers = [1, 2, 3, 4] as const;
@@ -789,6 +790,16 @@ function openProjectUrl(p: { url?: string }) {
 	window.open(url, '_blank', 'noopener');
 }
 
+function projectHoverTitle(p: Project): string {
+	const parts: string[] = [];
+	const type = (p.projectType ?? '').trim();
+	const customer = (p.customer ?? '').trim();
+	if (type) parts.push(type);
+	if (customer) parts.push(customer);
+	if (parts.length) return `${p.name} (${parts.join(', ')})`;
+	return p.name;
+}
+
 /** Выгрузка CSV с учётом текущего режима */
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
@@ -802,6 +813,8 @@ function exportCsv() {
 		// === РЕЖИМ "ОБЩИЙ" ===
 		const header = [
 			'Проект',
+			'Заказчик',
+			'Тип проекта',
 			...visibleGroups.value.map((g) => g.name),
 			'Итого (по проекту)',
 			'Размер проекта, %',
@@ -811,6 +824,8 @@ function exportCsv() {
 		for (const p of projects) {
 			const cells: (string | number)[] = [];
 			cells.push(p.name);
+			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {
 				const val = p.archived ? 0 : store.valueByPair(p.id, g.id);
@@ -837,6 +852,8 @@ function exportCsv() {
 		const q = selectedQuarter.value;
 		const header = [
 			'Проект',
+			'Заказчик',
+			'Тип проекта',
 			...visibleGroups.value.map((g) => `${g.name} (${quarterLabel[q]})`),
 			`Итого (по проекту, ${quarterLabel[q]})`,
 			`Размер проекта, %, ${quarterLabel[q]}`,
@@ -846,6 +863,8 @@ function exportCsv() {
 		for (const p of projects) {
 			const cells: (string | number)[] = [];
 			cells.push(p.name);
+			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {
 				const val = getQuarterCell(p.id, g.id, q, p.archived);
@@ -877,6 +896,8 @@ function exportCsv() {
 	} else {
 		// === РЕЖИМ "КВАРТАЛЬНО (4 КОЛОНКИ)" ===
 		const header: string[] = ['Проект'];
+		header.push('Заказчик');
+		header.push('Тип проекта');
 
 		for (const g of visibleGroups.value) {
 			for (const q of quarterNumbers) {
@@ -890,6 +911,8 @@ function exportCsv() {
 		for (const p of projects) {
 			const cells: (string | number)[] = [];
 			cells.push(p.name);
+			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {
 				for (const q of quarterNumbers) {
