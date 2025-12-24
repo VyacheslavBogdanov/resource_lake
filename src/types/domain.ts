@@ -3,6 +3,9 @@ export interface Project {
 	name: string;
 	archived?: boolean;
 	url?: string;
+	customer?: string;
+	projectType?: string;
+	order?: number;
 }
 
 export interface Group {

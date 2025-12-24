@@ -15,112 +15,172 @@
 				placeholder="Ссылка"
 				type="url"
 			/>
+			<input class="projects__input" v-model.trim="newCustomer" placeholder="Заказчик" />
+			<input
+				class="projects__input"
+				v-model.trim="newProjectType"
+				placeholder="Тип проекта"
+			/>
 			<button class="btn btn--primary" type="submit">Добавить</button>
 		</form>
 
-		<table class="projects__table" v-if="store.projects.length">
-			<colgroup>
-				<col style="width: 40%" />
-				<col style="width: 20%" />
-				<col style="width: 20%" />
-				<col style="width: 35%" />
-			</colgroup>
+		<div v-if="store.projects.length" class="projects__table-wrap">
+			<table class="projects__table">
+				<colgroup>
+					<col style="width: 28%" />
+					<col style="width: 12%" />
+					<col style="width: 18%" />
+					<col style="width: 14%" />
+					<col style="width: 14%" />
+					<col style="width: 14%" />
+				</colgroup>
 
-			<thead>
-				<tr>
-					<th class="projects__th projects__th--left">
-						<div class="projects__cell-inner">Название</div>
-					</th>
-					<th class="projects__th">
-						<div class="projects__cell-inner">Статус</div>
-					</th>
-					<th class="projects__th">
-						<div class="projects__cell-inner">Действия</div>
-					</th>
-					<th class="projects__th">
-						<div class="projects__cell-inner">Ссылка</div>
-					</th>
-				</tr>
-			</thead>
+				<thead>
+					<tr>
+						<th class="projects__th projects__th--left">
+							<div class="projects__cell-inner">Название</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Статус</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Действия</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Заказчик</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Тип</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Ссылка</div>
+						</th>
+					</tr>
+				</thead>
 
-			<tbody>
-				<tr
-					v-for="p in store.projects"
-					:key="p.id"
-					class="projects__row"
-					:class="{ 'projects__row--archived': p.archived }"
-				>
-					<td class="projects__cell projects__cell--left">
-						<div class="projects__cell-inner">
-							<template v-if="editingId === p.id">
-								<input
-									ref="nameInputRef"
-									class="projects__name-input"
-									type="text"
-									v-model.trim="editingName"
-									@keydown.enter.prevent="saveName(p.id)"
-									@keydown.esc.prevent="cancelEdit"
-									@blur="onNameBlur(p.id)"
-								/>
-							</template>
-
-							<template v-else>
-								<span class="projects__text" :title="p.name">{{ p.name }}</span>
+				<tbody>
+					<tr
+						v-for="p in orderedProjects"
+						:key="p.id"
+						class="projects__row"
+						:class="{
+							'projects__row--archived': p.archived,
+							'projects__row--drag-over':
+								dragState.overId === p.id && dragState.draggingId !== null,
+						}"
+						@dragenter.prevent="onDragEnter(p.id)"
+						@dragover.prevent
+						@drop.prevent="onDrop(p.id)"
+					>
+						<td class="projects__cell projects__cell--left">
+							<div class="projects__cell-inner">
 								<button
 									type="button"
-									class="projects__edit-btn"
-									title="Переименовать проект"
-									@click="startEdit(p)"
+									class="projects__drag-handle"
+									title="Перетащите для изменения порядка"
+									draggable="true"
+									@dragstart="onDragStart(p.id)"
+									@dragend="onDragEnd"
 								>
-									🖉
+									☰
 								</button>
-							</template>
-						</div>
-					</td>
+								<template v-if="editingId === p.id">
+									<input
+										ref="nameInputRef"
+										class="projects__name-input"
+										type="text"
+										v-model.trim="editingName"
+										@keydown.enter.prevent="saveName(p.id)"
+										@keydown.esc.prevent="cancelEdit"
+										@blur="onNameBlur(p.id)"
+									/>
+								</template>
 
-					<td class="projects__cell">
-						<div class="projects__cell-inner">
-							<span class="badge" :class="p.archived ? 'badge--muted' : 'badge--ok'">
-								{{ p.archived ? 'В архиве' : 'Активен' }}
-							</span>
-						</div>
-					</td>
+								<template v-else>
+									<span class="projects__text" :title="p.name">{{ p.name }}</span>
+									<button
+										type="button"
+										class="projects__edit-btn"
+										title="Переименовать проект"
+										@click="startEdit(p)"
+									>
+										✎
+									</button>
+								</template>
+							</div>
+						</td>
 
-					<td class="projects__cell projects__cell--actions">
-						<div class="projects__cell-inner projects__actions">
-							<button
-								class="btn btn--archive"
-								@click="store.toggleArchiveProject(p.id, !p.archived)"
-							>
-								{{ p.archived ? 'Разархивировать' : 'Архивировать' }}
-							</button>
-							<button class="btn btn--danger" @click="removeProject(p)">
-								Удалить
-							</button>
-						</div>
-					</td>
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<span
+									class="badge"
+									:class="p.archived ? 'badge--muted' : 'badge--ok'"
+								>
+									{{ p.archived ? 'В архиве' : 'Активен' }}
+								</span>
+							</div>
+						</td>
 
-					<td class="projects__cell projects__cell--url">
-						<div class="projects__cell-inner">
-							<input
-								class="projects__url-input"
-								type="url"
-								placeholder="Ссылка"
-								v-model.trim="urlDrafts[p.id]"
-								@blur="saveUrl(p.id)"
-							/>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+						<td class="projects__cell projects__cell--actions">
+							<div class="projects__cell-inner projects__actions">
+								<button
+									class="btn btn--archive"
+									@click="store.toggleArchiveProject(p.id, !p.archived)"
+								>
+									{{ p.archived ? 'Разархивировать' : 'Архивировать' }}
+								</button>
+								<button class="btn btn--danger" @click="removeProject(p)">
+									Удалить
+								</button>
+							</div>
+						</td>
+
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
+									placeholder="Заказчик"
+									v-model.trim="customerDrafts[p.id]"
+									@blur="saveCustomer(p.id)"
+								/>
+							</div>
+						</td>
+
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
+									placeholder="Тип проекта"
+									v-model.trim="typeDrafts[p.id]"
+									@blur="saveProjectType(p.id)"
+								/>
+							</div>
+						</td>
+
+						<td class="projects__cell projects__cell--url">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__url-input"
+									type="url"
+									placeholder="Ссылка"
+									v-model.trim="urlDrafts[p.id]"
+									@blur="saveUrl(p.id)"
+								/>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
 		<p v-else class="projects__empty">Пока нет проектов.</p>
 	</section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useResourceStore } from '../stores/resource';
 import type { Project } from '../types/domain';
 
@@ -129,31 +189,58 @@ onMounted(() => store.fetchAll());
 
 const newName = ref('');
 const newUrl = ref('');
+const newCustomer = ref('');
+const newProjectType = ref('');
 
 const urlDrafts = ref<Record<number, string>>({});
+const customerDrafts = ref<Record<number, string>>({});
+const typeDrafts = ref<Record<number, string>>({});
 
 const editingId = ref<number | null>(null);
 const editingName = ref('');
 
 const nameInputRef = ref<HTMLInputElement[] | null>(null);
 
+const dragState = ref<{ draggingId: number | null; overId: number | null }>({
+	draggingId: null,
+	overId: null,
+});
+
+const orderedProjects = computed<Project[]>(() => {
+	const list = [...store.projects];
+	return list.sort((a, b) => {
+		const aOrder = Number.isFinite(a.order) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
+		const bOrder = Number.isFinite(b.order) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
+		if (aOrder !== bOrder) return aOrder - bOrder;
+		return a.id - b.id;
+	});
+});
+
 watch(
 	() => store.projects,
 	(projects) => {
-		const map: Record<number, string> = {};
+		const mapUrl: Record<number, string> = {};
+		const mapCustomer: Record<number, string> = {};
+		const mapType: Record<number, string> = {};
 		for (const p of projects) {
-			map[p.id] = (p.url ?? '').trim();
+			mapUrl[p.id] = (p.url ?? '').trim();
+			mapCustomer[p.id] = (p.customer ?? '').trim();
+			mapType[p.id] = (p.projectType ?? '').trim();
 		}
-		urlDrafts.value = map;
+		urlDrafts.value = mapUrl;
+		customerDrafts.value = mapCustomer;
+		typeDrafts.value = mapType;
 	},
 	{ immediate: true, deep: true },
 );
 
 async function addProject() {
 	if (!newName.value.trim()) return;
-	await store.addProject(newName.value, newUrl.value);
+	await store.addProject(newName.value, newUrl.value, newCustomer.value, newProjectType.value);
 	newName.value = '';
 	newUrl.value = '';
+	newCustomer.value = '';
+	newProjectType.value = '';
 }
 
 async function removeProject(p: Project) {
@@ -164,6 +251,16 @@ async function removeProject(p: Project) {
 async function saveUrl(projectId: number) {
 	const url = (urlDrafts.value[projectId] || '').trim();
 	await store.updateProjectUrl(projectId, url);
+}
+
+async function saveCustomer(projectId: number) {
+	const customer = (customerDrafts.value[projectId] || '').trim();
+	await store.updateProjectCustomer(projectId, customer);
+}
+
+async function saveProjectType(projectId: number) {
+	const projectType = (typeDrafts.value[projectId] || '').trim();
+	await store.updateProjectType(projectId, projectType);
 }
 
 async function startEdit(p: Project) {
@@ -213,6 +310,40 @@ async function onNameBlur(projectId: number) {
 	if (editingId.value !== projectId) return;
 	await saveName(projectId);
 }
+
+function onDragStart(projectId: number) {
+	dragState.value.draggingId = projectId;
+	dragState.value.overId = null;
+}
+
+function onDragEnter(projectId: number) {
+	if (dragState.value.draggingId === null || dragState.value.draggingId === projectId) return;
+	dragState.value.overId = projectId;
+}
+
+async function onDrop(projectId: number) {
+	if (dragState.value.draggingId === null) return;
+	const sourceId = dragState.value.draggingId;
+	const current = orderedProjects.value.map((p) => p.id);
+
+	const fromIdx = current.indexOf(sourceId);
+	const toIdx = current.indexOf(projectId);
+	if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) {
+		onDragEnd();
+		return;
+	}
+
+	const [moved] = current.splice(fromIdx, 1);
+	current.splice(toIdx, 0, moved);
+
+	await store.reorderProjects(current);
+	onDragEnd();
+}
+
+function onDragEnd() {
+	dragState.value.draggingId = null;
+	dragState.value.overId = null;
+}
 </script>
 
 <style scoped lang="scss">
@@ -254,8 +385,15 @@ async function onNameBlur(projectId: number) {
 		font: inherit;
 	}
 
+	&__table-wrap {
+		width: 100%;
+		overflow-x: auto;
+		padding: 0 1px;
+	}
+
 	&__table {
 		width: 100%;
+		min-width: 880px;
 		background: #fff;
 		box-shadow: var(--shadow);
 		border-collapse: separate;
@@ -287,6 +425,12 @@ async function onNameBlur(projectId: number) {
 
 	&__row--archived {
 		opacity: 0.7;
+	}
+
+	&__row--drag-over {
+		outline: 2px dashed #7aa4ff;
+		outline-offset: -4px;
+		background: #f5f8ff;
 	}
 
 	&__text {
@@ -369,6 +513,45 @@ async function onNameBlur(projectId: number) {
 
 	&__empty {
 		color: #446;
+	}
+
+	&__drag-handle {
+		width: 24px;
+		height: 24px;
+		border-radius: 999px;
+		border: 1px solid #d6e2ff;
+		background: #fff;
+		cursor: grab;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		color: #445;
+		padding: 0;
+
+		&:hover {
+			background: #eef3ff;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__meta-input {
+		width: 100%;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid #cfe1ff;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font-size: 13px;
+
+		&:focus-visible {
+			outline: none;
+			border-color: var(--blue-600);
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
 	}
 }
 
