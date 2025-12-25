@@ -181,7 +181,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useResourceStore } from '../stores/resource';
+import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
 const store = useResourceStore();

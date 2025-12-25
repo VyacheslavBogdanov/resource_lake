@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useResourceStore } from '../stores/resource';
+import { useResourceStore } from '../stores/resource/index';
 import type { Group } from '../types/domain';
 
 const store = useResourceStore();

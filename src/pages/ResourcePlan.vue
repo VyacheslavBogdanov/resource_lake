@@ -461,7 +461,7 @@
 
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue';
-import { useResourceStore } from '../stores/resource';
+import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
 type ViewMode = 'total' | 'quarterSingle' | 'quarterSplit';
@@ -809,11 +809,11 @@ function exportCsv() {
 	const rows: string[] = [];
 	const projects = sortedProjects.value;
 
-		if (viewMode.value === 'total') {
+	if (viewMode.value === 'total') {
 		// === РЕЖИМ "ОБЩИЙ" ===
 		const header = [
 			'Проект',
-				'Ссылка',
+			'Ссылка',
 			'Заказчик',
 			'Тип проекта',
 			...visibleGroups.value.map((g) => g.name),
@@ -825,7 +825,7 @@ function exportCsv() {
 		for (const p of projects) {
 			const cells: (string | number)[] = [];
 			cells.push(p.name);
-				cells.push(projectUrl(p) || '');
+			cells.push(projectUrl(p) || '');
 			cells.push((p.customer ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
@@ -854,7 +854,7 @@ function exportCsv() {
 		const q = selectedQuarter.value;
 		const header = [
 			'Проект',
-				'Ссылка',
+			'Ссылка',
 			'Заказчик',
 			'Тип проекта',
 			...visibleGroups.value.map((g) => `${g.name} (${quarterLabel[q]})`),
@@ -866,7 +866,7 @@ function exportCsv() {
 		for (const p of projects) {
 			const cells: (string | number)[] = [];
 			cells.push(p.name);
-				cells.push(projectUrl(p) || '');
+			cells.push(projectUrl(p) || '');
 			cells.push((p.customer ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
@@ -900,7 +900,7 @@ function exportCsv() {
 	} else {
 		// === РЕЖИМ "КВАРТАЛЬНО (4 КОЛОНКИ)" ===
 		const header: string[] = ['Проект'];
-			header.push('Ссылка');
+		header.push('Ссылка');
 		header.push('Заказчик');
 		header.push('Тип проекта');
 

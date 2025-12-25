@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import NavHeader from './components/NavHeader.vue';
 import { onMounted } from 'vue';
-import { useResourceStore } from './stores/resource';
+import { useResourceStore } from './stores/resource/index';
 
 const store = useResourceStore();
 onMounted(() => store.fetchAll());
