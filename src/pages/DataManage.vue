@@ -127,7 +127,7 @@
 <script setup lang="ts">
 import UiSelect from '../components/UiSelect.vue';
 import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
-import { useResourceStore } from '../stores/resource';
+import { useResourceStore } from '../stores/resource/index';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
