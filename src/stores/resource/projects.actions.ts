@@ -13,6 +13,7 @@ export async function addProject(
 	url?: string,
 	customer?: string,
 	projectType?: string,
+	projectManager?: string,
 ) {
 	const payload: Partial<Project> = {
 		name,
@@ -33,6 +34,9 @@ export async function addProject(
 	}
 	if (typeof projectType === 'string') {
 		payload.projectType = projectType.trim();
+	}
+	if (typeof projectManager === 'string') {
+		payload.projectManager = projectManager.trim();
 	}
 
 	await api.create<Project>('projects', payload);
@@ -76,6 +80,18 @@ export async function updateProjectCustomer(store: StoreInstance, id: number, cu
 export async function updateProjectType(store: StoreInstance, id: number, projectType: string) {
 	const trimmed = (projectType ?? '').trim();
 	const body: Partial<Project> = { projectType: trimmed || '' };
+	await api.update<Project>('projects', id, body);
+	const projects = await api.list<Project>('projects');
+	store.projects = sortProjectsForView(projects);
+}
+
+export async function updateProjectManager(
+	store: StoreInstance,
+	id: number,
+	projectManager: string,
+) {
+	const trimmed = (projectManager ?? '').trim();
+	const body: Partial<Project> = { projectManager: trimmed || '' };
 	await api.update<Project>('projects', id, body);
 	const projects = await api.list<Project>('projects');
 	store.projects = sortProjectsForView(projects);

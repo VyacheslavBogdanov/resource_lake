@@ -815,6 +815,7 @@ function exportCsv() {
 			'Проект',
 			'Ссылка',
 			'Заказчик',
+			'Руководитель проекта',
 			'Тип проекта',
 			...visibleGroups.value.map((g) => g.name),
 			'Итого (по проекту)',
@@ -827,6 +828,7 @@ function exportCsv() {
 			cells.push(p.name);
 			cells.push(projectUrl(p) || '');
 			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {
@@ -856,6 +858,7 @@ function exportCsv() {
 			'Проект',
 			'Ссылка',
 			'Заказчик',
+			'Руководитель проекта',
 			'Тип проекта',
 			...visibleGroups.value.map((g) => `${g.name} (${quarterLabel[q]})`),
 			`Итого (по проекту, ${quarterLabel[q]})`,
@@ -868,6 +871,7 @@ function exportCsv() {
 			cells.push(p.name);
 			cells.push(projectUrl(p) || '');
 			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {
@@ -902,6 +906,7 @@ function exportCsv() {
 		const header: string[] = ['Проект'];
 		header.push('Ссылка');
 		header.push('Заказчик');
+		header.push('Руководитель проекта');
 		header.push('Тип проекта');
 
 		for (const g of visibleGroups.value) {
@@ -918,6 +923,7 @@ function exportCsv() {
 			cells.push(p.name);
 			cells.push(projectUrl(p) || '');
 			cells.push((p.customer ?? '').trim());
+			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
 			for (const g of visibleGroups.value) {

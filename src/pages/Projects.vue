@@ -18,6 +18,11 @@
 			<input class="projects__input" v-model.trim="newCustomer" placeholder="Заказчик" />
 			<input
 				class="projects__input"
+				v-model.trim="newProjectManager"
+				placeholder="Руководитель проекта"
+			/>
+			<input
+				class="projects__input"
 				v-model.trim="newProjectType"
 				placeholder="Тип проекта"
 			/>
@@ -27,11 +32,12 @@
 		<div v-if="store.projects.length" class="projects__table-wrap">
 			<table class="projects__table">
 				<colgroup>
-					<col style="width: 28%" />
+					<col style="width: 24%" />
+					<col style="width: 10%" />
+					<col style="width: 16%" />
 					<col style="width: 12%" />
-					<col style="width: 18%" />
-					<col style="width: 14%" />
-					<col style="width: 14%" />
+					<col style="width: 12%" />
+					<col style="width: 12%" />
 					<col style="width: 14%" />
 				</colgroup>
 
@@ -48,6 +54,9 @@
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Заказчик</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Руководитель</div>
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Тип</div>
@@ -152,6 +161,18 @@
 								<input
 									class="projects__meta-input"
 									type="text"
+									placeholder="Руководитель проекта"
+									v-model.trim="managerDrafts[p.id]"
+									@blur="saveProjectManager(p.id)"
+								/>
+							</div>
+						</td>
+
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
 									placeholder="Тип проекта"
 									v-model.trim="typeDrafts[p.id]"
 									@blur="saveProjectType(p.id)"
@@ -190,10 +211,12 @@ onMounted(() => store.fetchAll());
 const newName = ref('');
 const newUrl = ref('');
 const newCustomer = ref('');
+const newProjectManager = ref('');
 const newProjectType = ref('');
 
 const urlDrafts = ref<Record<number, string>>({});
 const customerDrafts = ref<Record<number, string>>({});
+const managerDrafts = ref<Record<number, string>>({});
 const typeDrafts = ref<Record<number, string>>({});
 
 const editingId = ref<number | null>(null);
@@ -221,14 +244,17 @@ watch(
 	(projects) => {
 		const mapUrl: Record<number, string> = {};
 		const mapCustomer: Record<number, string> = {};
+		const mapManager: Record<number, string> = {};
 		const mapType: Record<number, string> = {};
 		for (const p of projects) {
 			mapUrl[p.id] = (p.url ?? '').trim();
 			mapCustomer[p.id] = (p.customer ?? '').trim();
+			mapManager[p.id] = (p.projectManager ?? '').trim();
 			mapType[p.id] = (p.projectType ?? '').trim();
 		}
 		urlDrafts.value = mapUrl;
 		customerDrafts.value = mapCustomer;
+		managerDrafts.value = mapManager;
 		typeDrafts.value = mapType;
 	},
 	{ immediate: true, deep: true },
@@ -236,10 +262,17 @@ watch(
 
 async function addProject() {
 	if (!newName.value.trim()) return;
-	await store.addProject(newName.value, newUrl.value, newCustomer.value, newProjectType.value);
+	await store.addProject(
+		newName.value,
+		newUrl.value,
+		newCustomer.value,
+		newProjectType.value,
+		newProjectManager.value,
+	);
 	newName.value = '';
 	newUrl.value = '';
 	newCustomer.value = '';
+	newProjectManager.value = '';
 	newProjectType.value = '';
 }
 
@@ -261,6 +294,11 @@ async function saveCustomer(projectId: number) {
 async function saveProjectType(projectId: number) {
 	const projectType = (typeDrafts.value[projectId] || '').trim();
 	await store.updateProjectType(projectId, projectType);
+}
+
+async function saveProjectManager(projectId: number) {
+	const projectManager = (managerDrafts.value[projectId] || '').trim();
+	await store.updateProjectManager(projectId, projectManager);
 }
 
 async function startEdit(p: Project) {

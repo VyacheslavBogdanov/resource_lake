@@ -5,6 +5,7 @@ export interface Project {
 	url?: string;
 	customer?: string;
 	projectType?: string;
+	projectManager?: string;
 	order?: number;
 }
 

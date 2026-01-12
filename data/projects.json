@@ -16,7 +16,8 @@
       "url": "teccode.ru",
       "order": 1,
       "customer": "ООО \"техинвест\"",
-      "projectType": "Разработка"
+      "projectType": "Разработка",
+      "projectManager": "Богданов"
     },
     {
       "name": "Проект 9",
@@ -44,7 +45,9 @@
       "archived": false,
       "url": "",
       "id": 9,
-      "order": 2
+      "order": 2,
+      "projectManager": "123",
+      "customer": "222"
     },
     {
       "name": "Проект 13",
@@ -67,7 +70,8 @@
       "url": "",
       "customer": "ООО \"Технокод\"",
       "projectType": "Разработка",
-      "id": 12
+      "id": 12,
+      "projectManager": "Константинов"
     },
     {
       "name": "1234",

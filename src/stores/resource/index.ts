@@ -116,8 +116,21 @@ export const useResourceStore = defineStore('resource', {
 		},
 
 		// ===================== Projects =====================
-		async addProject(name: string, url?: string, customer?: string, projectType?: string) {
-			return projectActions.addProject(this, name, url, customer, projectType);
+		async addProject(
+			name: string,
+			url?: string,
+			customer?: string,
+			projectType?: string,
+			projectManager?: string,
+		) {
+			return projectActions.addProject(
+				this,
+				name,
+				url,
+				customer,
+				projectType,
+				projectManager,
+			);
 		},
 
 		async toggleArchiveProject(id: number, archived: boolean) {
@@ -138,6 +151,10 @@ export const useResourceStore = defineStore('resource', {
 
 		async updateProjectType(id: number, projectType: string) {
 			return projectActions.updateProjectType(this, id, projectType);
+		},
+
+		async updateProjectManager(id: number, projectManager: string) {
+			return projectActions.updateProjectManager(this, id, projectManager);
 		},
 
 		async deleteProject(id: number) {
