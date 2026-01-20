@@ -273,18 +273,31 @@
 						<th class="plan__cell plan__sticky plan__sticky--left">
 							<div class="plan__cell-inner plan__cell-inner--left">
 								<div class="plan__project-header">
+									<button
+										type="button"
+										class="plan__project-link"
+										:disabled="!projectUrl(p)"
+										:title="projectUrl(p) ? 'Открыть в новом окне' : 'Ссылка не задана'"
+										@click="openProjectUrl(p)"
+										aria-label="Открыть проект в новом окне"
+									>
+										<svg
+											class="plan__project-link-icon"
+											viewBox="0 0 24 24"
+											width="16"
+											height="16"
+											aria-hidden="true"
+										>
+											<path
+												fill="currentColor"
+												d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Zm5 18H5V5h7V3H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7Z"
+											/>
+										</svg>
+									</button>
+
 									<span class="plan__project-name" :title="projectHoverTitle(p)">
 										{{ p.name }}
 									</span>
-
-									<button
-										v-if="projectUrl(p)"
-										type="button"
-										class="plan__btn plan__btn--outline plan__open-link"
-										@click="openProjectUrl(p)"
-									>
-										Открыть в новом окне
-									</button>
 								</div>
 							</div>
 						</th>
@@ -1290,7 +1303,7 @@ const chartRows = computed(() => {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		gap: 25px;
+		gap: 10px;
 		width: 100%;
 	}
 
@@ -1301,11 +1314,32 @@ const chartRows = computed(() => {
 		white-space: nowrap;
 	}
 
-	&__open-link {
+	&__project-link {
 		height: 28px;
-		padding: 0 10px;
-		font-size: 12px;
-		white-space: nowrap;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid #cfe0ff;
+		background: #ffffff;
+		color: #2a66ff;
+		cursor: pointer;
+		flex: 0 0 auto;
+	}
+
+	&__project-link:hover:not(:disabled) {
+		background: #f2f7ff;
+		border-color: #b7d0ff;
+	}
+
+	&__project-link:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+	}
+
+	&__project-link-icon {
+		display: block;
 	}
 
 	tbody .plan__row:nth-child(odd) {
