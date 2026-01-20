@@ -17,7 +17,8 @@
       "order": 1,
       "customer": "ООО \"техинвест\"",
       "projectType": "Разработка",
-      "projectManager": "Богданов"
+      "projectManager": "Богданов",
+      "description": "1298471398"
     },
     {
       "name": "Проект 9",
@@ -38,7 +39,8 @@
       "archived": false,
       "url": "",
       "id": 8,
-      "order": 0
+      "order": 0,
+      "description": ""
     },
     {
       "name": "Проект 15",

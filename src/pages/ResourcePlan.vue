@@ -809,8 +809,13 @@ function projectHoverTitle(p: Project): string {
 	const customer = (p.customer ?? '').trim();
 	if (type) parts.push(type);
 	if (customer) parts.push(customer);
-	if (parts.length) return `${p.name} (${parts.join(', ')})`;
-	return p.name;
+	const base = parts.length ? `${p.name} (${parts.join(', ')})` : p.name;
+
+	const description = (p.description ?? '').trim();
+	if (!description) return base;
+
+	// описание добавляем к базовому заголовку
+	return `${base} — ${description}`;
 }
 
 /** Выгрузка CSV с учётом текущего режима */

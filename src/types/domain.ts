@@ -6,6 +6,7 @@ export interface Project {
 	customer?: string;
 	projectType?: string;
 	projectManager?: string;
+	description?: string;
 	order?: number;
 }
 

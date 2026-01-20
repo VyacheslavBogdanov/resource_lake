@@ -26,19 +26,25 @@
 				v-model.trim="newProjectType"
 				placeholder="Тип проекта"
 			/>
+			<input
+				class="projects__input"
+				v-model.trim="newDescription"
+				placeholder="Описание"
+			/>
 			<button class="btn btn--primary" type="submit">Добавить</button>
 		</form>
 
 		<div v-if="store.projects.length" class="projects__table-wrap">
 			<table class="projects__table">
 				<colgroup>
-					<col style="width: 24%" />
+					<col style="width: 22%" />
 					<col style="width: 10%" />
+					<col style="width: 15%" />
+					<col style="width: 11%" />
+					<col style="width: 11%" />
+					<col style="width: 10%" />
+					<col style="width: 15%" />
 					<col style="width: 16%" />
-					<col style="width: 12%" />
-					<col style="width: 12%" />
-					<col style="width: 12%" />
-					<col style="width: 14%" />
 				</colgroup>
 
 				<thead>
@@ -60,6 +66,9 @@
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Тип</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Описание</div>
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Ссылка</div>
@@ -180,6 +189,18 @@
 							</div>
 						</td>
 
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
+									placeholder="Описание"
+									v-model.trim="descriptionDrafts[p.id]"
+									@blur="saveDescription(p.id)"
+								/>
+							</div>
+						</td>
+
 						<td class="projects__cell projects__cell--url">
 							<div class="projects__cell-inner">
 								<input
@@ -213,11 +234,13 @@ const newUrl = ref('');
 const newCustomer = ref('');
 const newProjectManager = ref('');
 const newProjectType = ref('');
+const newDescription = ref('');
 
 const urlDrafts = ref<Record<number, string>>({});
 const customerDrafts = ref<Record<number, string>>({});
 const managerDrafts = ref<Record<number, string>>({});
 const typeDrafts = ref<Record<number, string>>({});
+const descriptionDrafts = ref<Record<number, string>>({});
 
 const editingId = ref<number | null>(null);
 const editingName = ref('');
@@ -246,16 +269,19 @@ watch(
 		const mapCustomer: Record<number, string> = {};
 		const mapManager: Record<number, string> = {};
 		const mapType: Record<number, string> = {};
+		const mapDescription: Record<number, string> = {};
 		for (const p of projects) {
 			mapUrl[p.id] = (p.url ?? '').trim();
 			mapCustomer[p.id] = (p.customer ?? '').trim();
 			mapManager[p.id] = (p.projectManager ?? '').trim();
 			mapType[p.id] = (p.projectType ?? '').trim();
+			mapDescription[p.id] = (p.description ?? '').trim();
 		}
 		urlDrafts.value = mapUrl;
 		customerDrafts.value = mapCustomer;
 		managerDrafts.value = mapManager;
 		typeDrafts.value = mapType;
+		descriptionDrafts.value = mapDescription;
 	},
 	{ immediate: true, deep: true },
 );
@@ -268,12 +294,14 @@ async function addProject() {
 		newCustomer.value,
 		newProjectType.value,
 		newProjectManager.value,
+		newDescription.value,
 	);
 	newName.value = '';
 	newUrl.value = '';
 	newCustomer.value = '';
 	newProjectManager.value = '';
 	newProjectType.value = '';
+	newDescription.value = '';
 }
 
 async function removeProject(p: Project) {
@@ -299,6 +327,11 @@ async function saveProjectType(projectId: number) {
 async function saveProjectManager(projectId: number) {
 	const projectManager = (managerDrafts.value[projectId] || '').trim();
 	await store.updateProjectManager(projectId, projectManager);
+}
+
+async function saveDescription(projectId: number) {
+	const description = (descriptionDrafts.value[projectId] || '').trim();
+	await store.updateProjectDescription(projectId, description);
 }
 
 async function startEdit(p: Project) {

@@ -122,6 +122,7 @@ export const useResourceStore = defineStore('resource', {
 			customer?: string,
 			projectType?: string,
 			projectManager?: string,
+			description?: string,
 		) {
 			return projectActions.addProject(
 				this,
@@ -130,6 +131,7 @@ export const useResourceStore = defineStore('resource', {
 				customer,
 				projectType,
 				projectManager,
+				description,
 			);
 		},
 
@@ -155,6 +157,10 @@ export const useResourceStore = defineStore('resource', {
 
 		async updateProjectManager(id: number, projectManager: string) {
 			return projectActions.updateProjectManager(this, id, projectManager);
+		},
+
+		async updateProjectDescription(id: number, description: string) {
+			return projectActions.updateProjectDescription(this, id, description);
 		},
 
 		async deleteProject(id: number) {
