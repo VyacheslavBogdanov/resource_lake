@@ -49,6 +49,92 @@
 						</select>
 					</div>
 				</div>
+
+				<div class="plan__filters">
+					<button
+						type="button"
+						class="plan__filter-btn"
+						@click="isFilterOpen = !isFilterOpen"
+						@blur="isFilterOpen = false"
+						:aria-pressed="isFilterOpen"
+						aria-label="Фильтр проектов"
+					>
+						<svg
+							class="plan__filter-icon"
+							viewBox="0 0 24 24"
+							width="16"
+							height="16"
+							aria-hidden="true"
+						>
+							<path
+								fill="currentColor"
+								d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z"
+							/>
+						</svg>
+						<span class="plan__filter-label">Фильтр</span>
+						<span v-if="hasActiveFilters" class="plan__filter-badge">
+							{{ filteredProjectsCount }} / {{ store.projects.length }}
+						</span>
+					</button>
+
+					<div v-if="isFilterOpen" class="plan__filter-panel">
+						<div class="plan__filter-header">
+							<span class="plan__filter-title">Фильтр проектов</span>
+							<button
+								type="button"
+								class="plan__filter-reset"
+								@click="resetFilters"
+								v-if="hasActiveFilters"
+							>
+								Сбросить
+							</button>
+						</div>
+
+						<div class="plan__filter-groups">
+							<div class="plan__filter-group">
+								<div class="plan__filter-group-title">Заказчик</div>
+								<div class="plan__filter-options">
+									<label
+										v-for="c in customerOptions"
+										:key="c"
+										class="plan__filter-option"
+									>
+										<input
+											type="checkbox"
+											:value="c"
+											v-model="selectedCustomers"
+										/>
+										<span>{{ c }}</span>
+									</label>
+									<p v-if="!customerOptions.length" class="plan__filter-empty">
+										Нет заполненных заказчиков
+									</p>
+								</div>
+							</div>
+
+							<div class="plan__filter-group">
+								<div class="plan__filter-group-title">Руководитель проекта</div>
+								<div class="plan__filter-options">
+									<label
+										v-for="m in managerOptions"
+										:key="m"
+										class="plan__filter-option"
+									>
+										<input
+											type="checkbox"
+											:value="m"
+											v-model="selectedManagers"
+										/>
+										<span>{{ m }}</span>
+									</label>
+									<p v-if="!managerOptions.length" class="plan__filter-empty">
+										Нет заполненных руководителей
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -498,6 +584,57 @@ const selectedQuarter = ref<Quarter>(1);
 
 const visibleGroups = computed(() => store.visibleGroups);
 
+// --- Фильтр проектов по заказчику и руководителю ---
+const isFilterOpen = ref(false);
+const selectedCustomers = ref<string[]>([]);
+const selectedManagers = ref<string[]>([]);
+
+const customerOptions = computed(() => {
+	const set = new Set<string>();
+	for (const p of store.projects) {
+		const value = (p.customer ?? '').trim();
+		if (value) set.add(value);
+	}
+	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
+});
+
+const managerOptions = computed(() => {
+	const set = new Set<string>();
+	for (const p of store.projects) {
+		const value = (p.projectManager ?? '').trim();
+		if (value) set.add(value);
+	}
+	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
+});
+
+const hasActiveFilters = computed(
+	() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0,
+);
+
+const filteredProjects = computed(() => {
+	if (!hasActiveFilters.value) return store.projects;
+
+	const customers = new Set(selectedCustomers.value);
+	const managers = new Set(selectedManagers.value);
+
+	return store.projects.filter((p) => {
+		const customer = (p.customer ?? '').trim();
+		const manager = (p.projectManager ?? '').trim();
+
+		if (customers.size && !customers.has(customer)) return false;
+		if (managers.size && !managers.has(manager)) return false;
+
+		return true;
+	});
+});
+
+const filteredProjectsCount = computed(() => filteredProjects.value.length);
+
+function resetFilters() {
+	selectedCustomers.value = [];
+	selectedManagers.value = [];
+}
+
 function roundInt(value: unknown): number {
 	const n = Number(value);
 	if (!Number.isFinite(n)) return 0;
@@ -663,7 +800,7 @@ const sortState = ref<{
 });
 
 const sortedProjects = computed(() => {
-	const projects = [...store.projects];
+	const projects = [...filteredProjects.value];
 	const { field, groupId, direction } = sortState.value;
 
 	if (!field) return projects;
@@ -809,8 +946,13 @@ function projectHoverTitle(p: Project): string {
 	const customer = (p.customer ?? '').trim();
 	if (type) parts.push(type);
 	if (customer) parts.push(customer);
-	if (parts.length) return `${p.name} (${parts.join(', ')})`;
-	return p.name;
+	const base = parts.length ? `${p.name} (${parts.join(', ')})` : p.name;
+
+	const description = (p.description ?? '').trim();
+	if (!description) return base;
+
+	// описание добавляем к базовому заголовку
+	return `${base} — ${description}`;
 }
 
 /** Выгрузка CSV с учётом текущего режима */
@@ -1067,7 +1209,9 @@ const chartRows = computed(() => {
 	&__actions {
 		margin: 0;
 		display: flex;
-		justify-content: flex-start;
+		width: 100%;
+		align-items: flex-start;
+		gap: 8px;
 	}
 
 	&__view-modes {
@@ -1075,6 +1219,124 @@ const chartRows = computed(() => {
 		flex-wrap: wrap;
 		gap: 8px;
 		align-items: center;
+	}
+
+	&__filters {
+		margin-left: auto;
+		position: relative;
+		display: inline-flex;
+		align-items: flex-start;
+	}
+
+	&__filter-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border-radius: 999px;
+		border: 1px solid #d4e0f5;
+		background: #ffffff;
+		cursor: pointer;
+		font-size: 13px;
+		color: #1f2937;
+	}
+
+	&__filter-btn:hover {
+		background: #f3f7ff;
+	}
+
+	&__filter-icon {
+		display: block;
+		color: #2563eb;
+	}
+
+	&__filter-label {
+		white-space: nowrap;
+	}
+
+	&__filter-badge {
+		font-size: 11px;
+		padding: 2px 6px;
+		border-radius: 999px;
+		background: #eef2ff;
+		color: #3730a3;
+	}
+
+	&__filter-panel {
+		position: absolute;
+		top: calc(100% + 4px);
+		right: 0;
+		min-width: 260px;
+		max-width: 360px;
+		padding: 10px 12px;
+		border-radius: 10px;
+		background: #ffffff;
+		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+		border: 1px solid #dbe7ff;
+		z-index: 10;
+	}
+
+	&__filter-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		gap: 8px;
+	}
+
+	&__filter-title {
+		font-size: 13px;
+		font-weight: 600;
+		color: #111827;
+	}
+
+	&__filter-reset {
+		border: none;
+		background: transparent;
+		color: #2563eb;
+		cursor: pointer;
+		font-size: 12px;
+		padding: 2px 4px;
+	}
+
+	&__filter-groups {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	&__filter-group-title {
+		font-size: 12px;
+		font-weight: 600;
+		margin-bottom: 4px;
+		color: #4b5563;
+	}
+
+	&__filter-options {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		max-height: 180px;
+		overflow: auto;
+	}
+
+	&__filter-option {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 12px;
+		color: #111827;
+	}
+
+	&__filter-option input {
+		cursor: pointer;
+	}
+
+	&__filter-empty {
+		font-size: 12px;
+		color: #6b7280;
+		margin: 0;
 	}
 
 	&__mode {
