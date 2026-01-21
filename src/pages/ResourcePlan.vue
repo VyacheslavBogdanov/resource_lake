@@ -55,7 +55,6 @@
 						type="button"
 						class="plan__filter-btn"
 						@click="isFilterOpen = !isFilterOpen"
-						@blur="isFilterOpen = false"
 						:aria-pressed="isFilterOpen"
 						aria-label="Фильтр проектов"
 					>
@@ -66,10 +65,7 @@
 							height="16"
 							aria-hidden="true"
 						>
-							<path
-								fill="currentColor"
-								d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z"
-							/>
+							<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
 						</svg>
 						<span class="plan__filter-label">Фильтр</span>
 						<span v-if="hasActiveFilters" class="plan__filter-badge">
@@ -363,7 +359,11 @@
 										type="button"
 										class="plan__project-link"
 										:disabled="!projectUrl(p)"
-										:title="projectUrl(p) ? 'Открыть в новом окне' : 'Ссылка не задана'"
+										:title="
+											projectUrl(p)
+												? 'Открыть в новом окне'
+												: 'Ссылка не задана'
+										"
 										@click="openProjectUrl(p)"
 										aria-label="Открыть проект в новом окне"
 									>
@@ -1693,7 +1693,9 @@ const chartRows = computed(() => {
 		height: 100%;
 		width: 0%;
 		border-radius: 999px;
-		transition: width 0.25s ease, background-color 0.2s ease;
+		transition:
+			width 0.25s ease,
+			background-color 0.2s ease;
 	}
 
 	&__empty {
@@ -1805,7 +1807,9 @@ const chartRows = computed(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease, background-color 0.2s ease;
+		transition:
+			width 0.3s ease,
+			background-color 0.2s ease;
 	}
 
 	&__bar-value {

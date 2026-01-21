@@ -19,15 +19,11 @@
 				Сохранить изменения
 			</button>
 
-			<div
-				class="manage__filters"
-				v-if="selectedGroupId && store.projects.length"
-			>
+			<div class="manage__filters" v-if="selectedGroupId && store.projects.length">
 				<button
 					type="button"
 					class="manage__filter-btn"
 					@click="isFilterOpen = !isFilterOpen"
-					@blur="isFilterOpen = false"
 					:aria-pressed="isFilterOpen"
 					aria-label="Фильтр проектов"
 				>
@@ -677,7 +673,9 @@ async function saveAll() {
 
 .fade-enter-active,
 .fade-leave-active {
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
