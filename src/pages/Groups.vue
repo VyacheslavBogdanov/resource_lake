@@ -7,13 +7,43 @@ const store = useResourceStore();
 
 const newName = ref('');
 const newCap = ref<number | null>(null);
-const newSupport = ref<number | null>(0); // % поддержки при создании
+const newSupport = ref<number | null>(0);
 
 const editingId = ref<number | null>(null);
 const editName = ref('');
 const editCap = ref<number | null>(null);
-const editSupport = ref<number | null>(null); // % поддержки при редактировании
+const editSupport = ref<number | null>(null);
 const saving = ref(false);
+
+//обработчик для инпута  тип ресурса
+async function onResourceTypeBlur(g: Group, e: Event) {
+  const input = e.target as HTMLInputElement;
+  const formatted = formatResourceType(input.value);
+
+  const prev = (g.resourceType ?? '').trim();
+  if (prev === formatted) {
+    input.value = formatted;
+    return;
+  }
+
+  g.resourceType = formatted;
+  input.value = formatted;
+
+  await store.updateGroup(g.id, { resourceType: formatted });
+}
+// форматтер для текста вводимого
+function formatResourceType(raw: string): string {
+  const s = raw.trim().replace(/\s+/g, ' ');
+  if (!s) return '';
+
+  return s
+    .split(' ')
+    .map((w) => {
+      const lower = w.toLocaleLowerCase('ru-RU');
+      return lower.charAt(0).toLocaleUpperCase('ru-RU') + lower.slice(1);
+    })
+    .join(' ');
+}
 
 onMounted(() => store.fetchAll());
 
@@ -30,7 +60,6 @@ async function addGroup() {
 	if (!name) return;
 	if (!Number.isFinite(cap) || cap < 0) return;
 
-	// ограничиваем поддержку 0–100
 	if (!Number.isFinite(sp)) sp = 0;
 	if (sp < 0) sp = 0;
 	if (sp > 100) sp = 100;
@@ -124,16 +153,20 @@ async function removeGroup(g: Group) {
 
 		<table class="groups__table" v-if="store.groups.length">
 			<colgroup>
-				<col style="width: 34%" />
-				<col style="width: 22%" />
-				<col style="width: 12%" />
-				<col style="width: 32%" />
+				<col style="width: 30%" />
+				<col style="width: 18%" />
+				<col style="width: 16%" />
+				<col style="width: 16%" />
+				<col style="width: 20%" />
 			</colgroup>
 
 			<thead>
 				<tr>
-					<th class="groups__th groups__th--left">
+					<th class="groups__th">
 						<div class="groups__cell-inner">Название</div>
+					</th>
+					<th class="groups__th">
+						<div class="groups__cell-inner">Тип ресурса</div>
 					</th>
 					<th class="groups__th">
 						<div class="groups__cell-inner">Емкость (ч·ч)</div>
@@ -149,7 +182,6 @@ async function removeGroup(g: Group) {
 
 			<tbody>
 				<tr v-for="g in store.groups" :key="g.id" class="groups__row">
-					<!-- Название -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -170,7 +202,17 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<!-- Ёмкость -->
+					<td class="groups__cell groups__cell--type">
+						<div class="groups__cell-inner">
+							<input
+								class="groups__input groups__input--cell groups__input--left"
+								:value="g.resourceType ?? ''"
+								placeholder="Программист, Дизайнер, Электроник, Конструктор"
+								@blur="onResourceTypeBlur(g, $event)"
+							/>
+						</div>
+					</td>
+
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -194,7 +236,6 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<!-- % в поддержке -->
 					<td
 						class="groups__cell"
 						:class="{ 'groups__cell--editing': editingId === g.id }"
@@ -222,7 +263,6 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<!-- Действия -->
 					<td class="groups__cell groups__cell--actions">
 						<div class="groups__cell-inner groups__actions">
 							<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
@@ -287,10 +327,16 @@ async function removeGroup(g: Group) {
 	}
 	&__input--pct {
 		width: 140px;
-	} /* компактнее для процентов */
+	}
 	&__input--inline {
 		width: 80%;
-	} /* внутри ячейки — пошире */
+	}
+	&__input--cell {
+		width: 100%;
+	}
+	&__input--left {
+		text-align: left;
+	}
 
 	&__table {
 		width: 100%;
@@ -324,13 +370,14 @@ async function removeGroup(g: Group) {
 		background: #f8fbff;
 	}
 	&__cell--actions {
-		white-space: nowrap;
+		white-space: normal;
 	}
 
 	&__actions {
 		display: inline-flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		gap: 8px;
-		min-width: 220px;
 	}
 
 	&__text {

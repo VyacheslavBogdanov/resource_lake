@@ -178,7 +178,7 @@ export const useResourceStore = defineStore('resource', {
 
 		async updateGroup(
 			id: number,
-			patch: { name?: string; capacityHours?: number; supportPercent?: number },
+			patch: { name?: string; capacityHours?: number; supportPercent?: number; resourceType?: string },
 		) {
 			return groupActions.updateGroup(this, id, patch);
 		},

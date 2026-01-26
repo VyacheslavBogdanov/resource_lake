@@ -21,12 +21,13 @@ export async function addGroup(
 export async function updateGroup(
 	store: StoreInstance,
 	id: number,
-	patch: { name?: string; capacityHours?: number; supportPercent?: number },
+	patch: { name?: string; capacityHours?: number; supportPercent?: number; resourceType?: string },
 ) {
 	const body: {
 		name?: string;
 		capacityHours?: number;
 		supportPercent?: number;
+		resourceType?: string;
 	} = {};
 
 	if (typeof patch.name === 'string') {
@@ -45,6 +46,10 @@ export async function updateGroup(
 	if (typeof patch.supportPercent === 'number') {
 		const p = Math.min(100, Math.max(0, patch.supportPercent));
 		body.supportPercent = p;
+	}
+
+	if (typeof patch.resourceType === 'string') {
+		body.resourceType = patch.resourceType.trim();
 	}
 
 	if (!Object.keys(body).length) return;

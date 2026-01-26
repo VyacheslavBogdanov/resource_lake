@@ -7,14 +7,14 @@
       "url": "",
       "projectType": "",
       "customer": "Стилсофт",
-      "order": 3
+      "order": 4
     },
     {
       "name": "Проект 555",
       "archived": false,
       "id": 5,
       "url": "teccode.ru",
-      "order": 1,
+      "order": 7,
       "customer": "Техинвест",
       "projectType": "Разработка",
       "projectManager": "Богданов",
@@ -24,13 +24,13 @@
       "name": "Проект 9",
       "archived": false,
       "id": 6,
-      "order": 7
+      "order": 6
     },
     {
       "name": "Проект 10",
       "archived": false,
       "id": 7,
-      "order": 4,
+      "order": 2,
       "url": "",
       "customer": ""
     },
@@ -39,7 +39,7 @@
       "archived": false,
       "url": "",
       "id": 8,
-      "order": 0,
+      "order": 1,
       "description": ""
     },
     {
@@ -47,7 +47,7 @@
       "archived": false,
       "url": "",
       "id": 9,
-      "order": 2,
+      "order": 0,
       "projectManager": "123",
       "customer": "Технокод"
     },
@@ -56,14 +56,14 @@
       "archived": false,
       "url": "",
       "id": 10,
-      "order": 5
+      "order": 3
     },
     {
       "name": "Проект 14",
       "archived": false,
       "url": "",
       "id": 11,
-      "order": 6
+      "order": 5
     },
     {
       "name": "вфывфв",
