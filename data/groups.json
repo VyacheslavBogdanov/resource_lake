@@ -5,32 +5,30 @@
       "capacityHours": 50,
       "supportPercent": 0,
       "id": 1,
-      "resourceType": "Программист"
+      "resourceType": "Программист",
+      "position": 4
     },
     {
       "name": "Группа \"B\"",
       "capacityHours": 75,
       "supportPercent": 0,
       "id": 2,
-      "resourceType": "Дизайнер"
-    },
-    {
-      "name": "Группа \"C\"",
-      "capacityHours": 100,
-      "supportPercent": 0,
-      "id": 3
+      "resourceType": "Дизайнер",
+      "position": 3
     },
     {
       "name": "Группа \"D\"",
       "capacityHours": 125,
       "supportPercent": 0,
-      "id": 4
+      "id": 4,
+      "position": 2
     },
     {
       "name": "Группа \"E\"",
       "capacityHours": 150,
       "supportPercent": 0,
-      "id": 5
+      "id": 5,
+      "position": 1
     }
   ]
 }

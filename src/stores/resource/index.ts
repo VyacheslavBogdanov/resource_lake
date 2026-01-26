@@ -104,7 +104,9 @@ export const useResourceStore = defineStore('resource', {
 					api.list<Allocation>('allocations'),
 				]);
 				this.projects = sortProjectsForView(projects);
-				this.groups = groups;
+				this.groups = [...groups].sort(
+	                (a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0),
+                    );
 				this.allocations = allocations;
 
 				const validIds = new Set(this.groups.map((g) => g.id));
@@ -175,10 +177,12 @@ export const useResourceStore = defineStore('resource', {
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
 			return groupActions.addGroup(this, name, capacityHours, supportPercent);
 		},
-
+        async updateGroupPositions(updates: { id: number; position: number }[]) {
+	        return groupActions.updateGroupPositions(this, updates);
+        },
 		async updateGroup(
 			id: number,
-			patch: { name?: string; capacityHours?: number; supportPercent?: number; resourceType?: string },
+			patch: { name?: string; capacityHours?: number; supportPercent?: number; resourceType?: string; position?: number },
 		) {
 			return groupActions.updateGroup(this, id, patch);
 		},

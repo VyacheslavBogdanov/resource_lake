@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
+import { sortByPosition, moveItemById, buildPositionUpdates } from '../stores/resource/utils';
 import type { Group } from '../types/domain';
 
 const store = useResourceStore();
@@ -15,34 +16,79 @@ const editCap = ref<number | null>(null);
 const editSupport = ref<number | null>(null);
 const saving = ref(false);
 
-//обработчик для инпута  тип ресурса
+const dragId = ref<number | null>(null);
+const overId = ref<number | null>(null);
+const reordering = ref(false);
+
+
+
+const orderedGroups = computed(() => sortByPosition(store.groups));
+
 async function onResourceTypeBlur(g: Group, e: Event) {
-  const input = e.target as HTMLInputElement;
-  const formatted = formatResourceType(input.value);
+	const input = e.target as HTMLInputElement;
+	const formatted = formatResourceType(input.value);
 
-  const prev = (g.resourceType ?? '').trim();
-  if (prev === formatted) {
-    input.value = formatted;
-    return;
-  }
+	const prev = (g.resourceType ?? '').trim();
+	if (prev === formatted) {
+		input.value = formatted;
+		return;
+	}
 
-  g.resourceType = formatted;
-  input.value = formatted;
+	g.resourceType = formatted;
+	input.value = formatted;
 
-  await store.updateGroup(g.id, { resourceType: formatted });
+	await store.updateGroup(g.id, { resourceType: formatted });
 }
-// форматтер для текста вводимого
-function formatResourceType(raw: string): string {
-  const s = raw.trim().replace(/\s+/g, ' ');
-  if (!s) return '';
 
-  return s
-    .split(' ')
-    .map((w) => {
-      const lower = w.toLocaleLowerCase('ru-RU');
-      return lower.charAt(0).toLocaleUpperCase('ru-RU') + lower.slice(1);
-    })
-    .join(' ');
+function formatResourceType(raw: string): string {
+	const s = raw.trim().replace(/\s+/g, ' ');
+	if (!s) return '';
+
+	return s
+		.split(' ')
+		.map((w) => {
+			const lower = w.toLocaleLowerCase('ru-RU');
+			return lower.charAt(0).toLocaleUpperCase('ru-RU') + lower.slice(1);
+		})
+		.join(' ');
+}
+// функции сортировки вынесены в stores/resource/utils.ts
+function onDragStart(id: number) {
+	dragId.value = id;
+}
+
+function onDragOver(id: number) {
+	if (dragId.value === null) return;
+	overId.value = id;
+}
+
+async function onDrop(id: number) {
+	if (dragId.value === null) return;
+
+	const fromId = dragId.value;
+	const toId = id;
+
+	dragId.value = null;
+	overId.value = null;
+
+	if (fromId === toId) return;
+
+	const list = moveItemById(orderedGroups.value, fromId, toId);
+	if (list === orderedGroups.value) return;
+
+	const updates = buildPositionUpdates(list);
+
+	reordering.value = true;
+	try {
+		await store.updateGroupPositions(updates);
+	} finally {
+		reordering.value = false;
+	}
+}
+
+function onDragEnd() {
+	dragId.value = null;
+	overId.value = null;
 }
 
 onMounted(() => store.fetchAll());
@@ -123,12 +169,7 @@ async function removeGroup(g: Group) {
 		<h1 class="groups__title">Группы ресурсов</h1>
 
 		<form class="groups__form" @submit.prevent="addGroup">
-			<input
-				class="groups__input"
-				v-model.trim="newName"
-				placeholder="Название группы"
-				required
-			/>
+			<input class="groups__input" v-model.trim="newName" placeholder="Название группы" required />
 			<input
 				class="groups__input groups__input--num"
 				v-model.number="newCap"
@@ -162,36 +203,33 @@ async function removeGroup(g: Group) {
 
 			<thead>
 				<tr>
-					<th class="groups__th">
-						<div class="groups__cell-inner">Название</div>
-					</th>
-					<th class="groups__th">
-						<div class="groups__cell-inner">Тип ресурса</div>
-					</th>
-					<th class="groups__th">
-						<div class="groups__cell-inner">Емкость (ч·ч)</div>
-					</th>
-					<th class="groups__th">
-						<div class="groups__cell-inner">% в поддержке</div>
-					</th>
-					<th class="groups__th">
-						<div class="groups__cell-inner">Действия</div>
-					</th>
+					<th class="groups__th"><div class="groups__cell-inner">Название</div></th>
+					<th class="groups__th"><div class="groups__cell-inner">Тип ресурса</div></th>
+					<th class="groups__th"><div class="groups__cell-inner">Емкость (ч·ч)</div></th>
+					<th class="groups__th"><div class="groups__cell-inner">% в поддержке</div></th>
+					<th class="groups__th"><div class="groups__cell-inner">Действия</div></th>
 				</tr>
 			</thead>
 
 			<tbody>
-				<tr v-for="g in store.groups" :key="g.id" class="groups__row">
-					<td
-						class="groups__cell"
-						:class="{ 'groups__cell--editing': editingId === g.id }"
-					>
+				<tr
+					v-for="g in orderedGroups"
+					:key="g.id"
+					class="groups__row"
+					:class="{ 'groups__row--drag-over': overId === g.id }"
+					draggable="true"
+					@dragstart="onDragStart(g.id)"
+					@dragover.prevent="onDragOver(g.id)"
+					@drop.prevent="onDrop(g.id)"
+					@dragend="onDragEnd"
+				>
+					<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === g.id }">
 						<div class="groups__cell-inner">
 							<template v-if="editingId === g.id">
 								<input
 									class="groups__input groups__input--inline"
 									v-model.trim="editName"
-									:disabled="saving"
+									:disabled="saving || reordering"
 									@keydown.enter.prevent="saveEdit(g)"
 									@keydown.esc.prevent="editingId = null"
 								/>
@@ -208,15 +246,13 @@ async function removeGroup(g: Group) {
 								class="groups__input groups__input--cell groups__input--left"
 								:value="g.resourceType ?? ''"
 								placeholder="Программист, Дизайнер, Электроник, Конструктор"
+								:disabled="reordering"
 								@blur="onResourceTypeBlur(g, $event)"
 							/>
 						</div>
 					</td>
 
-					<td
-						class="groups__cell"
-						:class="{ 'groups__cell--editing': editingId === g.id }"
-					>
+					<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === g.id }">
 						<div class="groups__cell-inner">
 							<template v-if="editingId === g.id">
 								<input
@@ -225,7 +261,7 @@ async function removeGroup(g: Group) {
 									min="0"
 									step="1"
 									v-model.number="editCap"
-									:disabled="saving"
+									:disabled="saving || reordering"
 									@keydown.enter.prevent="saveEdit(g)"
 									@keydown.esc.prevent="editingId = null"
 								/>
@@ -236,10 +272,7 @@ async function removeGroup(g: Group) {
 						</div>
 					</td>
 
-					<td
-						class="groups__cell"
-						:class="{ 'groups__cell--editing': editingId === g.id }"
-					>
+					<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === g.id }">
 						<div class="groups__cell-inner">
 							<template v-if="editingId === g.id">
 								<input
@@ -249,41 +282,27 @@ async function removeGroup(g: Group) {
 									max="100"
 									step="1"
 									v-model.number="editSupport"
-									:disabled="saving"
+									:disabled="saving || reordering"
 									@keydown.enter.prevent="saveEdit(g)"
 									@keydown.esc.prevent="editingId = null"
 									title="Процент ресурсов, уходящих на поддержку (0–100)"
 								/>
 							</template>
 							<template v-else>
-								<span class="groups__text">
-									{{ Math.round(g.supportPercent ?? 0) }}%
-								</span>
+								<span class="groups__text">{{ Math.round(g.supportPercent ?? 0) }}%</span>
 							</template>
 						</div>
 					</td>
 
 					<td class="groups__cell groups__cell--actions">
 						<div class="groups__cell-inner groups__actions">
-							<button v-if="editingId !== g.id" class="btn" @click="startEdit(g)">
+							<button v-if="editingId !== g.id" class="btn" :disabled="reordering" @click="startEdit(g)">
 								Редактировать
 							</button>
-
-							<button
-								v-else
-								class="btn btn--primary"
-								:disabled="saving"
-								@click="saveEdit(g)"
-							>
+							<button v-else class="btn btn--primary" :disabled="saving || reordering" @click="saveEdit(g)">
 								Сохранить
 							</button>
-
-							<button
-								v-if="editingId !== g.id"
-								class="btn btn--danger"
-								:disabled="saving && editingId === g.id"
-								@click="removeGroup(g)"
-							>
+							<button v-if="editingId !== g.id" class="btn btn--danger" :disabled="reordering" @click="removeGroup(g)">
 								Удалить
 							</button>
 						</div>
@@ -322,18 +341,23 @@ async function removeGroup(g: Group) {
 		font: inherit;
 		text-align: center;
 	}
+
 	&__input--num {
 		width: 200px;
 	}
+
 	&__input--pct {
 		width: 140px;
 	}
+
 	&__input--inline {
 		width: 80%;
 	}
+
 	&__input--cell {
 		width: 100%;
 	}
+
 	&__input--left {
 		text-align: left;
 	}
@@ -366,9 +390,39 @@ async function removeGroup(g: Group) {
 		gap: 8px;
 	}
 
+	&__row {
+		cursor: grab;
+	}
+
+	&__row:active {
+		cursor: grabbing;
+	}
+
+	&__row:hover {
+		background: #fbfdff;
+	}
+
+	&__row--drag-over .groups__cell {
+		border-top: 1px solid #2563eb;
+		border-bottom: 1px solid #2563eb;
+	}
+
+	&__row--drag-over .groups__cell:first-child {
+		border-left: 1px solid #2563eb;
+		border-top-left-radius: 8px;
+		border-bottom-left-radius: 8px;
+	}
+
+	&__row--drag-over .groups__cell:last-child {
+		border-right: 1px solid #2563eb;
+		border-top-right-radius: 8px;
+		border-bottom-right-radius: 8px;
+	}
+
 	&__cell--editing {
 		background: #f8fbff;
 	}
+
 	&__cell--actions {
 		white-space: normal;
 	}
@@ -406,10 +460,11 @@ async function removeGroup(g: Group) {
 	cursor: pointer;
 
 	&--primary {
-		background: var(--blue-600);
+		background: #2563eb;
 		color: #fff;
-		border-color: var(--blue-600);
+		border-color: #2563eb;
 	}
+
 	&--danger {
 		border-color: #ffb3b3;
 		color: #8a0000;
