@@ -115,6 +115,15 @@
 		</div>
 
 		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
+			<colgroup>
+				<col style="width: 52%" />
+				<col style="width: 12%" />
+				<col style="width: 9%" />
+				<col style="width: 9%" />
+				<col style="width: 9%" />
+				<col style="width: 9%" />
+			</colgroup>
+
 			<thead>
 				<tr>
 					<th class="manage__th manage__th--left">Проект</th>
@@ -206,7 +215,6 @@ import { useResourceStore } from '../stores/resource/index';
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
 
-// --- Фильтр проектов по заказчику и руководителю ---
 const isFilterOpen = ref(false);
 const selectedCustomers = ref<string[]>([]);
 const selectedManagers = ref<string[]>([]);
@@ -283,7 +291,7 @@ function splitTotalToQuarters(total: number): [number, number, number, number] {
 	if (total <= 0) return [0, 0, 0, 0];
 
 	const base = Math.floor(total / 4);
-	let remainder = total - base * 4; // 0..3
+	let remainder = total - base * 4;
 
 	const parts = [base, base, base, base];
 	let i = 0;
@@ -304,7 +312,6 @@ watch(selectedGroupId, () => {
 	for (const p of store.projects) {
 		const quarters = store.quarterByPair(p.id, gId);
 		if (quarters) {
-			// округляем то, что пришло из стора
 			const q1 = roundInt(quarters.q1);
 			const q2 = roundInt(quarters.q2);
 			const q3 = roundInt(quarters.q3);
@@ -313,7 +320,6 @@ watch(selectedGroupId, () => {
 
 			buffer.value[p.id] = { total, q1, q2, q3, q4 };
 		} else {
-			// есть только hours — делим по кварталам в целых
 			const totalRaw = store.valueByPair(p.id, gId);
 			const total = roundInt(totalRaw);
 			const [q1, q2, q3, q4] = splitTotalToQuarters(total);
@@ -323,7 +329,6 @@ watch(selectedGroupId, () => {
 	}
 });
 
-/** Опции селекта по группам */
 const groupOptions = computed(() =>
 	store.groups.map((g) => ({
 		value: g.id,
@@ -583,7 +588,7 @@ async function saveAll() {
 		box-shadow: var(--shadow);
 		border-collapse: separate;
 		border-spacing: 0;
-		table-layout: fixed;
+		table-layout: auto;
 		overflow: hidden;
 	}
 
@@ -602,6 +607,17 @@ async function saveAll() {
 	&__th--left,
 	&__cell--left {
 		text-align: left;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+
+	&__cell--left {
+		word-break: break-word;
+		line-height: 1.2;
+		padding-top: 8px;
+		padding-bottom: 8px;
+		height: auto;
 	}
 
 	tbody .manage__row:nth-child(odd) {
@@ -632,7 +648,7 @@ async function saveAll() {
 	}
 
 	&__input {
-		width: 140px;
+		width: 88px;
 		height: var(--ctl-h);
 		line-height: var(--ctl-h);
 		padding: 0 10px;
@@ -647,7 +663,7 @@ async function saveAll() {
 	}
 
 	&__input--quarter {
-		width: 110px;
+		width: 72px;
 	}
 
 	&__input:focus-visible {

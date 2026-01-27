@@ -8,7 +8,7 @@ const store = useResourceStore();
 
 const newName = ref('');
 const newCap = ref<number | null>(null);
-const newSupport = ref<number | null>(0);
+const newSupport = ref<number | null>(null);
 
 const editingId = ref<number | null>(null);
 const editName = ref('');
@@ -19,8 +19,6 @@ const saving = ref(false);
 const dragId = ref<number | null>(null);
 const overId = ref<number | null>(null);
 const reordering = ref(false);
-
-
 
 const orderedGroups = computed(() => sortByPosition(store.groups));
 
@@ -52,7 +50,7 @@ function formatResourceType(raw: string): string {
 		})
 		.join(' ');
 }
-// функции сортировки вынесены в stores/resource/utils.ts
+
 function onDragStart(id: number) {
 	dragId.value = id;
 }
@@ -101,7 +99,7 @@ function roundInt(value: unknown): number {
 async function addGroup() {
 	const name = newName.value.trim();
 	let cap = roundInt(newCap.value);
-	let sp = roundInt(newSupport.value);
+	let sp = newSupport.value === null ? 0 : roundInt(newSupport.value);
 
 	if (!name) return;
 	if (!Number.isFinite(cap) || cap < 0) return;
@@ -113,7 +111,7 @@ async function addGroup() {
 	await store.addGroup(name, cap, sp);
 	newName.value = '';
 	newCap.value = null;
-	newSupport.value = 0;
+	newSupport.value = null;
 }
 
 function startEdit(g: Group) {
@@ -347,7 +345,7 @@ async function removeGroup(g: Group) {
 	}
 
 	&__input--pct {
-		width: 140px;
+		width: 165px;
 	}
 
 	&__input--inline {
@@ -402,21 +400,33 @@ async function removeGroup(g: Group) {
 		background: #fbfdff;
 	}
 
-	&__row--drag-over .groups__cell {
-		border-top: 1px solid #2563eb;
-		border-bottom: 1px solid #2563eb;
+	&__row--drag-over {
+		outline: 2px dashed #7aa4ff;
+		outline-offset: -4px;
+		background: #f5f8ff;
 	}
 
-	&__row--drag-over .groups__cell:first-child {
-		border-left: 1px solid #2563eb;
-		border-top-left-radius: 8px;
-		border-bottom-left-radius: 8px;
-	}
+	&__drag-handle {
+		width: 24px;
+		height: 24px;
+		border-radius: 999px;
+		border: 1px solid #d6e2ff;
+		background: #fff;
+		cursor: grab;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		color: #445;
+		padding: 0;
 
-	&__row--drag-over .groups__cell:last-child {
-		border-right: 1px solid #2563eb;
-		border-top-right-radius: 8px;
-		border-bottom-right-radius: 8px;
+		&:hover {
+			background: #eef3ff;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
 	}
 
 	&__cell--editing {

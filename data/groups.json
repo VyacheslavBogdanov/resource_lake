@@ -6,7 +6,7 @@
       "supportPercent": 0,
       "id": 1,
       "resourceType": "Программист",
-      "position": 4
+      "position": 2
     },
     {
       "name": "Группа \"B\"",
@@ -21,14 +21,21 @@
       "capacityHours": 125,
       "supportPercent": 0,
       "id": 4,
-      "position": 2
+      "position": 4
     },
     {
       "name": "Группа \"E\"",
       "capacityHours": 150,
       "supportPercent": 0,
       "id": 5,
-      "position": 1
+      "position": 5
+    },
+    {
+      "name": "Группа \"AC/DC\"",
+      "capacityHours": 20,
+      "supportPercent": 0,
+      "position": 1,
+      "id": 6
     }
   ]
 }

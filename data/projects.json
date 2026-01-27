@@ -1,88 +1,43 @@
 {
   "projects": [
     {
-      "name": "Проект 1",
+      "name": "Проект 7",
       "archived": false,
       "id": 2,
-      "url": "",
+      "url": "https://teccode.ru/",
       "projectType": "",
       "customer": "Стилсофт",
-      "order": 4
-    },
-    {
-      "name": "Проект 555",
-      "archived": false,
-      "id": 5,
-      "url": "teccode.ru",
-      "order": 7,
-      "customer": "Техинвест",
-      "projectType": "Разработка",
-      "projectManager": "Богданов",
-      "description": "1298471398"
+      "order": 4,
+      "projectManager": ""
     },
     {
       "name": "Проект 9",
       "archived": false,
       "id": 6,
-      "order": 6
+      "order": 5,
+      "url": "",
+      "projectManager": ""
     },
     {
       "name": "Проект 10",
       "archived": false,
       "id": 7,
-      "order": 2,
-      "url": "",
-      "customer": ""
-    },
-    {
-      "name": "Проект 11",
-      "archived": false,
-      "url": "",
-      "id": 8,
       "order": 1,
-      "description": ""
-    },
-    {
-      "name": "Проект 15",
-      "archived": false,
-      "url": "",
-      "id": 9,
-      "order": 0,
-      "projectManager": "123",
-      "customer": "Технокод"
+      "url": "https://teccode.ru/",
+      "customer": "",
+      "projectType": "",
+      "description": "",
+      "projectManager": ""
     },
     {
       "name": "Проект 13",
       "archived": false,
-      "url": "",
+      "url": "https://teccode.ru/",
       "id": 10,
-      "order": 3
-    },
-    {
-      "name": "Проект 14",
-      "archived": false,
-      "url": "",
-      "id": 11,
-      "order": 5
-    },
-    {
-      "name": "вфывфв",
-      "archived": false,
-      "order": 8,
-      "url": "",
-      "customer": "",
-      "projectType": "Разработка",
-      "id": 12,
-      "projectManager": "Константинов"
-    },
-    {
-      "name": "1234",
-      "archived": false,
-      "order": 9,
-      "url": "",
-      "customer": "",
-      "projectType": "34",
-      "id": 13
+      "order": 2,
+      "description": "",
+      "projectType": "",
+      "projectManager": ""
     }
   ]
 }
