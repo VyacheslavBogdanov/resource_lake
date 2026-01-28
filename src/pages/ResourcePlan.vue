@@ -378,6 +378,10 @@
 										</svg>
 									</button>
 
+									<span class="plan__project-name" :title="projectHoverTitle(p)">
+										{{ p.name }}
+									</span>
+
 									<span
 										v-if="isProjectWithoutResources(p.id, p.archived)"
 										class="plan__project-warning"
@@ -397,10 +401,6 @@
 												d="M11 4h2v11h-2V4zm0 13h2v3h-2v-3z"
 											/>
 										</svg>
-									</span>
-
-									<span class="plan__project-name" :title="projectHoverTitle(p)">
-										{{ p.name }}
 									</span>
 								</div>
 							</div>
@@ -1591,6 +1591,8 @@ const chartRows = computed(() => {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	&__project-link {
@@ -1632,6 +1634,7 @@ const chartRows = computed(() => {
 		background: #fff7e6;
 		color: rgb(239, 68, 68);
 		flex: 0 0 auto;
+		margin-left: auto;
 	}
 
 	&__project-warning-icon {

@@ -16,8 +16,10 @@ const editCap = ref<number | null>(null);
 const editSupport = ref<number | null>(null);
 const saving = ref(false);
 
-const dragId = ref<number | null>(null);
-const overId = ref<number | null>(null);
+const dragState = ref<{ draggingId: number | null; overId: number | null }>({
+	draggingId: null,
+	overId: null,
+});
 const reordering = ref(false);
 
 const orderedGroups = computed(() => sortByPosition(store.groups));
@@ -52,22 +54,23 @@ function formatResourceType(raw: string): string {
 }
 
 function onDragStart(id: number) {
-	dragId.value = id;
+	dragState.value.draggingId = id;
+	dragState.value.overId = null;
 }
 
-function onDragOver(id: number) {
-	if (dragId.value === null) return;
-	overId.value = id;
+function onDragEnter(id: number) {
+	if (dragState.value.draggingId === null || dragState.value.draggingId === id) return;
+	dragState.value.overId = id;
 }
 
 async function onDrop(id: number) {
-	if (dragId.value === null) return;
+	if (dragState.value.draggingId === null) return;
 
-	const fromId = dragId.value;
+	const fromId = dragState.value.draggingId;
 	const toId = id;
 
-	dragId.value = null;
-	overId.value = null;
+	dragState.value.draggingId = null;
+	dragState.value.overId = null;
 
 	if (fromId === toId) return;
 
@@ -85,8 +88,8 @@ async function onDrop(id: number) {
 }
 
 function onDragEnd() {
-	dragId.value = null;
-	overId.value = null;
+	dragState.value.draggingId = null;
+	dragState.value.overId = null;
 }
 
 onMounted(() => store.fetchAll());
@@ -214,15 +217,28 @@ async function removeGroup(g: Group) {
 					v-for="g in orderedGroups"
 					:key="g.id"
 					class="groups__row"
-					:class="{ 'groups__row--drag-over': overId === g.id }"
-					draggable="true"
-					@dragstart="onDragStart(g.id)"
-					@dragover.prevent="onDragOver(g.id)"
+					:class="{
+						'groups__row--drag-over':
+							dragState.overId === g.id && dragState.draggingId !== null,
+					}"
+					@dragenter.prevent="onDragEnter(g.id)"
+					@dragover.prevent
 					@drop.prevent="onDrop(g.id)"
-					@dragend="onDragEnd"
 				>
 					<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === g.id }">
-						<div class="groups__cell-inner">
+						<div class="groups__cell-inner groups__cell-inner--left">
+							<button
+								type="button"
+								class="groups__drag-handle"
+								title="Перетащите для изменения порядка"
+								draggable="true"
+								:disabled="reordering || saving"
+								@dragstart="onDragStart(g.id)"
+								@dragend="onDragEnd"
+							>
+								☰
+							</button>
+
 							<template v-if="editingId === g.id">
 								<input
 									class="groups__input groups__input--inline"
@@ -338,6 +354,12 @@ async function removeGroup(g: Group) {
 		box-sizing: border-box;
 		font: inherit;
 		text-align: center;
+
+		&:focus-visible {
+			outline: none;
+			border-color: var(--blue-600);
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
 	}
 
 	&__input--num {
@@ -388,12 +410,8 @@ async function removeGroup(g: Group) {
 		gap: 8px;
 	}
 
-	&__row {
-		cursor: grab;
-	}
-
-	&__row:active {
-		cursor: grabbing;
+	&__cell-inner--left {
+		justify-content: flex-start;
 	}
 
 	&__row:hover {
@@ -426,6 +444,11 @@ async function removeGroup(g: Group) {
 
 		&:active {
 			cursor: grabbing;
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.6;
 		}
 	}
 
