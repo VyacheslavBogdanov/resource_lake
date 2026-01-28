@@ -1,16 +1,6 @@
 {
   "allocations": [
     {
-      "projectId": 10,
-      "groupId": 1,
-      "hours": 15,
-      "q1": 4,
-      "q2": 4,
-      "q3": 4,
-      "q4": 3,
-      "id": 3
-    },
-    {
       "projectId": 7,
       "groupId": 2,
       "hours": 50,

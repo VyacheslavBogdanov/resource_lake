@@ -7,36 +7,30 @@
       "url": "https://teccode.ru/",
       "projectType": "",
       "customer": "Стилсофт",
-      "order": 4,
-      "projectManager": ""
+      "order": 2,
+      "projectManager": "",
+      "description": ""
     },
     {
       "name": "Проект 9",
       "archived": false,
       "id": 6,
-      "order": 5,
+      "order": 1,
       "url": "",
-      "projectManager": ""
+      "projectManager": "",
+      "customer": "",
+      "projectType": "",
+      "description": ""
     },
     {
       "name": "Проект 10",
       "archived": false,
       "id": 7,
-      "order": 1,
+      "order": 0,
       "url": "https://teccode.ru/",
       "customer": "",
       "projectType": "",
       "description": "",
-      "projectManager": ""
-    },
-    {
-      "name": "Проект 13",
-      "archived": false,
-      "url": "https://teccode.ru/",
-      "id": 10,
-      "order": 2,
-      "description": "",
-      "projectType": "",
       "projectManager": ""
     }
   ]

@@ -461,19 +461,6 @@ function onDragEnd() {
 		font: inherit;
 	}
 
-	&__url-input {
-		min-width: 160px;
-		max-width: 260px;
-		width: 220px;
-		flex: 0 0 auto;
-		height: var(--ctl-h);
-		padding: 0 10px;
-		border: 1px solid #cfe1ff;
-		border-radius: 8px;
-		box-sizing: border-box;
-		font: inherit;
-	}
-
 	&__table-wrap {
 		width: 100%;
 		overflow-x: auto;
@@ -536,6 +523,7 @@ function onDragEnd() {
 		align-items: center;
 		gap: 6px;
 		flex: 0 0 auto;
+		margin-left: auto;
 	}
 
 	&__icon-btn {
@@ -583,6 +571,17 @@ function onDragEnd() {
 		white-space: nowrap;
 	}
 
+	&__url-input,
+	&__name-input,
+	&__meta-input,
+	&__input {
+		&:focus-visible {
+			outline: none;
+			border-color: var(--blue-600);
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
+	}
+
 	&__url-input {
 		width: 100%;
 		height: var(--ctl-h);
@@ -593,12 +592,6 @@ function onDragEnd() {
 		font-size: 13px;
 	}
 
-	&__url-input:focus-visible {
-		outline: none;
-		border-color: var(--blue-600);
-		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-	}
-
 	&__name-input {
 		width: 100%;
 		height: var(--ctl-h);
@@ -607,12 +600,6 @@ function onDragEnd() {
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
-	}
-
-	&__name-input:focus-visible {
-		outline: none;
-		border-color: var(--blue-600);
-		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 	}
 
 	&__empty {
@@ -650,12 +637,6 @@ function onDragEnd() {
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
-
-		&:focus-visible {
-			outline: none;
-			border-color: var(--blue-600);
-			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-		}
 	}
 }
 
