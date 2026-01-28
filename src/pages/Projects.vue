@@ -37,14 +37,13 @@
 		<div v-if="store.projects.length" class="projects__table-wrap">
 			<table class="projects__table">
 				<colgroup>
-					<col style="width: 22%" />
+					<col style="width: 28%" />
 					<col style="width: 10%" />
-					<col style="width: 15%" />
-					<col style="width: 11%" />
-					<col style="width: 11%" />
+					<col style="width: 14%" />
+					<col style="width: 12%" />
 					<col style="width: 10%" />
-					<col style="width: 15%" />
 					<col style="width: 16%" />
+					<col style="width: 10%" />
 				</colgroup>
 
 				<thead>
@@ -54,9 +53,6 @@
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Статус</div>
-						</th>
-						<th class="projects__th">
-							<div class="projects__cell-inner">Действия</div>
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Заказчик</div>
@@ -116,14 +112,50 @@
 
 								<template v-else>
 									<span class="projects__text" :title="p.name">{{ p.name }}</span>
-									<button
-										type="button"
-										class="projects__edit-btn"
-										title="Переименовать проект"
-										@click="startEdit(p)"
-									>
-										✎
-									</button>
+
+									<div class="projects__name-actions">
+										<button
+											type="button"
+											class="projects__icon-btn"
+											title="Переименовать проект"
+											@click="startEdit(p)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.83H5v-.92l9.06-9.06.92.92L5.92 20.08ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82Z"
+												/>
+											</svg>
+										</button>
+
+										<button
+											type="button"
+											class="projects__icon-btn projects__icon-btn--archive"
+											:title="p.archived ? 'Разархивировать' : 'Архивировать'"
+											@click="store.toggleArchiveProject(p.id, !p.archived)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M20.54 5.23L19.15 3.5A2 2 0 0 0 17.59 3H6.41a2 2 0 0 0-1.56.5L3.46 5.23A2 2 0 0 0 3 6.5V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.5a2 2 0 0 0-.46-1.27ZM6.12 5l.5-.5h10.76l.5.5H6.12ZM19 19H5V7h14v12Zm-8-9h2v2h-2v-2Zm0 4h2v2h-2v-2Z"
+												/>
+											</svg>
+										</button>
+
+										<button
+											type="button"
+											class="projects__icon-btn projects__icon-btn--danger"
+											title="Удалить проект"
+											@click="removeProject(p)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M6 7h12l-1 14H7L6 7Zm3-3h6l1 2H8l1-2Zm-5 2h16v2H4V6Z"
+												/>
+											</svg>
+										</button>
+									</div>
 								</template>
 							</div>
 						</td>
@@ -136,20 +168,6 @@
 								>
 									{{ p.archived ? 'В архиве' : 'Активен' }}
 								</span>
-							</div>
-						</td>
-
-						<td class="projects__cell projects__cell--actions">
-							<div class="projects__cell-inner projects__actions">
-								<button
-									class="btn btn--archive"
-									@click="store.toggleArchiveProject(p.id, !p.archived)"
-								>
-									{{ p.archived ? 'Разархивировать' : 'Архивировать' }}
-								</button>
-								<button class="btn btn--danger" @click="removeProject(p)">
-									Удалить
-								</button>
 							</div>
 						</td>
 
@@ -513,16 +531,52 @@ function onDragEnd() {
 		line-height: 1;
 	}
 
-	&__cell--actions {
-		white-space: nowrap;
-	}
-
-	&__actions {
+	&__name-actions {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		min-width: 220px;
-		justify-content: flex-start;
+		gap: 6px;
+		flex: 0 0 auto;
+	}
+
+	&__icon-btn {
+		height: 28px;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid #cfe0ff;
+		background: #ffffff;
+		color: #2a66ff;
+		cursor: pointer;
+		padding: 0;
+
+		&:hover {
+			background: #f2f7ff;
+			border-color: #b7d0ff;
+		}
+	}
+
+	&__icon-btn--archive {
+		border-color: #d6e2ff;
+		color: #445;
+	}
+
+	&__icon-btn--archive:hover {
+		background: #eef3ff;
+		border-color: #b7d0ff;
+		color: #123;
+	}
+
+	&__icon-btn--danger {
+		border-color: #ffb3b3;
+		background: #fff5f5;
+		color: #8a0000;
+	}
+
+	&__icon-btn--danger:hover {
+		background: #ffecec;
+		border-color: #ff9a9a;
 	}
 
 	&__cell--url {
@@ -559,27 +613,6 @@ function onDragEnd() {
 		outline: none;
 		border-color: var(--blue-600);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-	}
-
-	&__edit-btn {
-		border: none;
-		background: transparent;
-		cursor: pointer;
-		width: 24px;
-		height: 24px;
-		border-radius: 999px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-		line-height: 1;
-		color: #667;
-		padding: 0;
-
-		&:hover {
-			background: #eef3ff;
-			color: #123;
-		}
 	}
 
 	&__empty {
@@ -659,11 +692,6 @@ function onDragEnd() {
 	border-radius: 8px;
 	background: #fff;
 	cursor: pointer;
-
-	&--archive {
-		min-width: 150px;
-		text-align: center;
-	}
 
 	&--primary {
 		background: var(--blue-600);

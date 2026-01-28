@@ -134,7 +134,6 @@
 			</div>
 		</div>
 
-		<!-- KPI -->
 		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Проектов</div>
@@ -153,7 +152,6 @@
 				<div class="plan__kpi-value">{{ totalAllocated }}</div>
 			</div>
 
-			<!-- KPI: ресурсы в поддержке -->
 			<div class="plan__kpi plan__kpi--support">
 				<div class="plan__kpi-label">В поддержке, ч</div>
 				<div class="plan__kpi-value">
@@ -169,7 +167,6 @@
 			</div>
 		</div>
 
-		<!-- Таблица -->
 		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
 			<table class="plan__table" aria-label="Таблица ресурсного плана">
 				<colgroup>
@@ -193,7 +190,6 @@
 				</colgroup>
 
 				<thead>
-					<!-- Первая строка заголовка -->
 					<tr class="plan__head-row">
 						<th
 							class="plan__th plan__th--sticky plan__th--left"
@@ -202,7 +198,6 @@
 							<div class="plan__th-inner" title="Проект">Проект</div>
 						</th>
 
-						<!-- Заголовки групп для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<th
 								v-for="g in visibleGroups"
@@ -247,7 +242,6 @@
 							</th>
 						</template>
 
-						<!-- Шапка для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<th
 								v-for="g in visibleGroups"
@@ -322,7 +316,6 @@
 						</th>
 					</tr>
 
-					<!-- Вторая строка заголовка для квартального режима -->
 					<tr
 						v-if="viewMode === 'quarterSplit'"
 						class="plan__head-row plan__head-row--quarters"
@@ -350,7 +343,11 @@
 						v-for="p in sortedProjects"
 						:key="p.id"
 						class="plan__row"
-						:class="{ 'plan__row--archived': p.archived }"
+						:class="{
+							'plan__row--archived': p.archived,
+							'plan__row--selected': selectedProjectId === p.id,
+						}"
+						@click="onProjectRowClick(p.id)"
 					>
 						<th class="plan__cell plan__sticky plan__sticky--left">
 							<div class="plan__cell-inner plan__cell-inner--left">
@@ -364,7 +361,7 @@
 												? 'Открыть в новом окне'
 												: 'Ссылка не задана'
 										"
-										@click="openProjectUrl(p)"
+										@click.stop="openProjectUrl(p)"
 										aria-label="Открыть проект в новом окне"
 									>
 										<svg
@@ -381,6 +378,27 @@
 										</svg>
 									</button>
 
+									<span
+										v-if="isProjectWithoutResources(p.id, p.archived)"
+										class="plan__project-warning"
+										title="Проект без назначенных ресурсов"
+										aria-label="Проект без назначенных ресурсов"
+										@click.stop
+									>
+										<svg
+											class="plan__project-warning-icon"
+											viewBox="0 0 24 24"
+											width="16"
+											height="16"
+											aria-hidden="true"
+										>
+											<path
+												fill="currentColor"
+												d="M11 4h2v11h-2V4zm0 13h2v3h-2v-3z"
+											/>
+										</svg>
+									</span>
+
 									<span class="plan__project-name" :title="projectHoverTitle(p)">
 										{{ p.name }}
 									</span>
@@ -388,7 +406,6 @@
 							</div>
 						</th>
 
-						<!-- Ячейки по группам для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
 								v-for="g in visibleGroups"
@@ -405,7 +422,6 @@
 							</td>
 						</template>
 
-						<!-- Ячейки по кварталам для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<template v-for="g in visibleGroups" :key="'row-g-' + g.id">
 								<td
@@ -447,7 +463,6 @@
 							<div class="plan__th-inner">Итого (по группе)</div>
 						</th>
 
-						<!-- Футер для режимов "Общий" и "По квартально" -->
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
 								v-for="g in visibleGroups"
@@ -464,7 +479,6 @@
 							</td>
 						</template>
 
-						<!-- Футер для режима "Квартально (4 колонки)" -->
 						<template v-else>
 							<template v-for="g in visibleGroups" :key="'foot-g-' + g.id">
 								<td
@@ -501,7 +515,6 @@
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
-		<!-- Диаграмма по группам -->
 		<div v-if="store.groups.length" class="plan__chart">
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">
@@ -584,7 +597,26 @@ const selectedQuarter = ref<Quarter>(1);
 
 const visibleGroups = computed(() => store.visibleGroups);
 
-// --- Фильтр проектов по заказчику и руководителю ---
+const selectedProjectId = ref<number | null>(null);
+function onProjectRowClick(projectId: number) {
+	selectedProjectId.value = selectedProjectId.value === projectId ? null : projectId;
+}
+
+const hasAllocationsByProjectId = computed<Record<number, boolean>>(() => {
+	const map: Record<number, boolean> = {};
+	for (const a of store.allocations) {
+		const hours = Number(a.hours || 0);
+		if (!hours) continue;
+		map[a.projectId] = true;
+	}
+	return map;
+});
+
+function isProjectWithoutResources(projectId: number, archived?: boolean): boolean {
+	if (archived) return false;
+	return !hasAllocationsByProjectId.value[projectId];
+}
+
 const isFilterOpen = ref(false);
 const selectedCustomers = ref<string[]>([]);
 const selectedManagers = ref<string[]>([]);
@@ -663,10 +695,8 @@ function onGroupToggle(id: number, e: Event) {
 	store.setGroupVisibility(id, checked);
 }
 
-/** Только активные (не архивированные) проекты */
 const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
 
-/** Итоги по группам только по активным проектам (годовой итог) */
 const activeColTotals = computed<Record<number, number>>(() => {
 	const totals: Record<number, number> = {};
 	const activeIds = new Set(activeProjects.value.map((p) => p.id));
@@ -886,7 +916,6 @@ const totalSupport = computed(() => {
 
 const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
-/** Утилизация по активным проектам (уже целое %) */
 const utilization = computed(() =>
 	totalCapacity.value
 		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
@@ -899,7 +928,6 @@ const utilClass = computed(() => {
 	return 'is-ok';
 });
 
-/** Размер проекта, % — ОКРУГЛЯЕМ ДО ЦЕЛОГО */
 function projectShareValue(projectId: number, archived?: boolean): string {
 	const total = totalCapacity.value;
 	if (!total || archived) return '0';
@@ -951,21 +979,17 @@ function projectHoverTitle(p: Project): string {
 	const description = (p.description ?? '').trim();
 	if (!description) return base;
 
-	// описание добавляем к базовому заголовку
 	return `${base} — ${description}`;
 }
 
-/** Выгрузка CSV с учётом текущего режима */
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
-	// разделитель для русского Excel
 	const delimiter = ';';
 	const rows: string[] = [];
 	const projects = sortedProjects.value;
 
 	if (viewMode.value === 'total') {
-		// === РЕЖИМ "ОБЩИЙ" ===
 		const header = [
 			'Проект',
 			'Ссылка',
@@ -1007,7 +1031,6 @@ function exportCsv() {
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else if (viewMode.value === 'quarterSingle') {
-		// === РЕЖИМ "ПО КВАРТАЛЬНО"  ===
 		const q = selectedQuarter.value;
 		const header = [
 			'Проект',
@@ -1057,7 +1080,6 @@ function exportCsv() {
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else {
-		// === РЕЖИМ "КВАРТАЛЬНО (4 КОЛОНКИ)" ===
 		const header: string[] = ['Проект'];
 		header.push('Ссылка');
 		header.push('Заказчик');
@@ -1123,7 +1145,6 @@ function exportCsv() {
 	URL.revokeObjectURL(url);
 }
 
-/* Прогресс в заголовках по группам — по эффективной ёмкости и ТОЛЬКО активным проектам */
 type HeaderBar = { fillPct: number; fillColor: string };
 const headerBars = computed<Record<number, HeaderBar>>(() => {
 	const map: Record<number, HeaderBar> = {};
@@ -1155,7 +1176,6 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
-/* Диаграмма: capacity = ЭФФЕКТИВНАЯ ёмкость группы, allocated = только активные проекты (годовой итог) */
 const chartRows = computed(() => {
 	return store.groups.map((g) => {
 		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
@@ -1376,7 +1396,6 @@ const chartRows = computed(() => {
 		font-size: 13px;
 	}
 
-	/* Кнопки */
 	&__btn {
 		display: inline-flex;
 		align-items: center;
@@ -1402,7 +1421,6 @@ const chartRows = computed(() => {
 		color: #0a1a2b;
 	}
 
-	/* KPI */
 	&__kpis {
 		display: grid;
 		grid-template-columns: repeat(6, minmax(130px, 1fr));
@@ -1478,7 +1496,6 @@ const chartRows = computed(() => {
 		}
 	}
 
-	/* Таблица */
 	&__table-wrapper {
 		overflow-x: auto;
 		background: #fff;
@@ -1604,12 +1621,46 @@ const chartRows = computed(() => {
 		display: block;
 	}
 
+	&__project-warning {
+		height: 28px;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid rgb(239, 68, 68);
+		background: #fff7e6;
+		color: rgb(239, 68, 68);
+		flex: 0 0 auto;
+	}
+
+	&__project-warning-icon {
+		display: block;
+	}
+
 	tbody .plan__row:nth-child(odd) {
 		background: #fbfdff;
 	}
 
 	tbody .plan__row:hover {
 		background: #f2f7ff;
+	}
+
+	tbody .plan__row {
+		cursor: pointer;
+	}
+
+	tbody .plan__row--selected {
+		background: #e7f3ff;
+	}
+
+	tbody .plan__row--selected:hover {
+		background: #dbeafe;
+	}
+
+	tbody .plan__row--selected > th,
+	tbody .plan__row--selected > td {
+		background: #d2e7fd !important;
 	}
 
 	&__th--left,
@@ -1641,14 +1692,12 @@ const chartRows = computed(() => {
 		opacity: 0.72;
 	}
 
-	/* индикатор перерасхода по году */
 	&__th--over,
 	&__cell--over {
 		color: #a40000;
 		font-weight: 600;
 	}
 
-	/* лёгкий фон — для колонок с перерасходом */
 	&__th--over-bg,
 	&__cell--over-bg {
 		background: #f8e9e9;
@@ -1679,7 +1728,6 @@ const chartRows = computed(() => {
 		font-size: 11px;
 	}
 
-	/* микро-прогресс */
 	&__th-progress {
 		width: 100%;
 		height: 6px;
@@ -1703,7 +1751,6 @@ const chartRows = computed(() => {
 		margin-top: 8px;
 	}
 
-	/* Диаграмма */
 	&__chart {
 		margin-top: 18px;
 		background: #fff;
@@ -1821,7 +1868,6 @@ const chartRows = computed(() => {
 	}
 }
 
-/* Первая липкая колонка — многострочная */
 .plan__sticky--left,
 .plan__th--left {
 	white-space: normal !important;

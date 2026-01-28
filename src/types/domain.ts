@@ -15,6 +15,8 @@ export interface Group {
 	name: string;
 	capacityHours: number;
 	supportPercent?: number;
+	resourceType?: string;
+	position?: number
 }
 
 export interface Allocation {
