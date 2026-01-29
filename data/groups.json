@@ -6,7 +6,7 @@
       "supportPercent": 0,
       "id": 1,
       "resourceType": "Программист",
-      "position": 4
+      "position": 2
     },
     {
       "name": "Группа \"B\"",
@@ -14,14 +14,15 @@
       "supportPercent": 0,
       "id": 2,
       "resourceType": "Дизайнер",
-      "position": 1
+      "position": 3
     },
     {
       "name": "Группа \"D\"",
       "capacityHours": 125,
       "supportPercent": 0,
       "id": 4,
-      "position": 2
+      "position": 4,
+      "resourceType": "Программист"
     },
     {
       "name": "Группа \"E\"",
@@ -34,7 +35,7 @@
       "name": "Группа \"AC/DC\"",
       "capacityHours": 20,
       "supportPercent": 0,
-      "position": 3,
+      "position": 1,
       "id": 6
     }
   ]
