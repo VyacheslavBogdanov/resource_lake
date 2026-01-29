@@ -1186,6 +1186,7 @@ function projectHoverTitle(p: Project): string {
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
+	// Выгрузка идёт по тем же колонкам, что и таблица: по группе или по типу ресурса (tableColumns зависит от displayByResourceType).
 	const delimiter = ';';
 	const rows: string[] = [];
 	const projects = sortedProjects.value;
@@ -1332,7 +1333,9 @@ function exportCsv() {
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement('a');
 	link.href = url;
-	link.download = 'resource-plan.csv';
+	link.download = displayByResourceType.value
+		? 'resource-plan-by-type.csv'
+		: 'resource-plan-by-group.csv';
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
