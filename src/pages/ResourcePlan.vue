@@ -34,129 +34,132 @@
 				</div>
 
 				<div class="plan__actions-row">
-				<div class="plan__view-modes">
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="total"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">Общий</span>
-					</label>
+					<div class="plan__view-modes">
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="total"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">Общий</span>
+						</label>
 
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="quarterSingle"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">По квартально</span>
-					</label>
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="quarterSingle"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">По квартально</span>
+						</label>
 
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="quarterSplit"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">Квартально (4 колонки)</span>
-					</label>
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="quarterSplit"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">Квартально (4 колонки)</span>
+						</label>
 
-					<div v-if="viewMode === 'quarterSingle'" class="plan__quarter-picker">
-						<span>Квартал:</span>
-						<select v-model.number="selectedQuarter" class="plan__quarter-select">
-							<option :value="1">1 кв</option>
-							<option :value="2">2 кв</option>
-							<option :value="3">3 кв</option>
-							<option :value="4">4 кв</option>
-						</select>
+						<div v-if="viewMode === 'quarterSingle'" class="plan__quarter-picker">
+							<span>Квартал:</span>
+							<select v-model.number="selectedQuarter" class="plan__quarter-select">
+								<option :value="1">1 кв</option>
+								<option :value="2">2 кв</option>
+								<option :value="3">3 кв</option>
+								<option :value="4">4 кв</option>
+							</select>
+						</div>
 					</div>
-				</div>
 
-				<div class="plan__filters">
-					<button
-						type="button"
-						class="plan__filter-btn"
-						@click="isFilterOpen = !isFilterOpen"
-						:aria-pressed="isFilterOpen"
-						aria-label="Фильтр проектов"
-					>
-						<svg
-							class="plan__filter-icon"
-							viewBox="0 0 24 24"
-							width="16"
-							height="16"
-							aria-hidden="true"
+					<div class="plan__filters">
+						<button
+							type="button"
+							class="plan__filter-btn"
+							@click="isFilterOpen = !isFilterOpen"
+							:aria-pressed="isFilterOpen"
+							aria-label="Фильтр проектов"
 						>
-							<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
-						</svg>
-						<span class="plan__filter-label">Фильтр</span>
-						<span v-if="hasActiveFilters" class="plan__filter-badge">
-							{{ filteredProjectsCount }} / {{ store.projects.length }}
-						</span>
-					</button>
-
-					<div v-if="isFilterOpen" class="plan__filter-panel">
-						<div class="plan__filter-header">
-							<span class="plan__filter-title">Фильтр проектов</span>
-							<button
-								type="button"
-								class="plan__filter-reset"
-								@click="resetFilters"
-								v-if="hasActiveFilters"
+							<svg
+								class="plan__filter-icon"
+								viewBox="0 0 24 24"
+								width="16"
+								height="16"
+								aria-hidden="true"
 							>
-								Сбросить
-							</button>
-						</div>
+								<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
+							</svg>
+							<span class="plan__filter-label">Фильтр</span>
+							<span v-if="hasActiveFilters" class="plan__filter-badge">
+								{{ filteredProjectsCount }} / {{ store.projects.length }}
+							</span>
+						</button>
 
-						<div class="plan__filter-groups">
-							<div class="plan__filter-group">
-								<div class="plan__filter-group-title">Заказчик</div>
-								<div class="plan__filter-options">
-									<label
-										v-for="c in customerOptions"
-										:key="c"
-										class="plan__filter-option"
-									>
-										<input
-											type="checkbox"
-											:value="c"
-											v-model="selectedCustomers"
-										/>
-										<span>{{ c }}</span>
-									</label>
-									<p v-if="!customerOptions.length" class="plan__filter-empty">
-										Нет заполненных заказчиков
-									</p>
-								</div>
+						<div v-if="isFilterOpen" class="plan__filter-panel">
+							<div class="plan__filter-header">
+								<span class="plan__filter-title">Фильтр проектов</span>
+								<button
+									type="button"
+									class="plan__filter-reset"
+									@click="resetFilters"
+									v-if="hasActiveFilters"
+								>
+									Сбросить
+								</button>
 							</div>
 
-							<div class="plan__filter-group">
-								<div class="plan__filter-group-title">Руководитель проекта</div>
-								<div class="plan__filter-options">
-									<label
-										v-for="m in managerOptions"
-										:key="m"
-										class="plan__filter-option"
-									>
-										<input
-											type="checkbox"
-											:value="m"
-											v-model="selectedManagers"
-										/>
-										<span>{{ m }}</span>
-									</label>
-									<p v-if="!managerOptions.length" class="plan__filter-empty">
-										Нет заполненных руководителей
-									</p>
+							<div class="plan__filter-groups">
+								<div class="plan__filter-group">
+									<div class="plan__filter-group-title">Заказчик</div>
+									<div class="plan__filter-options">
+										<label
+											v-for="c in customerOptions"
+											:key="c"
+											class="plan__filter-option"
+										>
+											<input
+												type="checkbox"
+												:value="c"
+												v-model="selectedCustomers"
+											/>
+											<span>{{ c }}</span>
+										</label>
+										<p
+											v-if="!customerOptions.length"
+											class="plan__filter-empty"
+										>
+											Нет заполненных заказчиков
+										</p>
+									</div>
+								</div>
+
+								<div class="plan__filter-group">
+									<div class="plan__filter-group-title">Руководитель проекта</div>
+									<div class="plan__filter-options">
+										<label
+											v-for="m in managerOptions"
+											:key="m"
+											class="plan__filter-option"
+										>
+											<input
+												type="checkbox"
+												:value="m"
+												v-model="selectedManagers"
+											/>
+											<span>{{ m }}</span>
+										</label>
+										<p v-if="!managerOptions.length" class="plan__filter-empty">
+											Нет заполненных руководителей
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 				</div>
 			</div>
 		</div>
@@ -200,7 +203,11 @@
 					<col style="width: 28ch" />
 
 					<template v-if="viewMode !== 'quarterSplit'">
-						<col v-for="col in tableColumns" :key="'col-' + col.id" style="width: 12ch" />
+						<col
+							v-for="col in tableColumns"
+							:key="'col-' + col.id"
+							style="width: 12ch"
+						/>
 					</template>
 					<template v-else>
 						<template v-for="col in tableColumns" :key="'colg-' + col.id">
@@ -234,7 +241,8 @@
 									'plan__th--over': isYearOverCapacityByColumn(col),
 									'plan__th--over-bg': isYearOverCapacityByColumn(col),
 									'plan__th--sorted':
-										sortState.field === 'group' && sortState.columnId === col.id,
+										sortState.field === 'group' &&
+										sortState.columnId === col.id,
 								}"
 								:title="columnHeaderTitle(col)"
 								@click="onColumnSort(col.id)"
@@ -278,7 +286,8 @@
 									'plan__th--over': isYearOverCapacityByColumn(col),
 									'plan__th--over-bg': isYearOverCapacityByColumn(col),
 									'plan__th--sorted':
-										sortState.field === 'group' && sortState.columnId === col.id,
+										sortState.field === 'group' &&
+										sortState.columnId === col.id,
 								}"
 								:colspan="4"
 								:title="columnHeaderTitle(col)"
@@ -492,7 +501,9 @@
 					<tr>
 						<th class="plan__th plan__th--sticky plan__th--left">
 							<div class="plan__th-inner">
-								{{ displayByResourceType ? 'Итого (по типу)' : 'Итого (по группе)' }}
+								{{
+									displayByResourceType ? 'Итого (по типу)' : 'Итого (по группе)'
+								}}
 							</div>
 						</th>
 
@@ -557,7 +568,11 @@
 							class="plan__bar-checkbox"
 							v-model="allGroupsChecked"
 						/>
-						<span>Загрузка по группам</span>
+						<span>{{
+							displayByResourceType
+								? 'Загрузка по типу ресурса'
+								: 'Загрузка по группам'
+						}}</span>
 					</label>
 				</h2>
 				<div class="plan__legend">
@@ -576,14 +591,22 @@
 			</div>
 
 			<div class="plan__bars">
-				<div v-for="row in chartRows" :key="row.id" class="plan__bar-row">
+				<div v-for="row in chartRows" :key="row.rowKind + '-' + row.id" class="plan__bar-row">
 					<div class="plan__bar-label" :title="row.name">
 						<label class="plan__bar-label-inner">
 							<input
 								type="checkbox"
 								class="plan__bar-checkbox"
-								:checked="isGroupVisible(row.id)"
-								@change="onGroupToggle(row.id, $event)"
+								:checked="
+									row.rowKind === 'group'
+										? isGroupVisible(row.id as number)
+										: isResourceTypeVisible(row.id as string)
+								"
+								@change="
+									row.rowKind === 'group'
+										? onGroupToggle(row.id as number, $event)
+										: onResourceTypeToggle(row.id as string, $event)
+								"
 							/>
 							<span>{{ row.name }}</span>
 						</label>
@@ -627,6 +650,18 @@ onMounted(() => {
 
 /** Колонка таблицы: либо одна группа, либо объединённый тип ресурса (несколько групп). */
 type TableColumn = { id: string; name: string; groupIds: number[] };
+
+/** Общая структура строки нижнего блока «Загрузка по группам / по типу ресурса». */
+type ChartRowBase = {
+	name: string;
+	capacity: number;
+	allocated: number;
+	fillPct: number;
+	fillColor: string;
+};
+type ChartRowGroup = ChartRowBase & { rowKind: 'group'; id: number };
+type ChartRowType = ChartRowBase & { rowKind: 'type'; id: string };
+type ChartRow = ChartRowGroup | ChartRowType;
 
 const viewMode = ref<ViewMode>('total');
 const selectedQuarter = ref<Quarter>(1);
@@ -727,14 +762,44 @@ function roundInt(value: unknown): number {
 	return Math.round(n);
 }
 
+/** Получить все уникальные типы ресурсов из групп. */
+function getAllResourceTypes(): string[] {
+	const types = new Set<string>();
+	for (const g of store.groups) {
+		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
+		types.add(typeName);
+	}
+	return Array.from(types);
+}
+
 const allGroupsChecked = computed({
 	get(): boolean {
 		if (!store.groups.length) return false;
-		return store.groups.every((g) => store.isGroupVisible(g.id));
+		if (!displayByResourceType.value) {
+			// Режим "по группе": проверяем все группы
+			return store.groups.every((g) => store.isGroupVisible(g.id));
+		}
+		// Режим "по типу": проверяем все типы (все типы видимы = все группы видимы)
+		const allTypes = getAllResourceTypes();
+		return allTypes.every((typeName) => isResourceTypeVisible(typeName));
 	},
 	set(value: boolean) {
-		for (const g of store.groups) {
-			store.setGroupVisibility(g.id, value);
+		if (!displayByResourceType.value) {
+			// Режим "по группе": устанавливаем видимость всех групп
+			for (const g of store.groups) {
+				store.setGroupVisibility(g.id, value);
+			}
+		} else {
+			// Режим "по типу": устанавливаем видимость всех типов (через группы)
+			const allTypes = getAllResourceTypes();
+			for (const typeName of allTypes) {
+				const groupsOfType = store.groups.filter(
+					(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+				);
+				for (const g of groupsOfType) {
+					store.setGroupVisibility(g.id, value);
+				}
+			}
 		}
 	},
 });
@@ -747,6 +812,24 @@ function onGroupToggle(id: number, e: Event) {
 	const input = e.target as HTMLInputElement | null;
 	const checked = input?.checked ?? true;
 	store.setGroupVisibility(id, checked);
+}
+
+function isResourceTypeVisible(typeName: string): boolean {
+	const groupsOfType = store.groups.filter(
+		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+	);
+	return groupsOfType.length > 0 && groupsOfType.every((g) => store.isGroupVisible(g.id));
+}
+
+function onResourceTypeToggle(typeName: string, e: Event) {
+	const input = e.target as HTMLInputElement | null;
+	const checked = input?.checked ?? true;
+	const groupsOfType = store.groups.filter(
+		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+	);
+	for (const g of groupsOfType) {
+		store.setGroupVisibility(g.id, checked);
+	}
 }
 
 const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
@@ -789,7 +872,10 @@ function groupFooterValue(groupId: number): number {
 
 function columnTotal(col: TableColumn): number {
 	if (viewMode.value === 'quarterSingle') {
-		return col.groupIds.reduce((s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value), 0);
+		return col.groupIds.reduce(
+			(s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value),
+			0,
+		);
 	}
 	return col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 }
@@ -1288,10 +1374,7 @@ const headerBarsByColumn = computed<Record<string, HeaderBar>>(() => {
 	const map: Record<string, HeaderBar> = {};
 	for (const col of tableColumns.value) {
 		const capacity = effectiveCapacityByColumn(col);
-		const allocated = col.groupIds.reduce(
-			(s, gid) => s + (activeColTotals.value[gid] || 0),
-			0,
-		);
+		const allocated = col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 		let fillPct = 0;
 		let fillColor = 'var(--blue-600)';
 
@@ -1317,34 +1400,72 @@ const headerBarsByColumn = computed<Record<string, HeaderBar>>(() => {
 	return map;
 });
 
-const chartRows = computed(() => {
-	return store.groups.map((g) => {
-		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
-		const allocated = Number(activeColTotals.value[g.id] || 0);
-
-		let fillPct = 0;
-		let fillColor = 'var(--blue-600)';
-
-		if (capacity <= 0) {
-			if (allocated > 0) {
-				fillPct = 100;
-				fillColor = '#ef4444';
-			} else {
-				fillPct = 0;
-			}
-		} else if (allocated === capacity) {
-			fillPct = 100;
-			fillColor = 'var(--blue-600)';
-		} else if (allocated > capacity) {
+function barFill(capacity: number, allocated: number): { fillPct: number; fillColor: string } {
+	let fillPct = 0;
+	let fillColor = 'var(--blue-600)';
+	if (capacity <= 0) {
+		if (allocated > 0) {
 			fillPct = 100;
 			fillColor = '#ef4444';
-		} else {
-			fillPct = Math.max(0, Math.min(100, (allocated / capacity) * 100));
-			fillColor = 'var(--blue-600)';
 		}
+	} else if (allocated === capacity) {
+		fillPct = 100;
+		fillColor = 'var(--blue-600)';
+	} else if (allocated > capacity) {
+		fillPct = 100;
+		fillColor = '#ef4444';
+	} else {
+		fillPct = Math.max(0, Math.min(100, (allocated / capacity) * 100));
+		fillColor = 'var(--blue-600)';
+	}
+	return { fillPct, fillColor };
+}
 
-		return { id: g.id, name: g.name, capacity, allocated, fillPct, fillColor };
-	});
+const chartRows = computed<ChartRow[]>(() => {
+	if (!displayByResourceType.value) {
+		return store.groups.map((g): ChartRowGroup => {
+			const capacity = Number(store.effectiveCapacityById[g.id] || 0);
+			const allocated = Number(activeColTotals.value[g.id] || 0);
+			const { fillPct, fillColor } = barFill(capacity, allocated);
+			return {
+				rowKind: 'group',
+				id: g.id,
+				name: g.name,
+				capacity,
+				allocated,
+				fillPct,
+				fillColor,
+			};
+		});
+	}
+	const byType = new Map<string, number[]>();
+	for (const g of store.groups) {
+		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
+		if (!byType.has(typeName)) byType.set(typeName, []);
+		byType.get(typeName)!.push(g.id);
+	}
+	return Array.from(byType.entries())
+		.map(([typeName, groupIds]): ChartRowType => {
+			const capacity = groupIds.reduce(
+				(s, gid) => s + Number(store.effectiveCapacityById[gid] || 0),
+				0,
+			);
+			const allocated = groupIds.reduce(
+				(s, gid) => s + (activeColTotals.value[gid] || 0),
+				0,
+			);
+			const { fillPct, fillColor } = barFill(capacity, allocated);
+			return {
+				rowKind: 'type',
+				id: typeName,
+				name: typeName,
+				capacity,
+				allocated,
+				fillPct,
+				fillColor,
+			};
+		})
+		.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 });
 </script>
 
