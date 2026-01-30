@@ -1428,10 +1428,17 @@ function barFill(capacity: number, allocated: number): { fillPct: number; fillCo
 	return { fillPct, fillColor };
 }
 
+/** В режимах «Общий» и «Квартально (4 колонки)» allocated за год, capacity в store — за квартал; множитель для приведения к году. */
+const chartCapacityMultiplier = computed(() =>
+	viewMode.value === 'total' || viewMode.value === 'quarterSplit' ? 4 : 1,
+);
+
 const chartRows = computed<ChartRow[]>(() => {
+	const mult = chartCapacityMultiplier.value;
 	if (!displayByResourceType.value) {
 		return store.groups.map((g): ChartRowGroup => {
-			const capacity = Number(store.effectiveCapacityById[g.id] || 0);
+			const capacityRaw = Number(store.effectiveCapacityById[g.id] || 0);
+			const capacity = capacityRaw * mult;
 			const allocated = Number(activeColTotals.value[g.id] || 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
@@ -1453,10 +1460,11 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 	return Array.from(byType.entries())
 		.map(([typeName, groupIds]): ChartRowType => {
-			const capacity = groupIds.reduce(
+			const capacityRaw = groupIds.reduce(
 				(s, gid) => s + Number(store.effectiveCapacityById[gid] || 0),
 				0,
 			);
+			const capacity = capacityRaw * mult;
 			const allocated = groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
