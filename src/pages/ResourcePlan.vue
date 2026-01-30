@@ -1830,7 +1830,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__table-wrapper {
-		overflow-x: auto;
+		overflow: auto;
 		background: #fff;
 		box-shadow: var(--shadow);
 		border-radius: 12px;
@@ -1842,7 +1842,6 @@ const chartRows = computed<ChartRow[]>(() => {
 		border-collapse: separate;
 		border-spacing: 0;
 		border-radius: 12px;
-		overflow: hidden;
 	}
 
 	&__table th + th,
@@ -2012,6 +2011,16 @@ const chartRows = computed<ChartRow[]>(() => {
 		text-align: left;
 		z-index: 1;
 		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08);
+	}
+
+	thead .plan__th--sticky {
+		z-index: 2;
+		background: var(--blue-100, #eef5ff);
+	}
+
+	tfoot .plan__th--sticky {
+		z-index: 2;
+		background: #f3f7ff;
 	}
 
 	&__th--total,
