@@ -591,7 +591,11 @@
 			</div>
 
 			<div class="plan__bars">
-				<div v-for="row in chartRows" :key="row.rowKind + '-' + row.id" class="plan__bar-row">
+				<div
+					v-for="row in chartRows"
+					:key="row.rowKind + '-' + row.id"
+					class="plan__bar-row"
+				>
 					<div class="plan__bar-label" :title="row.name">
 						<label class="plan__bar-label-inner">
 							<input
@@ -1453,10 +1457,7 @@ const chartRows = computed<ChartRow[]>(() => {
 				(s, gid) => s + Number(store.effectiveCapacityById[gid] || 0),
 				0,
 			);
-			const allocated = groupIds.reduce(
-				(s, gid) => s + (activeColTotals.value[gid] || 0),
-				0,
-			);
+			const allocated = groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
 				rowKind: 'type',
