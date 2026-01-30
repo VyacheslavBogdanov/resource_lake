@@ -15,9 +15,30 @@
 				/>
 			</label>
 
-			<button class="btn btn--primary" :disabled="!selectedGroupId" @click="saveAll">
-				Сохранить изменения
-			</button>
+			<div class="manage__save-row">
+				<button class="btn btn--primary" :disabled="!selectedGroupId" @click="saveAll">
+					Сохранить изменения
+				</button>
+				<transition name="fade">
+					<div
+						v-if="showSaved"
+						class="manage__notice manage__notice--success"
+						role="status"
+						aria-live="polite"
+					>
+						<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+							<path
+								d="M20 6L9 17l-5-5"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+						</svg>
+						<span>Сохранено</span>
+					</div>
+				</transition>
+			</div>
 
 			<div class="manage__filters" v-if="selectedGroupId && store.projects.length">
 				<button
@@ -92,26 +113,6 @@
 					</div>
 				</div>
 			</div>
-
-			<transition name="fade">
-				<div
-					v-if="showSaved"
-					class="manage__notice manage__notice--success"
-					role="status"
-					aria-live="polite"
-				>
-					<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-						<path
-							d="M20 6L9 17l-5-5"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-					</svg>
-					<span>Сохранено</span>
-				</div>
-			</transition>
 		</div>
 
 		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
@@ -437,6 +438,12 @@ async function saveAll() {
 		align-items: center;
 		margin-bottom: 14px;
 		flex-wrap: wrap;
+	}
+
+	&__save-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 	}
 
 	&__label {

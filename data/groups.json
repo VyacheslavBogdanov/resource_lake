@@ -6,7 +6,7 @@
       "supportPercent": 0,
       "id": 1,
       "resourceType": "Программист",
-      "position": 4
+      "position": 1
     },
     {
       "name": "Группа \"B\"",
@@ -14,28 +14,99 @@
       "supportPercent": 0,
       "id": 2,
       "resourceType": "Дизайнер",
-      "position": 1
+      "position": 3
     },
     {
       "name": "Группа \"D\"",
       "capacityHours": 125,
       "supportPercent": 0,
       "id": 4,
-      "position": 2
+      "position": 4,
+      "resourceType": "Программист"
     },
     {
       "name": "Группа \"E\"",
       "capacityHours": 150,
       "supportPercent": 0,
       "id": 5,
-      "position": 5
+      "position": 5,
+      "resourceType": "Программист"
     },
     {
       "name": "Группа \"AC/DC\"",
       "capacityHours": 20,
       "supportPercent": 0,
-      "position": 3,
-      "id": 6
+      "position": 2,
+      "id": 6,
+      "resourceType": "Конструктор"
+    },
+    {
+      "name": "Group 1",
+      "capacityHours": 1000,
+      "supportPercent": 99,
+      "position": 6,
+      "id": 7,
+      "resourceType": "Программист"
+    },
+    {
+      "name": "Group 2",
+      "capacityHours": 200,
+      "supportPercent": 20,
+      "position": 7,
+      "id": 8,
+      "resourceType": "Дизайнер"
+    },
+    {
+      "name": "Group 3",
+      "capacityHours": 100,
+      "supportPercent": 33,
+      "position": 8,
+      "id": 9,
+      "resourceType": "Дизайнер"
+    },
+    {
+      "name": "group4",
+      "capacityHours": 300,
+      "supportPercent": 75,
+      "position": 9,
+      "id": 10,
+      "resourceType": "Конструктор"
+    },
+    {
+      "name": "gr5",
+      "capacityHours": 1234,
+      "supportPercent": 23,
+      "position": 10,
+      "id": 11,
+      "resourceType": "Электроник"
+    },
+    {
+      "name": "гр6",
+      "capacityHours": 444,
+      "supportPercent": 44,
+      "position": 11,
+      "id": 12
+    },
+    {
+      "name": "123",
+      "capacityHours": 1213,
+      "supportPercent": 33,
+      "position": 12,
+      "id": 13
+    },
+    {
+      "name": "222",
+      "capacityHours": 22,
+      "supportPercent": 22,
+      "position": 13,
+      "id": 14
+    },
+    {
+      "name": "qwerty",
+      "capacityHours": 12,
+      "supportPercent": 12,
+      "position": 14,
+      "id": 15
     }
   ]
 }

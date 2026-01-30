@@ -8,124 +8,154 @@
 			</button>
 
 			<div class="plan__actions" v-if="store.projects.length && store.groups.length">
-				<div class="plan__view-modes">
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="total"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">Общий</span>
-					</label>
-
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="quarterSingle"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">По квартально</span>
-					</label>
-
-					<label class="plan__mode">
-						<input
-							type="radio"
-							class="plan__mode-input"
-							value="quarterSplit"
-							v-model="viewMode"
-						/>
-						<span class="plan__mode-label">Квартально (4 колонки)</span>
-					</label>
-
-					<div v-if="viewMode === 'quarterSingle'" class="plan__quarter-picker">
-						<span>Квартал:</span>
-						<select v-model.number="selectedQuarter" class="plan__quarter-select">
-							<option :value="1">1 кв</option>
-							<option :value="2">2 кв</option>
-							<option :value="3">3 кв</option>
-							<option :value="4">4 кв</option>
-						</select>
-					</div>
-				</div>
-
-				<div class="plan__filters">
+				<div class="plan__row-type-switch">
+					<span
+						class="plan__switch-label"
+						:class="{ 'plan__switch-label--active': !displayByResourceType }"
+					>
+						По группе ресурса
+					</span>
 					<button
 						type="button"
-						class="plan__filter-btn"
-						@click="isFilterOpen = !isFilterOpen"
-						:aria-pressed="isFilterOpen"
-						aria-label="Фильтр проектов"
+						class="plan__switch"
+						:class="{ 'plan__switch--on': displayByResourceType }"
+						:aria-pressed="displayByResourceType"
+						aria-label="Переключить отображение: по группе или по типу ресурса"
+						@click="displayByResourceType = !displayByResourceType"
 					>
-						<svg
-							class="plan__filter-icon"
-							viewBox="0 0 24 24"
-							width="16"
-							height="16"
-							aria-hidden="true"
-						>
-							<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
-						</svg>
-						<span class="plan__filter-label">Фильтр</span>
-						<span v-if="hasActiveFilters" class="plan__filter-badge">
-							{{ filteredProjectsCount }} / {{ store.projects.length }}
-						</span>
+						<span class="plan__switch-thumb"></span>
 					</button>
+					<span
+						class="plan__switch-label"
+						:class="{ 'plan__switch-label--active': displayByResourceType }"
+					>
+						По типу ресурса
+					</span>
+				</div>
 
-					<div v-if="isFilterOpen" class="plan__filter-panel">
-						<div class="plan__filter-header">
-							<span class="plan__filter-title">Фильтр проектов</span>
-							<button
-								type="button"
-								class="plan__filter-reset"
-								@click="resetFilters"
-								v-if="hasActiveFilters"
-							>
-								Сбросить
-							</button>
+				<div class="plan__actions-row">
+					<div class="plan__view-modes">
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="total"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">Общий</span>
+						</label>
+
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="quarterSingle"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">По квартально</span>
+						</label>
+
+						<label class="plan__mode">
+							<input
+								type="radio"
+								class="plan__mode-input"
+								value="quarterSplit"
+								v-model="viewMode"
+							/>
+							<span class="plan__mode-label">Квартально (4 колонки)</span>
+						</label>
+
+						<div v-if="viewMode === 'quarterSingle'" class="plan__quarter-picker">
+							<span>Квартал:</span>
+							<select v-model.number="selectedQuarter" class="plan__quarter-select">
+								<option :value="1">1 кв</option>
+								<option :value="2">2 кв</option>
+								<option :value="3">3 кв</option>
+								<option :value="4">4 кв</option>
+							</select>
 						</div>
+					</div>
 
-						<div class="plan__filter-groups">
-							<div class="plan__filter-group">
-								<div class="plan__filter-group-title">Заказчик</div>
-								<div class="plan__filter-options">
-									<label
-										v-for="c in customerOptions"
-										:key="c"
-										class="plan__filter-option"
-									>
-										<input
-											type="checkbox"
-											:value="c"
-											v-model="selectedCustomers"
-										/>
-										<span>{{ c }}</span>
-									</label>
-									<p v-if="!customerOptions.length" class="plan__filter-empty">
-										Нет заполненных заказчиков
-									</p>
-								</div>
+					<div class="plan__filters">
+						<button
+							type="button"
+							class="plan__filter-btn"
+							@click="isFilterOpen = !isFilterOpen"
+							:aria-pressed="isFilterOpen"
+							aria-label="Фильтр проектов"
+						>
+							<svg
+								class="plan__filter-icon"
+								viewBox="0 0 24 24"
+								width="16"
+								height="16"
+								aria-hidden="true"
+							>
+								<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
+							</svg>
+							<span class="plan__filter-label">Фильтр</span>
+							<span v-if="hasActiveFilters" class="plan__filter-badge">
+								{{ filteredProjectsCount }} / {{ store.projects.length }}
+							</span>
+						</button>
+
+						<div v-if="isFilterOpen" class="plan__filter-panel">
+							<div class="plan__filter-header">
+								<span class="plan__filter-title">Фильтр проектов</span>
+								<button
+									type="button"
+									class="plan__filter-reset"
+									@click="resetFilters"
+									v-if="hasActiveFilters"
+								>
+									Сбросить
+								</button>
 							</div>
 
-							<div class="plan__filter-group">
-								<div class="plan__filter-group-title">Руководитель проекта</div>
-								<div class="plan__filter-options">
-									<label
-										v-for="m in managerOptions"
-										:key="m"
-										class="plan__filter-option"
-									>
-										<input
-											type="checkbox"
-											:value="m"
-											v-model="selectedManagers"
-										/>
-										<span>{{ m }}</span>
-									</label>
-									<p v-if="!managerOptions.length" class="plan__filter-empty">
-										Нет заполненных руководителей
-									</p>
+							<div class="plan__filter-groups">
+								<div class="plan__filter-group">
+									<div class="plan__filter-group-title">Заказчик</div>
+									<div class="plan__filter-options">
+										<label
+											v-for="c in customerOptions"
+											:key="c"
+											class="plan__filter-option"
+										>
+											<input
+												type="checkbox"
+												:value="c"
+												v-model="selectedCustomers"
+											/>
+											<span>{{ c }}</span>
+										</label>
+										<p
+											v-if="!customerOptions.length"
+											class="plan__filter-empty"
+										>
+											Нет заполненных заказчиков
+										</p>
+									</div>
+								</div>
+
+								<div class="plan__filter-group">
+									<div class="plan__filter-group-title">Руководитель проекта</div>
+									<div class="plan__filter-options">
+										<label
+											v-for="m in managerOptions"
+											:key="m"
+											class="plan__filter-option"
+										>
+											<input
+												type="checkbox"
+												:value="m"
+												v-model="selectedManagers"
+											/>
+											<span>{{ m }}</span>
+										</label>
+										<p v-if="!managerOptions.length" class="plan__filter-empty">
+											Нет заполненных руководителей
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -173,13 +203,17 @@
 					<col style="width: 28ch" />
 
 					<template v-if="viewMode !== 'quarterSplit'">
-						<col v-for="g in visibleGroups" :key="'col-' + g.id" style="width: 12ch" />
+						<col
+							v-for="col in tableColumns"
+							:key="'col-' + col.id"
+							style="width: 12ch"
+						/>
 					</template>
 					<template v-else>
-						<template v-for="g in visibleGroups" :key="'colg-' + g.id">
+						<template v-for="col in tableColumns" :key="'colg-' + col.id">
 							<col
 								v-for="q in quarterNumbers"
-								:key="`col-${g.id}-${q}`"
+								:key="`col-${col.id}-${q}`"
 								style="width: 10ch"
 							/>
 						</template>
@@ -200,25 +234,26 @@
 
 						<template v-if="viewMode !== 'quarterSplit'">
 							<th
-								v-for="g in visibleGroups"
-								:key="g.id"
+								v-for="col in tableColumns"
+								:key="col.id"
 								class="plan__th plan__th--sortable"
 								:class="{
-									'plan__th--over': isYearOverCapacity(g.id),
-									'plan__th--over-bg': isYearOverCapacity(g.id),
+									'plan__th--over': isYearOverCapacityByColumn(col),
+									'plan__th--over-bg': isYearOverCapacityByColumn(col),
 									'plan__th--sorted':
-										sortState.field === 'group' && sortState.groupId === g.id,
+										sortState.field === 'group' &&
+										sortState.columnId === col.id,
 								}"
-								:title="groupHeaderTitle(g.id)"
-								@click="onGroupSort(g.id)"
+								:title="columnHeaderTitle(col)"
+								@click="onColumnSort(col.id)"
 							>
 								<div class="plan__th-inner">
-									<span class="plan__th-name" :title="g.name">
-										{{ g.name }}
+									<span class="plan__th-name" :title="col.name">
+										{{ col.name }}
 										<span
 											v-if="
 												sortState.field === 'group' &&
-												sortState.groupId === g.id
+												sortState.columnId === col.id
 											"
 											class="plan__sort-icon"
 										>
@@ -227,14 +262,14 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(store.effectiveCapacityById[g.id]) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
 											class="plan__th-progress-bar"
 											:style="{
-												width: headerBars[g.id]?.fillPct + '%',
-												background: headerBars[g.id]?.fillColor,
+												width: headerBarsByColumn[col.id]?.fillPct + '%',
+												background: headerBarsByColumn[col.id]?.fillColor,
 											}"
 										></div>
 									</div>
@@ -244,26 +279,27 @@
 
 						<template v-else>
 							<th
-								v-for="g in visibleGroups"
-								:key="'g-span-' + g.id"
+								v-for="col in tableColumns"
+								:key="'g-span-' + col.id"
 								class="plan__th plan__th--group-span plan__th--sortable"
 								:class="{
-									'plan__th--over': isYearOverCapacity(g.id),
-									'plan__th--over-bg': isYearOverCapacity(g.id),
+									'plan__th--over': isYearOverCapacityByColumn(col),
+									'plan__th--over-bg': isYearOverCapacityByColumn(col),
 									'plan__th--sorted':
-										sortState.field === 'group' && sortState.groupId === g.id,
+										sortState.field === 'group' &&
+										sortState.columnId === col.id,
 								}"
 								:colspan="4"
-								:title="groupHeaderTitle(g.id)"
-								@click="onGroupSort(g.id)"
+								:title="columnHeaderTitle(col)"
+								@click="onColumnSort(col.id)"
 							>
 								<div class="plan__th-inner">
-									<span class="plan__th-name" :title="g.name">
-										{{ g.name }}
+									<span class="plan__th-name" :title="col.name">
+										{{ col.name }}
 										<span
 											v-if="
 												sortState.field === 'group' &&
-												sortState.groupId === g.id
+												sortState.columnId === col.id
 											"
 											class="plan__sort-icon"
 										>
@@ -272,14 +308,14 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(store.effectiveCapacityById[g.id]) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
 											class="plan__th-progress-bar"
 											:style="{
-												width: headerBars[g.id]?.fillPct + '%',
-												background: headerBars[g.id]?.fillColor,
+												width: headerBarsByColumn[col.id]?.fillPct + '%',
+												background: headerBarsByColumn[col.id]?.fillColor,
 											}"
 										></div>
 									</div>
@@ -320,14 +356,14 @@
 						v-if="viewMode === 'quarterSplit'"
 						class="plan__head-row plan__head-row--quarters"
 					>
-						<template v-for="g in visibleGroups" :key="'qrow-' + g.id">
+						<template v-for="col in tableColumns" :key="'qrow-' + col.id">
 							<th
 								v-for="q in quarterNumbers"
-								:key="`q-${g.id}-${q}`"
+								:key="`q-${col.id}-${q}`"
 								class="plan__th plan__th--quarter"
 								:class="{
-									'plan__th--over': isYearOverCapacity(g.id),
-									'plan__th--over-bg': isYearOverCapacity(g.id),
+									'plan__th--over': isYearOverCapacityByColumn(col),
+									'plan__th--over-bg': isYearOverCapacityByColumn(col),
 								}"
 							>
 								<div class="plan__th-inner">
@@ -408,36 +444,40 @@
 
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
-								v-for="g in visibleGroups"
-								:key="g.id"
+								v-for="col in tableColumns"
+								:key="col.id"
 								class="plan__cell"
 								:class="{
-									'plan__cell--over': isYearOverCapacity(g.id),
-									'plan__cell--over-bg': isYearOverCapacity(g.id),
+									'plan__cell--over': isYearOverCapacityByColumn(col),
+									'plan__cell--over-bg': isYearOverCapacityByColumn(col),
 								}"
 							>
-								<div class="plan__cell-inner" :title="`${p.name} • ${g.name}`">
-									{{ cellDisplayValue(p.id, g.id, p.archived) }}
+								<div class="plan__cell-inner" :title="`${p.name} • ${col.name}`">
+									{{ p.archived ? '—' : cellValueByColumn(p.id, col, false) }}
 								</div>
 							</td>
 						</template>
 
 						<template v-else>
-							<template v-for="g in visibleGroups" :key="'row-g-' + g.id">
+							<template v-for="col in tableColumns" :key="'row-g-' + col.id">
 								<td
 									v-for="q in quarterNumbers"
-									:key="`cell-${p.id}-${g.id}-${q}`"
+									:key="`cell-${p.id}-${col.id}-${q}`"
 									class="plan__cell"
 									:class="{
-										'plan__cell--over': isYearOverCapacity(g.id),
-										'plan__cell--over-bg': isYearOverCapacity(g.id),
+										'plan__cell--over': isYearOverCapacityByColumn(col),
+										'plan__cell--over-bg': isYearOverCapacityByColumn(col),
 									}"
 								>
 									<div
 										class="plan__cell-inner"
-										:title="`${p.name} • ${g.name} • ${quarterLabel[q]}`"
+										:title="`${p.name} • ${col.name} • ${quarterLabel[q]}`"
 									>
-										{{ cellQuarterDisplayValue(p.id, g.id, q, p.archived) }}
+										{{
+											p.archived
+												? '—'
+												: getQuarterCellByColumn(p.id, col, q, false)
+										}}
 									</div>
 								</td>
 							</template>
@@ -460,41 +500,45 @@
 				<tfoot>
 					<tr>
 						<th class="plan__th plan__th--sticky plan__th--left">
-							<div class="plan__th-inner">Итого (по группе)</div>
+							<div class="plan__th-inner">
+								{{
+									displayByResourceType ? 'Итого (по типу)' : 'Итого (по группе)'
+								}}
+							</div>
 						</th>
 
 						<template v-if="viewMode !== 'quarterSplit'">
 							<td
-								v-for="g in visibleGroups"
-								:key="g.id"
+								v-for="col in tableColumns"
+								:key="col.id"
 								class="plan__cell plan__cell--footer"
 								:class="{
-									'plan__cell--over': isYearOverCapacity(g.id),
-									'plan__cell--over-bg': isYearOverCapacity(g.id),
+									'plan__cell--over': isYearOverCapacityByColumn(col),
+									'plan__cell--over-bg': isYearOverCapacityByColumn(col),
 								}"
 							>
-								<div class="plan__cell-inner" :title="`Итого по группе ${g.name}`">
-									{{ groupFooterValue(g.id) || 0 }}
+								<div class="plan__cell-inner" :title="`Итого: ${col.name}`">
+									{{ columnTotal(col) || 0 }}
 								</div>
 							</td>
 						</template>
 
 						<template v-else>
-							<template v-for="g in visibleGroups" :key="'foot-g-' + g.id">
+							<template v-for="col in tableColumns" :key="'foot-g-' + col.id">
 								<td
 									v-for="q in quarterNumbers"
-									:key="`foot-${g.id}-${q}`"
+									:key="`foot-${col.id}-${q}`"
 									class="plan__cell plan__cell--footer"
 									:class="{
-										'plan__cell--over': isYearOverCapacity(g.id),
-										'plan__cell--over-bg': isYearOverCapacity(g.id),
+										'plan__cell--over': isYearOverCapacityByColumn(col),
+										'plan__cell--over-bg': isYearOverCapacityByColumn(col),
 									}"
 								>
 									<div
 										class="plan__cell-inner"
-										:title="`Итого по группе ${g.name}, ${quarterLabel[q]}`"
+										:title="`Итого: ${col.name}, ${quarterLabel[q]}`"
 									>
-										{{ groupQuarterTotal(g.id, q) || 0 }}
+										{{ columnQuarterTotal(col, q) || 0 }}
 									</div>
 								</td>
 							</template>
@@ -524,7 +568,11 @@
 							class="plan__bar-checkbox"
 							v-model="allGroupsChecked"
 						/>
-						<span>Загрузка по группам</span>
+						<span>{{
+							displayByResourceType
+								? 'Загрузка по типу ресурса'
+								: 'Загрузка по группам'
+						}}</span>
 					</label>
 				</h2>
 				<div class="plan__legend">
@@ -543,14 +591,26 @@
 			</div>
 
 			<div class="plan__bars">
-				<div v-for="row in chartRows" :key="row.id" class="plan__bar-row">
+				<div
+					v-for="row in chartRows"
+					:key="row.rowKind + '-' + row.id"
+					class="plan__bar-row"
+				>
 					<div class="plan__bar-label" :title="row.name">
 						<label class="plan__bar-label-inner">
 							<input
 								type="checkbox"
 								class="plan__bar-checkbox"
-								:checked="isGroupVisible(row.id)"
-								@change="onGroupToggle(row.id, $event)"
+								:checked="
+									row.rowKind === 'group'
+										? isGroupVisible(row.id as number)
+										: isResourceTypeVisible(row.id as string)
+								"
+								@change="
+									row.rowKind === 'group'
+										? onGroupToggle(row.id as number, $event)
+										: onResourceTypeToggle(row.id as string, $event)
+								"
 							/>
 							<span>{{ row.name }}</span>
 						</label>
@@ -592,10 +652,43 @@ onMounted(() => {
 	store.fetchAll();
 });
 
+/** Колонка таблицы: либо одна группа, либо объединённый тип ресурса (несколько групп). */
+type TableColumn = { id: string; name: string; groupIds: number[] };
+
+/** Общая структура строки нижнего блока «Загрузка по группам / по типу ресурса». */
+type ChartRowBase = {
+	name: string;
+	capacity: number;
+	allocated: number;
+	fillPct: number;
+	fillColor: string;
+};
+type ChartRowGroup = ChartRowBase & { rowKind: 'group'; id: number };
+type ChartRowType = ChartRowBase & { rowKind: 'type'; id: string };
+type ChartRow = ChartRowGroup | ChartRowType;
+
 const viewMode = ref<ViewMode>('total');
 const selectedQuarter = ref<Quarter>(1);
+const displayByResourceType = ref(false);
 
 const visibleGroups = computed(() => store.visibleGroups);
+
+/** Колонки для таблицы: по группам или по типу ресурса (объединение групп с одним типом). */
+const tableColumns = computed<TableColumn[]>(() => {
+	const groups = visibleGroups.value;
+	if (!displayByResourceType.value) {
+		return groups.map((g) => ({ id: `g${g.id}`, name: g.name, groupIds: [g.id] }));
+	}
+	const byType = new Map<string, number[]>();
+	for (const g of groups) {
+		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
+		if (!byType.has(typeName)) byType.set(typeName, []);
+		byType.get(typeName)!.push(g.id);
+	}
+	return Array.from(byType.entries())
+		.map(([name, groupIds]) => ({ id: `t${name}`, name, groupIds }))
+		.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+});
 
 const selectedProjectId = ref<number | null>(null);
 function onProjectRowClick(projectId: number) {
@@ -673,14 +766,44 @@ function roundInt(value: unknown): number {
 	return Math.round(n);
 }
 
+/** Получить все уникальные типы ресурсов из групп. */
+function getAllResourceTypes(): string[] {
+	const types = new Set<string>();
+	for (const g of store.groups) {
+		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
+		types.add(typeName);
+	}
+	return Array.from(types);
+}
+
 const allGroupsChecked = computed({
 	get(): boolean {
 		if (!store.groups.length) return false;
-		return store.groups.every((g) => store.isGroupVisible(g.id));
+		if (!displayByResourceType.value) {
+			// Режим "по группе": проверяем все группы
+			return store.groups.every((g) => store.isGroupVisible(g.id));
+		}
+		// Режим "по типу": проверяем все типы (все типы видимы = все группы видимы)
+		const allTypes = getAllResourceTypes();
+		return allTypes.every((typeName) => isResourceTypeVisible(typeName));
 	},
 	set(value: boolean) {
-		for (const g of store.groups) {
-			store.setGroupVisibility(g.id, value);
+		if (!displayByResourceType.value) {
+			// Режим "по группе": устанавливаем видимость всех групп
+			for (const g of store.groups) {
+				store.setGroupVisibility(g.id, value);
+			}
+		} else {
+			// Режим "по типу": устанавливаем видимость всех типов (через группы)
+			const allTypes = getAllResourceTypes();
+			for (const typeName of allTypes) {
+				const groupsOfType = store.groups.filter(
+					(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+				);
+				for (const g of groupsOfType) {
+					store.setGroupVisibility(g.id, value);
+				}
+			}
 		}
 	},
 });
@@ -693,6 +816,24 @@ function onGroupToggle(id: number, e: Event) {
 	const input = e.target as HTMLInputElement | null;
 	const checked = input?.checked ?? true;
 	store.setGroupVisibility(id, checked);
+}
+
+function isResourceTypeVisible(typeName: string): boolean {
+	const groupsOfType = store.groups.filter(
+		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+	);
+	return groupsOfType.length > 0 && groupsOfType.every((g) => store.isGroupVisible(g.id));
+}
+
+function onResourceTypeToggle(typeName: string, e: Event) {
+	const input = e.target as HTMLInputElement | null;
+	const checked = input?.checked ?? true;
+	const groupsOfType = store.groups.filter(
+		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
+	);
+	for (const g of groupsOfType) {
+		store.setGroupVisibility(g.id, checked);
+	}
 }
 
 const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
@@ -733,15 +874,63 @@ function groupFooterValue(groupId: number): number {
 	return activeColTotals.value[groupId] || 0;
 }
 
+function columnTotal(col: TableColumn): number {
+	if (viewMode.value === 'quarterSingle') {
+		return col.groupIds.reduce(
+			(s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value),
+			0,
+		);
+	}
+	return col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
+}
+
+function columnQuarterTotal(col: TableColumn, quarter: Quarter): number {
+	return col.groupIds.reduce((s, gid) => s + groupQuarterTotal(gid, quarter), 0);
+}
+
+function effectiveCapacityByColumn(col: TableColumn): number {
+	return col.groupIds.reduce((s, gid) => s + (store.effectiveCapacityById[gid] || 0), 0);
+}
+
+function cellValueByColumn(projectId: number, col: TableColumn, archived?: boolean): number {
+	if (archived) return 0;
+	let sum = 0;
+	for (const gid of col.groupIds) {
+		sum += cellValue(projectId, gid, false);
+	}
+	return sum;
+}
+
+function getQuarterCellByColumn(
+	projectId: number,
+	col: TableColumn,
+	quarter: Quarter,
+	archived?: boolean,
+): number {
+	if (archived) return 0;
+	let sum = 0;
+	for (const gid of col.groupIds) {
+		sum += getQuarterCell(projectId, gid, quarter, false);
+	}
+	return sum;
+}
+
+function isYearOverCapacityByColumn(col: TableColumn): boolean {
+	const capacity = effectiveCapacityByColumn(col);
+	const allocated = col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
+	if (capacity <= 0) return allocated > 0;
+	return allocated > capacity;
+}
+
+function findColumnById(columnId: string): TableColumn | undefined {
+	return tableColumns.value.find((c) => c.id === columnId);
+}
+
 const activeGrandTotal = computed(() => {
 	if (viewMode.value === 'quarterSingle') {
-		let s = 0;
-		for (const g of visibleGroups.value) {
-			s += groupFooterValue(g.id);
-		}
-		return s;
+		return tableColumns.value.reduce((s, col) => s + columnTotal(col), 0);
 	}
-	return Object.values(activeColTotals.value).reduce((s, v) => s + v, 0);
+	return tableColumns.value.reduce((s, col) => s + columnTotal(col), 0);
 });
 
 function getQuarterCell(
@@ -821,17 +1010,17 @@ function projectTotalDisplay(projectId: number, archived?: boolean): string {
 
 const sortState = ref<{
 	field: 'group' | 'total' | null;
-	groupId: number | null;
+	columnId: string | null;
 	direction: 'asc' | 'desc';
 }>({
 	field: null,
-	groupId: null,
+	columnId: null,
 	direction: 'asc',
 });
 
 const sortedProjects = computed(() => {
 	const projects = [...filteredProjects.value];
-	const { field, groupId, direction } = sortState.value;
+	const { field, columnId, direction } = sortState.value;
 
 	if (!field) return projects;
 
@@ -843,9 +1032,12 @@ const sortedProjects = computed(() => {
 		let aVal = 0;
 		let bVal = 0;
 
-		if (field === 'group' && groupId !== null) {
-			aVal = cellValue(a.id, groupId, false);
-			bVal = cellValue(b.id, groupId, false);
+		if (field === 'group' && sortState.value.columnId !== null) {
+			const col = findColumnById(sortState.value.columnId);
+			if (col) {
+				aVal = cellValueByColumn(a.id, col, false);
+				bVal = cellValueByColumn(b.id, col, false);
+			}
 		} else if (field === 'total') {
 			aVal = projectTotalForLoad(a.id, false);
 			bVal = projectTotalForLoad(b.id, false);
@@ -858,12 +1050,12 @@ const sortedProjects = computed(() => {
 	return [...active, ...archived];
 });
 
-function onGroupSort(id: number) {
-	if (sortState.value.field === 'group' && sortState.value.groupId === id) {
+function onColumnSort(columnId: string) {
+	if (sortState.value.field === 'group' && sortState.value.columnId === columnId) {
 		sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
 	} else {
 		sortState.value.field = 'group';
-		sortState.value.groupId = id;
+		sortState.value.columnId = columnId;
 		sortState.value.direction = 'asc';
 	}
 }
@@ -873,7 +1065,7 @@ function onTotalSort() {
 		sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
 	} else {
 		sortState.value.field = 'total';
-		sortState.value.groupId = null;
+		sortState.value.columnId = null;
 		sortState.value.direction = 'asc';
 	}
 }
@@ -887,6 +1079,19 @@ function groupHeaderTitle(groupId: number): string {
 
 	if (viewMode.value === 'quarterSingle') {
 		const quarterTotal = groupQuarterTotal(groupId, selectedQuarter.value);
+		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)`;
+	}
+
+	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
+}
+
+function columnHeaderTitle(col: TableColumn): string {
+	const base = col.name;
+	const allocated = columnTotal(col);
+	const capacity = effectiveCapacityByColumn(col);
+
+	if (viewMode.value === 'quarterSingle') {
+		const quarterTotal = columnQuarterTotal(col, selectedQuarter.value);
 		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)`;
 	}
 
@@ -985,6 +1190,7 @@ function projectHoverTitle(p: Project): string {
 function exportCsv() {
 	if (!store.projects.length || !store.groups.length) return;
 
+	// Выгрузка идёт по тем же колонкам, что и таблица: по группе или по типу ресурса (tableColumns зависит от displayByResourceType).
 	const delimiter = ';';
 	const rows: string[] = [];
 	const projects = sortedProjects.value;
@@ -996,7 +1202,7 @@ function exportCsv() {
 			'Заказчик',
 			'Руководитель проекта',
 			'Тип проекта',
-			...visibleGroups.value.map((g) => g.name),
+			...tableColumns.value.map((col) => col.name),
 			'Итого (по проекту)',
 			'Размер проекта, %',
 		];
@@ -1010,9 +1216,8 @@ function exportCsv() {
 			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
-			for (const g of visibleGroups.value) {
-				const val = p.archived ? 0 : store.valueByPair(p.id, g.id);
-				cells.push(val ?? 0);
+			for (const col of tableColumns.value) {
+				cells.push(p.archived ? 0 : cellValueByColumn(p.id, col, false));
 			}
 
 			const rowTotal = p.archived ? 0 : store.rowTotalByProject(p.id);
@@ -1023,11 +1228,11 @@ function exportCsv() {
 		}
 
 		const footerCells: (string | number)[] = [];
-		footerCells.push('Итого (по группе)');
-		for (const g of visibleGroups.value) {
-			footerCells.push(activeColTotals.value[g.id] || 0);
+		footerCells.push('Итого (по группе/типу)');
+		for (const col of tableColumns.value) {
+			footerCells.push(columnTotal(col) || 0);
 		}
-		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
+		footerCells.push(activeGrandTotal.value);
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else if (viewMode.value === 'quarterSingle') {
@@ -1038,7 +1243,7 @@ function exportCsv() {
 			'Заказчик',
 			'Руководитель проекта',
 			'Тип проекта',
-			...visibleGroups.value.map((g) => `${g.name} (${quarterLabel[q]})`),
+			...tableColumns.value.map((col) => `${col.name} (${quarterLabel[q]})`),
 			`Итого (по проекту, ${quarterLabel[q]})`,
 			`Размер проекта, %, ${quarterLabel[q]}`,
 		];
@@ -1052,9 +1257,8 @@ function exportCsv() {
 			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
-			for (const g of visibleGroups.value) {
-				const val = getQuarterCell(p.id, g.id, q, p.archived);
-				cells.push(val ?? 0);
+			for (const col of tableColumns.value) {
+				cells.push(getQuarterCellByColumn(p.id, col, q, p.archived) ?? 0);
 			}
 
 			const rowTotal = p.archived ? 0 : projectQuarterTotal(p.id, q);
@@ -1068,15 +1272,11 @@ function exportCsv() {
 		}
 
 		const footerCells: (string | number)[] = [];
-		footerCells.push('Итого (по группе)');
-		for (const g of visibleGroups.value) {
-			footerCells.push(groupQuarterTotal(g.id, q) || 0);
+		footerCells.push('Итого (по группе/типу)');
+		for (const col of tableColumns.value) {
+			footerCells.push(columnQuarterTotal(col, q) || 0);
 		}
-		let grand = 0;
-		for (const g of visibleGroups.value) {
-			grand += groupQuarterTotal(g.id, q) || 0;
-		}
-		footerCells.push(grand);
+		footerCells.push(activeGrandTotal.value);
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	} else {
@@ -1086,9 +1286,9 @@ function exportCsv() {
 		header.push('Руководитель проекта');
 		header.push('Тип проекта');
 
-		for (const g of visibleGroups.value) {
+		for (const col of tableColumns.value) {
 			for (const q of quarterNumbers) {
-				header.push(`${g.name} (${quarterLabel[q]})`);
+				header.push(`${col.name} (${quarterLabel[q]})`);
 			}
 		}
 		header.push('Итого (по проекту)');
@@ -1103,10 +1303,9 @@ function exportCsv() {
 			cells.push((p.projectManager ?? '').trim());
 			cells.push((p.projectType ?? '').trim());
 
-			for (const g of visibleGroups.value) {
+			for (const col of tableColumns.value) {
 				for (const q of quarterNumbers) {
-					const val = getQuarterCell(p.id, g.id, q, p.archived);
-					cells.push(val ?? 0);
+					cells.push(getQuarterCellByColumn(p.id, col, q, p.archived) ?? 0);
 				}
 			}
 
@@ -1118,13 +1317,13 @@ function exportCsv() {
 		}
 
 		const footerCells: (string | number)[] = [];
-		footerCells.push('Итого (по группе)');
-		for (const g of visibleGroups.value) {
+		footerCells.push('Итого (по группе/типу)');
+		for (const col of tableColumns.value) {
 			for (const q of quarterNumbers) {
-				footerCells.push(groupQuarterTotal(g.id, q) || 0);
+				footerCells.push(columnQuarterTotal(col, q) || 0);
 			}
 		}
-		footerCells.push(Object.values(activeColTotals.value).reduce((s, v) => s + v, 0));
+		footerCells.push(activeGrandTotal.value);
 		footerCells.push('100');
 		rows.push(footerCells.map(csvValue).join(delimiter));
 	}
@@ -1138,7 +1337,9 @@ function exportCsv() {
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement('a');
 	link.href = url;
-	link.download = 'resource-plan.csv';
+	link.download = displayByResourceType.value
+		? 'resource-plan-by-type.csv'
+		: 'resource-plan-by-group.csv';
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -1176,11 +1377,11 @@ const headerBars = computed<Record<number, HeaderBar>>(() => {
 	return map;
 });
 
-const chartRows = computed(() => {
-	return store.groups.map((g) => {
-		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
-		const allocated = Number(activeColTotals.value[g.id] || 0);
-
+const headerBarsByColumn = computed<Record<string, HeaderBar>>(() => {
+	const map: Record<string, HeaderBar> = {};
+	for (const col of tableColumns.value) {
+		const capacity = effectiveCapacityByColumn(col);
+		const allocated = col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 		let fillPct = 0;
 		let fillColor = 'var(--blue-600)';
 
@@ -1201,9 +1402,82 @@ const chartRows = computed(() => {
 			fillPct = Math.max(0, Math.min(100, (allocated / capacity) * 100));
 			fillColor = 'var(--blue-600)';
 		}
+		map[col.id] = { fillPct, fillColor };
+	}
+	return map;
+});
 
-		return { id: g.id, name: g.name, capacity, allocated, fillPct, fillColor };
-	});
+function barFill(capacity: number, allocated: number): { fillPct: number; fillColor: string } {
+	let fillPct = 0;
+	let fillColor = 'var(--blue-600)';
+	if (capacity <= 0) {
+		if (allocated > 0) {
+			fillPct = 100;
+			fillColor = '#ef4444';
+		}
+	} else if (allocated === capacity) {
+		fillPct = 100;
+		fillColor = 'var(--blue-600)';
+	} else if (allocated > capacity) {
+		fillPct = 100;
+		fillColor = '#ef4444';
+	} else {
+		fillPct = Math.max(0, Math.min(100, (allocated / capacity) * 100));
+		fillColor = 'var(--blue-600)';
+	}
+	return { fillPct, fillColor };
+}
+
+/** В режимах «Общий» и «Квартально (4 колонки)» allocated за год, capacity в store — за квартал; множитель для приведения к году. */
+const chartCapacityMultiplier = computed(() =>
+	viewMode.value === 'total' || viewMode.value === 'quarterSplit' ? 4 : 1,
+);
+
+const chartRows = computed<ChartRow[]>(() => {
+	const mult = chartCapacityMultiplier.value;
+	if (!displayByResourceType.value) {
+		return store.groups.map((g): ChartRowGroup => {
+			const capacityRaw = Number(store.effectiveCapacityById[g.id] || 0);
+			const capacity = capacityRaw * mult;
+			const allocated = Number(activeColTotals.value[g.id] || 0);
+			const { fillPct, fillColor } = barFill(capacity, allocated);
+			return {
+				rowKind: 'group',
+				id: g.id,
+				name: g.name,
+				capacity,
+				allocated,
+				fillPct,
+				fillColor,
+			};
+		});
+	}
+	const byType = new Map<string, number[]>();
+	for (const g of store.groups) {
+		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
+		if (!byType.has(typeName)) byType.set(typeName, []);
+		byType.get(typeName)!.push(g.id);
+	}
+	return Array.from(byType.entries())
+		.map(([typeName, groupIds]): ChartRowType => {
+			const capacityRaw = groupIds.reduce(
+				(s, gid) => s + Number(store.effectiveCapacityById[gid] || 0),
+				0,
+			);
+			const capacity = capacityRaw * mult;
+			const allocated = groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
+			const { fillPct, fillColor } = barFill(capacity, allocated);
+			return {
+				rowKind: 'type',
+				id: typeName,
+				name: typeName,
+				capacity,
+				allocated,
+				fillPct,
+				fillColor,
+			};
+		})
+		.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 });
 </script>
 
@@ -1229,9 +1503,76 @@ const chartRows = computed(() => {
 	&__actions {
 		margin: 0;
 		display: flex;
+		flex-direction: column;
 		width: 100%;
 		align-items: flex-start;
+		gap: 10px;
+	}
+
+	&__actions-row {
+		display: flex;
+		width: 100%;
+		align-items: center;
 		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	&__row-type-switch {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 4px 0;
+	}
+
+	&__switch-label {
+		font-size: 13px;
+		color: #6b7280;
+		transition: color 0.15s ease;
+
+		&--active {
+			color: #111827;
+			font-weight: 500;
+		}
+	}
+
+	&__switch {
+		position: relative;
+		width: 44px;
+		height: 24px;
+		border-radius: 999px;
+		background: #d1d5db;
+		border: none;
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: background 0.2s ease;
+
+		&:hover {
+			background: #9ca3af;
+		}
+
+		&--on {
+			background: var(--blue-600);
+
+			&:hover {
+				background: #2563eb;
+			}
+		}
+	}
+
+	&__switch-thumb {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+		transition: transform 0.2s ease;
+	}
+
+	&__switch--on .plan__switch-thumb {
+		transform: translateX(20px);
 	}
 
 	&__view-modes {
@@ -1497,7 +1838,7 @@ const chartRows = computed(() => {
 	}
 
 	&__table-wrapper {
-		overflow-x: auto;
+		overflow: auto;
 		background: #fff;
 		box-shadow: var(--shadow);
 		border-radius: 12px;
@@ -1509,7 +1850,6 @@ const chartRows = computed(() => {
 		border-collapse: separate;
 		border-spacing: 0;
 		border-radius: 12px;
-		overflow: hidden;
 	}
 
 	&__table th + th,
@@ -1679,6 +2019,16 @@ const chartRows = computed(() => {
 		text-align: left;
 		z-index: 1;
 		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08);
+	}
+
+	thead .plan__th--sticky {
+		z-index: 2;
+		background: var(--blue-100, #eef5ff);
+	}
+
+	tfoot .plan__th--sticky {
+		z-index: 2;
+		background: #f3f7ff;
 	}
 
 	&__th--total,
