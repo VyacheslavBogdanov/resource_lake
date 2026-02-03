@@ -1019,16 +1019,14 @@ const sortState = ref<{
 });
 
 const sortedProjects = computed(() => {
-	const projects = [...filteredProjects.value];
+	const projects = [...filteredProjects.value].filter((p) => !p.archived);
 	const { field, columnId, direction } = sortState.value;
 
 	if (!field) return projects;
 
-	const active = projects.filter((p) => !p.archived);
-	const archived = projects.filter((p) => p.archived);
 	const factor = direction === 'asc' ? 1 : -1;
 
-	active.sort((a, b) => {
+	projects.sort((a, b) => {
 		let aVal = 0;
 		let bVal = 0;
 
@@ -1047,7 +1045,7 @@ const sortedProjects = computed(() => {
 		return aVal > bVal ? factor : -factor;
 	});
 
-	return [...active, ...archived];
+	return projects;
 });
 
 function onColumnSort(columnId: string) {
