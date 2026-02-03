@@ -1019,16 +1019,14 @@ const sortState = ref<{
 });
 
 const sortedProjects = computed(() => {
-	const projects = [...filteredProjects.value];
+	const projects = [...filteredProjects.value].filter((p) => !p.archived);
 	const { field, columnId, direction } = sortState.value;
 
 	if (!field) return projects;
 
-	const active = projects.filter((p) => !p.archived);
-	const archived = projects.filter((p) => p.archived);
 	const factor = direction === 'asc' ? 1 : -1;
 
-	active.sort((a, b) => {
+	projects.sort((a, b) => {
 		let aVal = 0;
 		let bVal = 0;
 
@@ -1047,7 +1045,7 @@ const sortedProjects = computed(() => {
 		return aVal > bVal ? factor : -factor;
 	});
 
-	return [...active, ...archived];
+	return projects;
 });
 
 function onColumnSort(columnId: string) {
@@ -1439,7 +1437,10 @@ const chartRows = computed<ChartRow[]>(() => {
 		return store.groups.map((g): ChartRowGroup => {
 			const capacityRaw = Number(store.effectiveCapacityById[g.id] || 0);
 			const capacity = capacityRaw * mult;
-			const allocated = Number(activeColTotals.value[g.id] || 0);
+			const allocated =
+				viewMode.value === 'quarterSingle'
+					? groupQuarterTotal(g.id, selectedQuarter.value)
+					: Number(activeColTotals.value[g.id] || 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
 				rowKind: 'group',
@@ -1465,7 +1466,13 @@ const chartRows = computed<ChartRow[]>(() => {
 				0,
 			);
 			const capacity = capacityRaw * mult;
-			const allocated = groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
+			const allocated =
+				viewMode.value === 'quarterSingle'
+					? groupIds.reduce(
+							(s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value),
+							0,
+					  )
+					: groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
 				rowKind: 'type',
@@ -2094,9 +2101,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		height: 100%;
 		width: 0%;
 		border-radius: 999px;
-		transition:
-			width 0.25s ease,
-			background-color 0.2s ease;
+		transition: width 0.25s ease, background-color 0.2s ease;
 	}
 
 	&__empty {
@@ -2207,9 +2212,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition:
-			width 0.3s ease,
-			background-color 0.2s ease;
+		transition: width 0.3s ease, background-color 0.2s ease;
 	}
 
 	&__bar-value {
