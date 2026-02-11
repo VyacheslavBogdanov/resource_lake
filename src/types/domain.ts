@@ -5,6 +5,8 @@ export interface Project {
 	url?: string;
 	customer?: string;
 	projectType?: string;
+	projectManager?: string;
+	description?: string;
 	order?: number;
 }
 
@@ -13,6 +15,8 @@ export interface Group {
 	name: string;
 	capacityHours: number;
 	supportPercent?: number;
+	resourceType?: string;
+	position?: number
 }
 
 export interface Allocation {

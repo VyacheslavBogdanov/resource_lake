@@ -1,58 +1,60 @@
 {
   "groups": [
     {
-      "name": "Конструкторы",
-      "capacityHours": 2000,
+      "name": "FE developers",
+      "capacityHours": 80,
+      "supportPercent": 0,
+      "position": 1,
       "id": 1,
-      "supportPercent": 0
+      "resourceType": "Программист"
     },
     {
-      "name": "Программисты",
-      "capacityHours": 2000,
+      "name": "Backend developers",
+      "capacityHours": 200,
+      "supportPercent": 10,
+      "position": 2,
       "id": 2,
-      "supportPercent": 10
+      "resourceType": "Программист"
     },
     {
-      "name": "Тестеровщики",
-      "capacityHours": 50,
+      "name": "Тестировщики",
+      "capacityHours": 300,
+      "supportPercent": 15,
+      "position": 3,
       "id": 3,
-      "supportPercent": 50
+      "resourceType": "Тестировщик"
     },
     {
-      "name": "Дев опсы",
-      "capacityHours": 33,
+      "name": "DevOps",
+      "capacityHours": 100,
+      "supportPercent": 5,
+      "position": 4,
       "id": 4,
-      "supportPercent": 0
+      "resourceType": "Дизайнер"
     },
     {
-      "name": "Смешарики",
+      "name": "Веб дизайнер",
+      "capacityHours": 500,
+      "supportPercent": 50,
+      "position": 5,
+      "id": 5,
+      "resourceType": "Дизайнер"
+    },
+    {
+      "name": "Конструктор",
+      "capacityHours": 400,
+      "supportPercent": 4,
+      "position": 6,
+      "id": 6,
+      "resourceType": "Конструктор"
+    },
+    {
+      "name": "Электроник",
       "capacityHours": 1000,
-      "supportPercent": 20,
-      "id": 5
-    },
-    {
-      "name": "Фиксики",
-      "capacityHours": 20000,
-      "supportPercent": 1,
-      "id": 6
-    },
-    {
-      "name": "Люди",
-      "capacityHours": 10,
       "supportPercent": 0,
-      "id": 7
-    },
-    {
-      "name": "Лушчие",
-      "capacityHours": 150,
-      "supportPercent": 0,
-      "id": 8
-    },
-    {
-      "name": "Малыши",
-      "capacityHours": 1,
-      "supportPercent": 1,
-      "id": 9
+      "position": 7,
+      "id": 7,
+      "resourceType": "Конструктор"
     }
   ]
 }

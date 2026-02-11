@@ -18,8 +18,18 @@
 			<input class="projects__input" v-model.trim="newCustomer" placeholder="Заказчик" />
 			<input
 				class="projects__input"
+				v-model.trim="newProjectManager"
+				placeholder="Руководитель проекта"
+			/>
+			<input
+				class="projects__input"
 				v-model.trim="newProjectType"
 				placeholder="Тип проекта"
+			/>
+			<input
+				class="projects__input"
+				v-model.trim="newDescription"
+				placeholder="Описание"
 			/>
 			<button class="btn btn--primary" type="submit">Добавить</button>
 		</form>
@@ -28,11 +38,12 @@
 			<table class="projects__table">
 				<colgroup>
 					<col style="width: 28%" />
+					<col style="width: 10%" />
+					<col style="width: 14%" />
 					<col style="width: 12%" />
-					<col style="width: 18%" />
-					<col style="width: 14%" />
-					<col style="width: 14%" />
-					<col style="width: 14%" />
+					<col style="width: 10%" />
+					<col style="width: 16%" />
+					<col style="width: 10%" />
 				</colgroup>
 
 				<thead>
@@ -44,13 +55,16 @@
 							<div class="projects__cell-inner">Статус</div>
 						</th>
 						<th class="projects__th">
-							<div class="projects__cell-inner">Действия</div>
-						</th>
-						<th class="projects__th">
 							<div class="projects__cell-inner">Заказчик</div>
 						</th>
 						<th class="projects__th">
+							<div class="projects__cell-inner">Руководитель</div>
+						</th>
+						<th class="projects__th">
 							<div class="projects__cell-inner">Тип</div>
+						</th>
+						<th class="projects__th">
+							<div class="projects__cell-inner">Описание</div>
 						</th>
 						<th class="projects__th">
 							<div class="projects__cell-inner">Ссылка</div>
@@ -98,14 +112,50 @@
 
 								<template v-else>
 									<span class="projects__text" :title="p.name">{{ p.name }}</span>
-									<button
-										type="button"
-										class="projects__edit-btn"
-										title="Переименовать проект"
-										@click="startEdit(p)"
-									>
-										✎
-									</button>
+
+									<div class="projects__name-actions">
+										<button
+											type="button"
+											class="projects__icon-btn"
+											title="Переименовать проект"
+											@click="startEdit(p)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.83H5v-.92l9.06-9.06.92.92L5.92 20.08ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82Z"
+												/>
+											</svg>
+										</button>
+
+										<button
+											type="button"
+											class="projects__icon-btn projects__icon-btn--archive"
+											:title="p.archived ? 'Разархивировать' : 'Архивировать'"
+											@click="store.toggleArchiveProject(p.id, !p.archived)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M20.54 5.23L19.15 3.5A2 2 0 0 0 17.59 3H6.41a2 2 0 0 0-1.56.5L3.46 5.23A2 2 0 0 0 3 6.5V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.5a2 2 0 0 0-.46-1.27ZM6.12 5l.5-.5h10.76l.5.5H6.12ZM19 19H5V7h14v12Zm-8-9h2v2h-2v-2Zm0 4h2v2h-2v-2Z"
+												/>
+											</svg>
+										</button>
+
+										<button
+											type="button"
+											class="projects__icon-btn projects__icon-btn--danger"
+											title="Удалить проект"
+											@click="removeProject(p)"
+										>
+											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+												<path
+													fill="currentColor"
+													d="M6 7h12l-1 14H7L6 7Zm3-3h6l1 2H8l1-2Zm-5 2h16v2H4V6Z"
+												/>
+											</svg>
+										</button>
+									</div>
 								</template>
 							</div>
 						</td>
@@ -118,20 +168,6 @@
 								>
 									{{ p.archived ? 'В архиве' : 'Активен' }}
 								</span>
-							</div>
-						</td>
-
-						<td class="projects__cell projects__cell--actions">
-							<div class="projects__cell-inner projects__actions">
-								<button
-									class="btn btn--archive"
-									@click="store.toggleArchiveProject(p.id, !p.archived)"
-								>
-									{{ p.archived ? 'Разархивировать' : 'Архивировать' }}
-								</button>
-								<button class="btn btn--danger" @click="removeProject(p)">
-									Удалить
-								</button>
 							</div>
 						</td>
 
@@ -152,9 +188,33 @@
 								<input
 									class="projects__meta-input"
 									type="text"
+									placeholder="Руководитель проекта"
+									v-model.trim="managerDrafts[p.id]"
+									@blur="saveProjectManager(p.id)"
+								/>
+							</div>
+						</td>
+
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
 									placeholder="Тип проекта"
 									v-model.trim="typeDrafts[p.id]"
 									@blur="saveProjectType(p.id)"
+								/>
+							</div>
+						</td>
+
+						<td class="projects__cell">
+							<div class="projects__cell-inner">
+								<input
+									class="projects__meta-input"
+									type="text"
+									placeholder="Описание"
+									v-model.trim="descriptionDrafts[p.id]"
+									@blur="saveDescription(p.id)"
 								/>
 							</div>
 						</td>
@@ -181,7 +241,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useResourceStore } from '../stores/resource';
+import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
 const store = useResourceStore();
@@ -190,11 +250,15 @@ onMounted(() => store.fetchAll());
 const newName = ref('');
 const newUrl = ref('');
 const newCustomer = ref('');
+const newProjectManager = ref('');
 const newProjectType = ref('');
+const newDescription = ref('');
 
 const urlDrafts = ref<Record<number, string>>({});
 const customerDrafts = ref<Record<number, string>>({});
+const managerDrafts = ref<Record<number, string>>({});
 const typeDrafts = ref<Record<number, string>>({});
+const descriptionDrafts = ref<Record<number, string>>({});
 
 const editingId = ref<number | null>(null);
 const editingName = ref('');
@@ -221,26 +285,41 @@ watch(
 	(projects) => {
 		const mapUrl: Record<number, string> = {};
 		const mapCustomer: Record<number, string> = {};
+		const mapManager: Record<number, string> = {};
 		const mapType: Record<number, string> = {};
+		const mapDescription: Record<number, string> = {};
 		for (const p of projects) {
 			mapUrl[p.id] = (p.url ?? '').trim();
 			mapCustomer[p.id] = (p.customer ?? '').trim();
+			mapManager[p.id] = (p.projectManager ?? '').trim();
 			mapType[p.id] = (p.projectType ?? '').trim();
+			mapDescription[p.id] = (p.description ?? '').trim();
 		}
 		urlDrafts.value = mapUrl;
 		customerDrafts.value = mapCustomer;
+		managerDrafts.value = mapManager;
 		typeDrafts.value = mapType;
+		descriptionDrafts.value = mapDescription;
 	},
 	{ immediate: true, deep: true },
 );
 
 async function addProject() {
 	if (!newName.value.trim()) return;
-	await store.addProject(newName.value, newUrl.value, newCustomer.value, newProjectType.value);
+	await store.addProject(
+		newName.value,
+		newUrl.value,
+		newCustomer.value,
+		newProjectType.value,
+		newProjectManager.value,
+		newDescription.value,
+	);
 	newName.value = '';
 	newUrl.value = '';
 	newCustomer.value = '';
+	newProjectManager.value = '';
 	newProjectType.value = '';
+	newDescription.value = '';
 }
 
 async function removeProject(p: Project) {
@@ -261,6 +340,16 @@ async function saveCustomer(projectId: number) {
 async function saveProjectType(projectId: number) {
 	const projectType = (typeDrafts.value[projectId] || '').trim();
 	await store.updateProjectType(projectId, projectType);
+}
+
+async function saveProjectManager(projectId: number) {
+	const projectManager = (managerDrafts.value[projectId] || '').trim();
+	await store.updateProjectManager(projectId, projectManager);
+}
+
+async function saveDescription(projectId: number) {
+	const description = (descriptionDrafts.value[projectId] || '').trim();
+	await store.updateProjectDescription(projectId, description);
 }
 
 async function startEdit(p: Project) {
@@ -372,19 +461,6 @@ function onDragEnd() {
 		font: inherit;
 	}
 
-	&__url-input {
-		min-width: 160px;
-		max-width: 260px;
-		width: 220px;
-		flex: 0 0 auto;
-		height: var(--ctl-h);
-		padding: 0 10px;
-		border: 1px solid #cfe1ff;
-		border-radius: 8px;
-		box-sizing: border-box;
-		font: inherit;
-	}
-
 	&__table-wrap {
 		width: 100%;
 		overflow-x: auto;
@@ -442,20 +518,68 @@ function onDragEnd() {
 		line-height: 1;
 	}
 
-	&__cell--actions {
-		white-space: nowrap;
-	}
-
-	&__actions {
+	&__name-actions {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		min-width: 220px;
-		justify-content: flex-start;
+		gap: 6px;
+		flex: 0 0 auto;
+		margin-left: auto;
+	}
+
+	&__icon-btn {
+		height: 28px;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid #cfe0ff;
+		background: #ffffff;
+		color: #2a66ff;
+		cursor: pointer;
+		padding: 0;
+
+		&:hover {
+			background: #f2f7ff;
+			border-color: #b7d0ff;
+		}
+	}
+
+	&__icon-btn--archive {
+		border-color: #d6e2ff;
+		color: #445;
+	}
+
+	&__icon-btn--archive:hover {
+		background: #eef3ff;
+		border-color: #b7d0ff;
+		color: #123;
+	}
+
+	&__icon-btn--danger {
+		border-color: #ffb3b3;
+		background: #fff5f5;
+		color: #8a0000;
+	}
+
+	&__icon-btn--danger:hover {
+		background: #ffecec;
+		border-color: #ff9a9a;
 	}
 
 	&__cell--url {
 		white-space: nowrap;
+	}
+
+	&__url-input,
+	&__name-input,
+	&__meta-input,
+	&__input {
+		&:focus-visible {
+			outline: none;
+			border-color: var(--blue-600);
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
 	}
 
 	&__url-input {
@@ -468,12 +592,6 @@ function onDragEnd() {
 		font-size: 13px;
 	}
 
-	&__url-input:focus-visible {
-		outline: none;
-		border-color: var(--blue-600);
-		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-	}
-
 	&__name-input {
 		width: 100%;
 		height: var(--ctl-h);
@@ -482,33 +600,6 @@ function onDragEnd() {
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
-	}
-
-	&__name-input:focus-visible {
-		outline: none;
-		border-color: var(--blue-600);
-		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-	}
-
-	&__edit-btn {
-		border: none;
-		background: transparent;
-		cursor: pointer;
-		width: 24px;
-		height: 24px;
-		border-radius: 999px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-		line-height: 1;
-		color: #667;
-		padding: 0;
-
-		&:hover {
-			background: #eef3ff;
-			color: #123;
-		}
 	}
 
 	&__empty {
@@ -546,12 +637,6 @@ function onDragEnd() {
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
-
-		&:focus-visible {
-			outline: none;
-			border-color: var(--blue-600);
-			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-		}
 	}
 }
 
@@ -588,11 +673,6 @@ function onDragEnd() {
 	border-radius: 8px;
 	background: #fff;
 	cursor: pointer;
-
-	&--archive {
-		min-width: 150px;
-		text-align: center;
-	}
 
 	&--primary {
 		background: var(--blue-600);
