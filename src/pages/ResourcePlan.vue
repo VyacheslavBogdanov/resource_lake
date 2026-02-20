@@ -1,5 +1,5 @@
 <template>
-	<section class="plan">
+	<section class="plan" :class="{ 'plan--has-hscroll': showHScroll }">
 		<h1 class="plan__title">Ресурсный план</h1>
 
 		<div class="plan__toolbar">
@@ -197,10 +197,11 @@
 			</div>
 		</div>
 
-		<div class="plan__table-wrapper" v-if="store.projects.length && store.groups.length">
-			<table class="plan__table" aria-label="Таблица ресурсного плана">
+		<template v-if="store.projects.length && store.groups.length">
+			<div class="plan__table-wrapper" ref="tableWrapperRef">
+				<table class="plan__table" aria-label="Таблица ресурсного плана" ref="tableRef">
 				<colgroup>
-					<col style="width: 28ch" />
+					<col style="width: 21ch" />
 
 					<template v-if="viewMode !== 'quarterSplit'">
 						<col
@@ -554,8 +555,18 @@
 						</td>
 					</tr>
 				</tfoot>
-			</table>
+				</table>
+			</div>
+
+		<div
+			v-show="showHScroll"
+			ref="hScrollRef"
+			class="plan__hscroll"
+			aria-hidden="true"
+		>
+			<div ref="hScrollInnerRef" class="plan__hscroll-inner"></div>
 		</div>
+		</template>
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
@@ -632,7 +643,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue';
+import { onBeforeUnmount, onMounted, computed, nextTick, ref, watch } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
@@ -650,6 +661,124 @@ const quarterLabel: Record<number, string> = {
 const store = useResourceStore();
 onMounted(() => {
 	store.fetchAll();
+});
+
+const tableWrapperRef = ref<HTMLElement | null>(null);
+const tableRef = ref<HTMLTableElement | null>(null);
+const hScrollRef = ref<HTMLElement | null>(null);
+const hScrollInnerRef = ref<HTMLElement | null>(null);
+const showHScroll = ref(false);
+const hasHOverflow = ref(false);
+
+let resizeObserver: ResizeObserver | null = null;
+let removeScrollSyncListeners: null | (() => void) = null;
+let scrollUiInitialized = false;
+
+function updateFixedHScrollVisibility() {
+	const wrap = tableWrapperRef.value;
+	if (!wrap || !hasHOverflow.value) {
+		showHScroll.value = false;
+		return;
+	}
+
+	const rect = wrap.getBoundingClientRect();
+	const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+
+	const isInView = rect.bottom > 0 && rect.top < viewportH;
+	const isNativeScrollbarVisible = rect.bottom <= viewportH - 2;
+
+	showHScroll.value = isInView && !isNativeScrollbarVisible;
+}
+
+function syncHScrollMetrics() {
+	const wrap = tableWrapperRef.value;
+	const barInner = hScrollInnerRef.value;
+	const bar = hScrollRef.value;
+	if (!wrap || !barInner || !bar) {
+		showHScroll.value = false;
+		hasHOverflow.value = false;
+		return;
+	}
+
+	const contentWidth = Math.max(wrap.scrollWidth, tableRef.value?.scrollWidth ?? 0);
+	barInner.style.width = `${contentWidth}px`;
+
+	hasHOverflow.value = contentWidth > wrap.clientWidth + 1;
+	updateFixedHScrollVisibility();
+
+	// Держим в синхронизации при пересчёте
+	if (showHScroll.value) {
+		bar.scrollLeft = wrap.scrollLeft;
+	}
+}
+
+function setupScrollSync() {
+	if (removeScrollSyncListeners) return;
+	const wrap = tableWrapperRef.value;
+	const bar = hScrollRef.value;
+	if (!wrap || !bar) return;
+
+	let syncing = false;
+
+	const onWrapScroll = () => {
+		if (syncing) return;
+		syncing = true;
+		bar.scrollLeft = wrap.scrollLeft;
+		syncing = false;
+	};
+
+	const onBarScroll = () => {
+		if (syncing) return;
+		syncing = true;
+		wrap.scrollLeft = bar.scrollLeft;
+		syncing = false;
+	};
+
+	wrap.addEventListener('scroll', onWrapScroll, { passive: true });
+	bar.addEventListener('scroll', onBarScroll, { passive: true });
+
+	removeScrollSyncListeners = () => {
+		wrap.removeEventListener('scroll', onWrapScroll);
+		bar.removeEventListener('scroll', onBarScroll);
+		removeScrollSyncListeners = null;
+	};
+}
+
+function ensureScrollUi() {
+	const wrap = tableWrapperRef.value;
+	const bar = hScrollRef.value;
+	const inner = hScrollInnerRef.value;
+	if (!wrap || !bar || !inner) return;
+
+	// инициализируем один раз, когда таблица реально появилась в DOM
+	if (!scrollUiInitialized) {
+		setupScrollSync();
+
+		const table = tableRef.value;
+		if (typeof ResizeObserver !== 'undefined') {
+			resizeObserver = resizeObserver ?? new ResizeObserver(() => syncHScrollMetrics());
+			resizeObserver.observe(wrap);
+			if (table) resizeObserver.observe(table);
+		}
+
+		scrollUiInitialized = true;
+	}
+
+	syncHScrollMetrics();
+}
+
+onMounted(() => {
+	window.addEventListener('resize', syncHScrollMetrics, { passive: true });
+	window.addEventListener('scroll', updateFixedHScrollVisibility, { passive: true });
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener('resize', syncHScrollMetrics);
+	window.removeEventListener('scroll', updateFixedHScrollVisibility);
+	resizeObserver?.disconnect();
+	resizeObserver = null;
+	removeScrollSyncListeners?.();
+	scrollUiInitialized = false;
 });
 
 /** Колонка таблицы: либо одна группа, либо объединённый тип ресурса (несколько групп). */
@@ -754,6 +883,22 @@ const filteredProjects = computed(() => {
 });
 
 const filteredProjectsCount = computed(() => filteredProjects.value.length);
+
+watch(
+	() => [
+		store.projects.length,
+		store.groups.length,
+		filteredProjectsCount.value,
+		tableColumns.value.length,
+		viewMode.value,
+		selectedQuarter.value,
+		displayByResourceType.value,
+	],
+	async () => {
+		await nextTick();
+		ensureScrollUi();
+	},
+);
 
 function resetFilters() {
 	selectedCustomers.value = [];
@@ -1494,6 +1639,11 @@ const chartRows = computed<ChartRow[]>(() => {
 	--th-h: 64px;
 	--bar-h: 14px;
 	--ctl-h: 32px;
+	--hscroll-h: 16px;
+
+	&--has-hscroll {
+		padding-bottom: calc(var(--hscroll-h) + 10px);
+	}
 
 	&__title {
 		margin-bottom: 8px;
@@ -1849,6 +1999,24 @@ const chartRows = computed<ChartRow[]>(() => {
 		background: #fff;
 		box-shadow: var(--shadow);
 		border-radius: 12px;
+	}
+
+	&__hscroll {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: var(--hscroll-h);
+		overflow-x: auto;
+		overflow-y: hidden;
+		background: rgba(245, 249, 255, 0.92);
+		backdrop-filter: blur(6px);
+		border-top: 1px solid #dbe7ff;
+		z-index: 50;
+	}
+
+	&__hscroll-inner {
+		height: 1px;
 	}
 
 	&__table {
