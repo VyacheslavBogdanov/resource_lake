@@ -263,7 +263,7 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -309,7 +309,7 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -1231,7 +1231,7 @@ function groupHeaderTitle(groupId: number): string {
 function columnHeaderTitle(col: TableColumn): string {
 	const base = col.name;
 	const allocated = columnTotal(col);
-	const capacity = effectiveCapacityByColumn(col);
+	const capacity = effectiveCapacityByColumn(col) * chartCapacityMultiplier.value;
 
 	if (viewMode.value === 'quarterSingle') {
 		const quarterTotal = columnQuarterTotal(col, selectedQuarter.value);
