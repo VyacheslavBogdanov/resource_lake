@@ -239,8 +239,8 @@
 								:key="col.id"
 								class="plan__th plan__th--sortable"
 								:class="{
-									'plan__th--over': isYearOverCapacityByColumn(col),
-									'plan__th--over-bg': isYearOverCapacityByColumn(col),
+									'plan__th--over': isColumnOverCapacity(col),
+									'plan__th--over-bg': isColumnOverCapacity(col),
 									'plan__th--sorted':
 										sortState.field === 'group' &&
 										sortState.columnId === col.id,
@@ -263,7 +263,7 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -284,8 +284,8 @@
 								:key="'g-span-' + col.id"
 								class="plan__th plan__th--group-span plan__th--sortable"
 								:class="{
-									'plan__th--over': isYearOverCapacityByColumn(col),
-									'plan__th--over-bg': isYearOverCapacityByColumn(col),
+									'plan__th--over': isAnyQuarterOverCapacityByColumn(col),
+									'plan__th--over-bg': isAnyQuarterOverCapacityByColumn(col),
 									'plan__th--sorted':
 										sortState.field === 'group' &&
 										sortState.columnId === col.id,
@@ -309,7 +309,7 @@
 									</span>
 									<small class="plan__capacity">
 										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col)) }} ч
+										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
 									</small>
 									<div class="plan__th-progress" aria-hidden="true">
 										<div
@@ -363,8 +363,8 @@
 								:key="`q-${col.id}-${q}`"
 								class="plan__th plan__th--quarter"
 								:class="{
-									'plan__th--over': isYearOverCapacityByColumn(col),
-									'plan__th--over-bg': isYearOverCapacityByColumn(col),
+									'plan__th--over': isQuarterOverCapacityByColumn(col, q),
+									'plan__th--over-bg': isQuarterOverCapacityByColumn(col, q),
 								}"
 							>
 								<div class="plan__th-inner">
@@ -449,8 +449,8 @@
 								:key="col.id"
 								class="plan__cell"
 								:class="{
-									'plan__cell--over': isYearOverCapacityByColumn(col),
-									'plan__cell--over-bg': isYearOverCapacityByColumn(col),
+									'plan__cell--over': isColumnOverCapacity(col),
+									'plan__cell--over-bg': isColumnOverCapacity(col),
 								}"
 							>
 								<div class="plan__cell-inner" :title="`${p.name} • ${col.name}`">
@@ -466,8 +466,8 @@
 									:key="`cell-${p.id}-${col.id}-${q}`"
 									class="plan__cell"
 									:class="{
-										'plan__cell--over': isYearOverCapacityByColumn(col),
-										'plan__cell--over-bg': isYearOverCapacityByColumn(col),
+										'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
+										'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
 									}"
 								>
 									<div
@@ -514,8 +514,8 @@
 								:key="col.id"
 								class="plan__cell plan__cell--footer"
 								:class="{
-									'plan__cell--over': isYearOverCapacityByColumn(col),
-									'plan__cell--over-bg': isYearOverCapacityByColumn(col),
+									'plan__cell--over': isColumnOverCapacity(col),
+									'plan__cell--over-bg': isColumnOverCapacity(col),
 								}"
 							>
 								<div class="plan__cell-inner" :title="`Итого: ${col.name}`">
@@ -531,8 +531,8 @@
 									:key="`foot-${col.id}-${q}`"
 									class="plan__cell plan__cell--footer"
 									:class="{
-										'plan__cell--over': isYearOverCapacityByColumn(col),
-										'plan__cell--over-bg': isYearOverCapacityByColumn(col),
+										'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
+										'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
 									}"
 								>
 									<div
@@ -1067,6 +1067,33 @@ function isYearOverCapacityByColumn(col: TableColumn): boolean {
 	return allocated > capacity;
 }
 
+function isQuarterOverCapacityByColumn(col: TableColumn, quarter: Quarter): boolean {
+	const capacity = effectiveCapacityByColumn(col);
+	const allocated = col.groupIds.reduce(
+		(s, gid) => s + groupQuarterTotal(gid, quarter), 0,
+	);
+	if (capacity <= 0) return allocated > 0;
+	return allocated > capacity;
+}
+
+function isAnyQuarterOverCapacityByColumn(col: TableColumn): boolean {
+	return quarterNumbers.some((q) => isQuarterOverCapacityByColumn(col, q));
+}
+
+function isColumnOverCapacity(col: TableColumn): boolean {
+	if (viewMode.value === 'quarterSingle') {
+		return isQuarterOverCapacityByColumn(col, selectedQuarter.value);
+	}
+	const annualCapacity = effectiveCapacityByColumn(col) * 4;
+	const annualAllocated = col.groupIds.reduce(
+		(s, gid) => s + (activeColTotals.value[gid] || 0), 0,
+	);
+	const annualOver = annualCapacity <= 0
+		? annualAllocated > 0
+		: annualAllocated > annualCapacity;
+	return annualOver || isAnyQuarterOverCapacityByColumn(col);
+}
+
 function findColumnById(columnId: string): TableColumn | undefined {
 	return tableColumns.value.find((c) => c.id === columnId);
 }
@@ -1231,7 +1258,7 @@ function groupHeaderTitle(groupId: number): string {
 function columnHeaderTitle(col: TableColumn): string {
 	const base = col.name;
 	const allocated = columnTotal(col);
-	const capacity = effectiveCapacityByColumn(col);
+	const capacity = effectiveCapacityByColumn(col) * chartCapacityMultiplier.value;
 
 	if (viewMode.value === 'quarterSingle') {
 		const quarterTotal = columnQuarterTotal(col, selectedQuarter.value);
