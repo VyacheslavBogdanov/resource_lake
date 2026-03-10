@@ -18,7 +18,8 @@ Resource Planner — SPA на Vue 3 для управления распреде
 | 10  | [Рефакторинг drag-and-drop](10-drag-and-drop-refactoring.md)      | Composable useDragReorder, унификация order/position               | P3        | M         |
 | 11  | [Роутинг и навигация](11-routing-and-navigation.md)               | Навигация по name, lazy-loading маршрутов                          | P3        | S         |
 | 12  | [Деплой](12-deployment.md)                                        | Деплой фронтенда, удаление firebase-артефактов                     | P4        | S         |
-| 13  | [CSS дизайн-токены](13-css-design-tokens.md)                      | CSS-переменные, SCSS-архитектура                                   | P1        | M         |
+| 13  | [SCSS дизайн-токены](13-css-design-tokens.md)                     | SCSS-переменные, миксины, SCSS-архитектура                         | P1        | M         |
+| 14  | [Декомпозиция страниц](14-pages-decomposition.md)                 | DataManage, Projects, Groups, UiSelect → composables + подкомпоненты | P3      | L         |
 
 ## Порядок работы
 
