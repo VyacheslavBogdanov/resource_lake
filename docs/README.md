@@ -21,6 +21,7 @@ Resource Planner — SPA на Vue 3 для управления распреде
 | 13  | [SCSS дизайн-токены](13-css-design-tokens.md)                     | SCSS-переменные, миксины, SCSS-архитектура                         | P1        | M         |
 | 14  | [Декомпозиция страниц](14-pages-decomposition.md)                 | DataManage, Projects, Groups, UiSelect → composables + подкомпоненты | P3      | L         |
 | 15  | [Отчёты о выполнении фаз](15-refactoring-progress.md)            | Прогресс рефакторинга, результаты регрессии, ссылки на PR            | —       | —         |
+| 16  | [Соглашения по коду](16-coding-conventions.md)                    | Именование, структура файлов, Vue/TS/SCSS стандарты                  | —       | —         |
 
 ## Порядок работы
 
