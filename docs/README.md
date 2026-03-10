@@ -20,6 +20,7 @@ Resource Planner — SPA на Vue 3 для управления распреде
 | 12  | [Деплой](12-deployment.md)                                        | Деплой фронтенда, удаление firebase-артефактов                     | P4        | S         |
 | 13  | [SCSS дизайн-токены](13-css-design-tokens.md)                     | SCSS-переменные, миксины, SCSS-архитектура                         | P1        | M         |
 | 14  | [Декомпозиция страниц](14-pages-decomposition.md)                 | DataManage, Projects, Groups, UiSelect → composables + подкомпоненты | P3      | L         |
+| 15  | [Отчёты о выполнении фаз](15-refactoring-progress.md)            | Прогресс рефакторинга, результаты регрессии, ссылки на PR            | —       | —         |
 
 ## Порядок работы
 
