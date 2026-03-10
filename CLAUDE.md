@@ -1,60 +1,111 @@
-# CLAUDE.md
+# Resource Planner — Frontend
 
-Этот файл содержит инструкции для Claude Code (claude.ai/code) при работе с кодом в этом репозитории.
+SPA-приложение на Vue 3 для управления распределением ресурсов по проектам и группам. Интерфейс на русском языке.
 
-## Обзор проекта
+## Быстрый старт
 
-Resource Planner — SPA на Vue 3 для управления распределением ресурсов по проектам и группам. Пользователи назначают часы (общие и поквартальные) из ресурсных групп на проекты, отслеживают загрузку мощностей и управляют метаданными проектов/групп. Интерфейс на русском языке.
+Прочитай перед началом работы:
+
+- [`docs/01-project-overview.md`](docs/01-project-overview.md) — что делает приложение, архитектура, поток данных
+- [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md) — стандарты кода (обязательно)
+- [`docs/02-refactoring-priorities.md`](docs/02-refactoring-priorities.md) — приоритеты рефакторинга
+- [`docs/15-refactoring-progress.md`](docs/15-refactoring-progress.md) — текущий прогресс
+
+## Документация
+
+| Файл                                                                            | Описание                           |
+| ------------------------------------------------------------------------------- | ---------------------------------- |
+| [`01-project-overview.md`](docs/01-project-overview.md)                         | Обзор проекта                      |
+| [`02-refactoring-priorities.md`](docs/02-refactoring-priorities.md)             | Приоритеты рефакторинга            |
+| [`03-tooling-and-linting.md`](docs/03-tooling-and-linting.md)                   | Тулинг и линтинг                   |
+| [`04-ui-kit-and-shared-components.md`](docs/04-ui-kit-and-shared-components.md) | UI-кит и общие компоненты          |
+| [`05-store-decomposition.md`](docs/05-store-decomposition.md)                   | Декомпозиция стора                 |
+| [`06-resource-plan-decomposition.md`](docs/06-resource-plan-decomposition.md)   | Декомпозиция ResourcePlan.vue      |
+| [`07-code-deduplication.md`](docs/07-code-deduplication.md)                     | Устранение дублирования кода       |
+| [`08-api-layer-and-error-handling.md`](docs/08-api-layer-and-error-handling.md) | API-слой и обработка ошибок        |
+| [`09-performance-optimization.md`](docs/09-performance-optimization.md)         | Оптимизация производительности     |
+| [`10-drag-and-drop-refactoring.md`](docs/10-drag-and-drop-refactoring.md)       | Рефакторинг drag-and-drop          |
+| [`11-routing-and-navigation.md`](docs/11-routing-and-navigation.md)             | Роутинг и навигация                |
+| [`12-deployment.md`](docs/12-deployment.md)                                     | Деплой                             |
+| [`13-css-design-tokens.md`](docs/13-css-design-tokens.md)                       | SCSS дизайн-токены                 |
+| [`14-pages-decomposition.md`](docs/14-pages-decomposition.md)                   | Декомпозиция страниц и компонентов |
+| [`15-refactoring-progress.md`](docs/15-refactoring-progress.md)                 | Прогресс рефакторинга              |
+| [`16-coding-conventions.md`](docs/16-coding-conventions.md)                     | Соглашения по коду                 |
+
+## Технологии
+
+| Технология  | Версия  | Назначение            |
+| ----------- | ------- | --------------------- |
+| Vue 3       | ^3.4.38 | UI-фреймворк          |
+| TypeScript  | ^5.5.4  | Типизация             |
+| Vite        | ^5.4.1  | Сборка и dev-сервер   |
+| vue-router  | ^4.4.5  | Маршрутизация         |
+| Pinia       | ^2.2.4  | Управление состоянием |
+| SCSS (sass) | ^1.77.8 | Стили                 |
+| json-server | ^0.17.4 | Локальный REST API    |
+| xlsx        | ^0.18.5 | Импорт/экспорт Excel  |
 
 ## Команды
 
-- **Разработка (клиент + API):** `npm run dev` — запускает Vite dev server (порт 5173) и json-server API (порт 3001) параллельно
-- **Только клиент:** `npm run dev:client`
-- **Только API:** `npm run dev:api`
-- **Сборка:** `npm run build`
-- **Превью:** `npm run preview`
-- **Деплой:** Firebase Hosting (`firebase deploy`), раздаёт из `dist/`
+```bash
+npm run dev          # Клиент (порт 5173) + API (порт 3001) параллельно
+npm run dev:client   # Только Vite dev server
+npm run dev:api      # Только json-server API
+npm run build        # Production-сборка
+npm run preview      # Превью сборки (порт 5173)
+```
 
-Тесты не настроены.
+## API
 
-## Архитектура
+json-server обслуживает три JSON-файла из `data/` как REST-эндпоинты. URL rewriting монтирует роутеры под префиксами `/p`, `/g`, `/a`.
 
-**Фронтенд:** Vue 3 + TypeScript + Pinia + Vue Router + Vite + SCSS
+| Метод          | Endpoint           | Описание                                        |
+| -------------- | ------------------ | ----------------------------------------------- |
+| GET/POST       | `/projects`        | Список / создание проектов                      |
+| GET/PUT/DELETE | `/projects/:id`    | Получение / обновление / удаление проекта       |
+| GET/POST       | `/groups`          | Список / создание ресурсных групп               |
+| GET/PUT/DELETE | `/groups/:id`      | Получение / обновление / удаление группы        |
+| GET/POST       | `/allocations`     | Список / создание распределений                 |
+| GET/PUT/DELETE | `/allocations/:id` | Получение / обновление / удаление распределения |
 
-**Бэкенд:** json-server (в `api.js`), обслуживает три JSON-файла из `data/` как REST-эндпоинты:
-- `/projects` → `data/projects.json`
-- `/groups` → `data/groups.json`
-- `/allocations` → `data/data.json`
+Данные хранятся в: `data/projects.json`, `data/groups.json`, `data/data.json`.
 
-API использует URL rewriting для монтирования трёх отдельных json-server роутеров под префиксами `/p`, `/g`, `/a`.
+## Структура проекта
 
-### Основные директории
+```
+src/
+├── components/    # UI-компоненты (NavHeader, UiSelect)
+├── pages/         # Страницы (ResourcePlan, Projects, Groups, DataManage)
+├── stores/        # Pinia store
+│   └── resource/  # Модульный store (actions, utils, types, constants)
+├── services/      # HTTP-клиент (http.ts)
+├── router/        # Маршрутизация
+├── types/         # TypeScript типы (domain.ts)
+└── styles.scss    # Глобальные стили
+```
 
-- `src/pages/` — четыре страничных компонента: ResourcePlan (основная таблица распределения, самый большой файл), Projects, Groups, DataManage (импорт/экспорт)
-- `src/stores/resource/` — единый Pinia-стор, разбитый на модули действий (`projects.actions.ts`, `groups.actions.ts`, `allocations.actions.ts`), плюс `utils.ts`, `storage.ts` (localStorage для скрытых групп), `constants.ts`, `types.ts`
-- `src/services/http.ts` — тонкая обёртка над fetch (объект `api`) с методами `list`, `get`, `create`, `update`, `remove`; базовый URL из переменной окружения `VITE_API_BASE_URL` (по умолчанию `http://localhost:3001`)
-- `src/types/domain.ts` — основные доменные типы: `Project`, `Group`, `Allocation`
-- `src/components/` — общие UI-компоненты (`NavHeader`, `UiSelect`)
+**Маршруты:** `/` → редирект на `/plan` | `/plan` — таблица распределения | `/projects` — проекты | `/groups` — группы | `/manage` — импорт/экспорт
 
-### Поток данных
+## Важно
 
-`App.vue` вызывает `store.fetchAll()` при монтировании, загружая все три сущности параллельно. Страница ResourcePlan отображает матрицу проекты (строки) × группы (столбцы) с редактируемыми ячейками часов. Аллокации поддерживают как общие часы, так и квартальную разбивку (q1–q4). Геттеры стора вычисляют итоги по столбцам, строкам, эффективную мощность (с учётом процента поддержки) и общий итог.
-
-### Маршруты
-
-- `/` → редирект на `/plan`
-- `/plan` — ResourcePlan (таблица распределения)
-- `/projects` — управление проектами
-- `/groups` — управление ресурсными группами
-- `/manage` — импорт/экспорт данных
-
-## Стиль кода
-
-- Prettier: табы, ширина табуляции 4, одинарные кавычки, точки с запятой, висячие запятые, ширина строки 100
-- ESLint: Vue essential rules + TypeScript config
-- Vue-компоненты используют `<script setup lang="ts">` и `<style scoped lang="scss">`
+- **Следуй [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md)** — основной документ по стилю кода
+- Компонент не более **300 строк** — декомпозируй при превышении
+- TypeScript **strict mode**, никакого `any`
+- Стили по **БЭМ**, используй SCSS переменные из `styles.scss`
+- Интерфейс на **русском языке**
+- Prettier: табы, одинарные кавычки, точки с запятой, ширина строки 120
 
 ## Переменные окружения
 
-- `VITE_API_BASE_URL` — базовый URL API (по умолчанию: `http://localhost:3001`)
-- `VITE_HELP_URL` — URL для иконки помощи в NavHeader
+| Переменная          | Назначение                        | По умолчанию            |
+| ------------------- | --------------------------------- | ----------------------- |
+| `VITE_API_BASE_URL` | Базовый URL API                   | `http://localhost:3001` |
+| `VITE_HELP_URL`     | URL для иконки помощи в NavHeader | —                       |
+
+## Перед коммитом
+
+```bash
+npm run build
+```
+
+Тесты и линтер пока не настроены.
