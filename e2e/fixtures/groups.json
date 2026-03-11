@@ -1,0 +1,20 @@
+{
+  "groups": [
+    {
+      "name": "Frontend",
+      "capacityHours": 200,
+      "supportPercent": 10,
+      "position": 1,
+      "id": 1,
+      "resourceType": "Программист"
+    },
+    {
+      "name": "Backend",
+      "capacityHours": 300,
+      "supportPercent": 20,
+      "position": 2,
+      "id": 2,
+      "resourceType": "Программист"
+    }
+  ]
+}
