@@ -198,57 +198,24 @@
 import UiSelect from '../components/UiSelect.vue';
 import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
+import { useProjectFilters } from '../composables/useProjectFilters';
 import { roundInt } from '../utils/format';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
 
 const isFilterOpen = ref(false);
-const selectedCustomers = ref<string[]>([]);
-const selectedManagers = ref<string[]>([]);
 
-const customerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.customer ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const managerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.projectManager ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
-
-const filteredProjects = computed(() => {
-	if (!hasActiveFilters.value) return store.projects;
-
-	const customers = new Set(selectedCustomers.value);
-	const managers = new Set(selectedManagers.value);
-
-	return store.projects.filter((p) => {
-		const customer = (p.customer ?? '').trim();
-		const manager = (p.projectManager ?? '').trim();
-
-		if (customers.size && !customers.has(customer)) return false;
-		if (managers.size && !managers.has(manager)) return false;
-		return true;
-	});
-});
-
-const filteredProjectsCount = computed(() => filteredProjects.value.length);
-
-function resetFilters() {
-	selectedCustomers.value = [];
-	selectedManagers.value = [];
-}
+const {
+	selectedCustomers,
+	selectedManagers,
+	customerOptions,
+	managerOptions,
+	hasActiveFilters,
+	filteredProjects,
+	filteredProjectsCount,
+	resetFilters,
+} = useProjectFilters(computed(() => store.projects));
 
 type RowBuffer = {
 	total: number;
