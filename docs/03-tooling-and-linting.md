@@ -1,31 +1,27 @@
 # 03. Тулинг и линтинг
 
-**Приоритет:** P0 | **Сложность:** S
+**Приоритет:** P0 | **Сложность:** S | **Статус:** Завершено
 
-## Проблема
+## Текущее состояние
 
-Файл `eslint.config.js` импортирует три пакета, которых нет в `package.json`:
+ESLint и Prettier установлены и настроены. Конфиг — `eslint.config.mjs`.
 
 ```js
-// eslint.config.js
-import pluginVue from 'eslint-plugin-vue'; // не установлен
-import vueTsEslintConfig from '@vue/eslint-config-typescript'; // не установлен
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'; // не установлен
+// eslint.config.mjs
+import pluginVue from 'eslint-plugin-vue';
+import vueTsEslintConfig from '@vue/eslint-config-typescript';
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 ```
 
-В `package.json` нет ни `eslint`, ни ESLint-плагинов. Команды `lint` и `format` в `scripts` отсутствуют.
+### Установленные пакеты (devDependencies)
 
-Также: зависимость `xlsx` (^0.18.5) указана в `dependencies`, но нигде не импортируется в `src/`.
+- `eslint`
+- `eslint-plugin-vue`
+- `@vue/eslint-config-typescript`
+- `@vue/eslint-config-prettier`
+- `prettier`
 
-## Решение
-
-### 1. Установить ESLint-пакеты
-
-```bash
-npm i -D eslint eslint-plugin-vue @vue/eslint-config-typescript @vue/eslint-config-prettier
-```
-
-### 2. Добавить скрипты в package.json
+### Скрипты
 
 ```json
 {
@@ -36,51 +32,31 @@ npm i -D eslint eslint-plugin-vue @vue/eslint-config-typescript @vue/eslint-conf
 }
 ```
 
-Prettier уже подразумевается конфигом `@vue/eslint-config-prettier/skip-formatting`, но если Prettier не установлен глобально:
+### Конфигурация Prettier (`.prettierrc.json`)
 
-```bash
-npm i -D prettier
-```
+- Табы, одинарные кавычки, точки с запятой
+- `printWidth: 120` (согласно CLAUDE.md)
+- `trailingComma: "all"`
 
-### 3. Удалить неиспользуемый xlsx
+### .gitignore
 
-```bash
-npm uninstall xlsx
-```
+Расширен стандартными паттернами: `.env`, `.env.*`, `.env.local`, `*.local`, `.DS_Store`, `.firebase/`.
 
-Проверка: `xlsx` нигде не импортируется в `src/` (проверено grep-ом).
+## Что было сделано
 
-### 4. Расширить .gitignore
+1. Установлены ESLint-пакеты и Prettier
+2. Добавлены скрипты `lint` и `format` в `package.json`
+3. `eslint.config.js` переименован в `eslint.config.mjs` (в проекте нет `"type": "module"`)
+4. Удалён неиспользуемый пакет `xlsx` из `dependencies`
+5. Расширен `.gitignore`
+6. Исправлен `printWidth`: 100 → 120
+7. Исправлено 19 ошибок ESLint (unused imports, `no-explicit-any`, dead code)
 
-Текущий `.gitignore`:
+## Файлы изменённые
 
-```
-node_modules
-dist
-*.log
-```
-
-Добавить:
-
-```
-.env
-.env.*
-.firebase/
-.DS_Store
-*.local
-```
-
-### 5. Проверка
-
-```bash
-npm run lint     # Должен отработать без критических ошибок
-npm run format   # Должен переформатировать файлы
-```
-
-## Файлы для изменения
-
-| Файл               | Действие                                                                   |
-| ------------------ | -------------------------------------------------------------------------- |
-| `package.json`     | Добавить devDependencies (eslint, плагины), удалить xlsx, добавить скрипты |
-| `.gitignore`       | Расширить список игнорируемых файлов                                       |
-| `eslint.config.js` | Без изменений (конфиг уже корректен, просто пакеты не были установлены)    |
+| Файл                | Действие                                                |
+| ------------------- | ------------------------------------------------------- |
+| `package.json`      | Добавлены devDependencies, удалён xlsx, добавлены скрипты |
+| `.prettierrc.json`  | printWidth 100 → 120                                    |
+| `.gitignore`        | Расширен список игнорируемых файлов                     |
+| `eslint.config.mjs` | Переименован из .js, добавлены правила                  |

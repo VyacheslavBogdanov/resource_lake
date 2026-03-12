@@ -87,10 +87,8 @@ resource-planner/
 │   │   └── index.ts                # 16 строк — маршруты без name и lazy-loading
 │   └── types/
 │       └── domain.ts               # 31 строка — Project, Group, Allocation
-├── eslint.config.js                # Конфиг ESLint (пакеты не установлены!)
-├── firebase.json                   # Firebase Hosting конфиг
-├── .firebaserc                     # Firebase project alias
-└── package.json                    # Зависимости (включая неиспользуемый xlsx)
+├── eslint.config.mjs               # Конфиг ESLint
+└── package.json                    # Зависимости и скрипты (lint, format)
 ```
 
 ## Поток данных
@@ -134,10 +132,10 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 
 ## Системные проблемы (сводка)
 
-1. ESLint конфиг ссылается на пакеты, не установленные в package.json
-2. Зависимость `xlsx` не используется в коде
-3. `.gitignore` не содержит `.env`, `.firebase/`, `.DS_Store`
-4. Firebase-артефакты (`.firebaserc`, `firebase.json`, `.firebase/`) возможно не нужны
+1. ~~ESLint конфиг ссылается на пакеты, не установленные в package.json~~ — решено (P0)
+2. ~~Зависимость `xlsx` не используется в коде~~ — удалено (P0)
+3. ~~`.gitignore` не содержит `.env`, `.firebase/`, `.DS_Store`~~ — расширено (P0)
+4. ~~Firebase-артефакты~~ — удалены (P0)
 5. Только 3 CSS-переменных, 193 хардкоженных цвета в HEX
 6. Всего 2 общих компонента (NavHeader, UiSelect)
 7. Монолитный стор (все сущности в одном defineStore)

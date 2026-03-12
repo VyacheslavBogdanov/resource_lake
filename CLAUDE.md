@@ -43,7 +43,8 @@ SPA-приложение на Vue 3 для управления распреде
 | Pinia       | ^2.2.4  | Управление состоянием |
 | SCSS (sass) | ^1.77.8 | Стили                 |
 | json-server | ^0.17.4 | Локальный REST API    |
-| xlsx        | ^0.18.5 | Импорт/экспорт Excel  |
+| ESLint      | ^9.x    | Линтинг               |
+| Prettier    | ^3.x    | Форматирование кода   |
 
 ## Команды
 
@@ -53,6 +54,8 @@ npm run dev:client   # Только Vite dev server
 npm run dev:api      # Только json-server API
 npm run build        # Production-сборка
 npm run preview      # Превью сборки (порт 5173)
+npm run lint         # ESLint --fix
+npm run format       # Prettier --write src/
 ```
 
 ## API
@@ -105,7 +108,7 @@ src/
 ## Перед коммитом
 
 ```bash
+npm run lint
+npm run format
 npm run build
 ```
-
-Тесты и линтер пока не настроены.
