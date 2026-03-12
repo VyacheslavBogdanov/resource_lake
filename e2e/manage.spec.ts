@@ -87,10 +87,10 @@ test.describe('Страница «Управление данными»', () => 
 
 		// Открываем фильтр
 		await page.click('[aria-label="Фильтр проектов"]');
-		await expect(page.locator('.manage__filter-panel')).toBeVisible();
+		await expect(page.locator('.filter-panel')).toBeVisible();
 
 		// Выбираем заказчика А
-		const checkbox = page.locator('.manage__filter-option').filter({ hasText: 'Заказчик А' }).locator('input');
+		const checkbox = page.locator('.filter-panel__option').filter({ hasText: 'Заказчик А' }).locator('input');
 		await checkbox.check();
 
 		// Проект Бета (Заказчик Б) скрыт
@@ -148,7 +148,7 @@ test.describe('Страница «Управление данными»', () => 
 
 		await page.click('[aria-label="Фильтр проектов"]');
 
-		const checkbox = page.locator('.manage__filter-option').filter({ hasText: 'Иванов' }).locator('input');
+		const checkbox = page.locator('.filter-panel__option').filter({ hasText: 'Иванов' }).locator('input');
 		await checkbox.check();
 
 		// Проект Бета (Петров) скрыт

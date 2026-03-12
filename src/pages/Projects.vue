@@ -9,7 +9,7 @@
 			<input class="projects__input" v-model.trim="newProjectManager" placeholder="Руководитель проекта" />
 			<input class="projects__input" v-model.trim="newProjectType" placeholder="Тип проекта" />
 			<input class="projects__input" v-model.trim="newDescription" placeholder="Описание" />
-			<button class="btn btn--primary" type="submit">Добавить</button>
+			<BaseButton variant="primary" type="submit">Добавить</BaseButton>
 		</form>
 
 		<div v-if="store.projects.length" class="projects__table-wrap">
@@ -215,6 +215,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import BaseButton from '../components/ui/BaseButton.vue';
 import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
@@ -634,29 +635,6 @@ function onDragEnd() {
 		background: $color-disabled-bg;
 		color: $color-disabled-text;
 		border-color: $color-disabled-border;
-	}
-}
-
-.btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: var(--ctl-h);
-	padding: 0 12px;
-	border: 1px solid $color-border;
-	border-radius: 8px;
-	background: $color-bg-surface;
-	cursor: pointer;
-
-	&--primary {
-		background: $color-primary-600;
-		color: $color-text-inverse;
-		border-color: $color-primary-600;
-	}
-	&--danger {
-		border-color: $color-danger-border;
-		color: $color-danger-text;
-		background: $color-danger-bg;
 	}
 }
 </style>

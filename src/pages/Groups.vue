@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
+import BaseButton from '../components/ui/BaseButton.vue';
 import { useResourceStore } from '../stores/resource/index';
 import { sortByPosition, moveItemById, buildPositionUpdates } from '../stores/resource/utils';
 import { roundInt } from '../utils/format';
@@ -186,7 +187,7 @@ async function removeGroup(g: Group) {
 				placeholder="% в поддержке"
 				title="Процент ресурсов, уходящих на поддержку (0–100)"
 			/>
-			<button class="btn btn--primary" type="submit">Добавить</button>
+			<BaseButton variant="primary" type="submit">Добавить</BaseButton>
 		</form>
 
 		<table class="groups__table" v-if="store.groups.length">
@@ -305,25 +306,20 @@ async function removeGroup(g: Group) {
 
 					<td class="groups__cell groups__cell--actions">
 						<div class="groups__cell-inner groups__actions">
-							<button v-if="editingId !== g.id" class="btn" :disabled="reordering" @click="startEdit(g)">
+							<BaseButton v-if="editingId !== g.id" :disabled="reordering" @click="startEdit(g)">
 								Редактировать
-							</button>
-							<button
-								v-else
-								class="btn btn--primary"
-								:disabled="saving || reordering"
-								@click="saveEdit(g)"
-							>
+							</BaseButton>
+							<BaseButton v-else variant="primary" :disabled="saving || reordering" @click="saveEdit(g)">
 								Сохранить
-							</button>
-							<button
+							</BaseButton>
+							<BaseButton
 								v-if="editingId !== g.id"
-								class="btn btn--danger"
+								variant="danger"
 								:disabled="reordering"
 								@click="removeGroup(g)"
 							>
 								Удалить
-							</button>
+							</BaseButton>
 						</div>
 					</td>
 				</tr>
@@ -483,30 +479,6 @@ async function removeGroup(g: Group) {
 
 	&__empty {
 		color: $color-text-soft;
-	}
-}
-
-.btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: var(--ctl-h);
-	padding: 0 12px;
-	border: 1px solid $color-border;
-	border-radius: 8px;
-	background: $color-bg-surface;
-	cursor: pointer;
-
-	&--primary {
-		background: $color-primary-600;
-		color: $color-text-inverse;
-		border-color: $color-primary-600;
-	}
-
-	&--danger {
-		border-color: $color-danger-border;
-		color: $color-danger-text;
-		background: $color-danger-bg;
 	}
 }
 </style>

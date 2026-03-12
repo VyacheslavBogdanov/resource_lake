@@ -65,10 +65,10 @@ test.describe('Страница «План ресурсов»', () => {
 
 		// Открываем фильтр
 		await page.click('[aria-label="Фильтр проектов"]');
-		await expect(page.locator('.plan__filter-panel')).toBeVisible();
+		await expect(page.locator('.filter-panel')).toBeVisible();
 
 		// Выбираем заказчика
-		const checkbox = page.locator('.plan__filter-option').filter({ hasText: 'Заказчик А' }).locator('input');
+		const checkbox = page.locator('.filter-panel__option').filter({ hasText: 'Заказчик А' }).locator('input');
 		await checkbox.check();
 
 		// Проект Бета (Заказчик Б) должен исчезнуть из таблицы
@@ -80,7 +80,7 @@ test.describe('Страница «План ресурсов»', () => {
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
 		await page.click('[aria-label="Фильтр проектов"]');
-		const checkbox = page.locator('.plan__filter-option').filter({ hasText: 'Петров' }).locator('input');
+		const checkbox = page.locator('.filter-panel__option').filter({ hasText: 'Петров' }).locator('input');
 		await checkbox.check();
 
 		// Проект Бета (Петров) остаётся видимым
