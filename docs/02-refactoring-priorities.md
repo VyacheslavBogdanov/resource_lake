@@ -30,7 +30,7 @@
 | Общий composable: `useProjectFilters`                 | [07-code-deduplication.md](07-code-deduplication.md)                     | S         |
 
 **Зависимости:** Фаза 0 завершена
-**Результат:** единый визуальный стиль, переиспользуемые компоненты и утилиты
+**Результат:** единый визуальный стиль, переиспользуемые компоненты и утилиты. **Завершено 2026-03-12.**
 
 ---
 
@@ -55,7 +55,7 @@
 
 | Задача                                             | Документ                                                               | Сложность |
 | -------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
-| Декомпозиция ResourcePlan.vue (2432 строки → ~200) | [06-resource-plan-decomposition.md](06-resource-plan-decomposition.md) | XL        |
+| Декомпозиция ResourcePlan.vue (1982 строки → ~200) | [06-resource-plan-decomposition.md](06-resource-plan-decomposition.md) | XL        |
 | Декомпозиция страниц и компонентов                 | [14-pages-decomposition.md](14-pages-decomposition.md)                 | L         |
 | Composable `useDragReorder`                        | [10-drag-and-drop-refactoring.md](10-drag-and-drop-refactoring.md)     | M         |
 | Навигация по `name`, lazy-loading маршрутов        | [11-routing-and-navigation.md](11-routing-and-navigation.md)           | S         |

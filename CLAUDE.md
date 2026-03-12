@@ -77,14 +77,20 @@ json-server обслуживает три JSON-файла из `data/` как RE
 
 ```
 src/
-├── components/    # UI-компоненты (NavHeader, UiSelect)
+├── components/
+│   ├── ui/        # UI-кит (BaseButton, BaseInput)
+│   ├── shared/    # Общие компоненты (FilterPanel)
+│   ├── NavHeader.vue
+│   └── UiSelect.vue
+├── composables/   # Общие composables (useProjectFilters)
 ├── pages/         # Страницы (ResourcePlan, Projects, Groups, DataManage)
 ├── stores/        # Pinia store
 │   └── resource/  # Модульный store (actions, utils, types, constants)
 ├── services/      # HTTP-клиент (http.ts)
 ├── router/        # Маршрутизация
 ├── types/         # TypeScript типы (domain.ts)
-└── styles.scss    # Глобальные стили
+├── utils/         # Утилиты (format.ts)
+└── styles/        # SCSS-архитектура (_variables, _mixins, _reset, index)
 ```
 
 **Маршруты:** `/` → редирект на `/plan` | `/plan` — таблица распределения | `/projects` — проекты | `/groups` — группы | `/manage` — импорт/экспорт
@@ -94,7 +100,7 @@ src/
 - **Следуй [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md)** — основной документ по стилю кода
 - Компонент не более **300 строк** — декомпозируй при превышении
 - TypeScript **strict mode**, никакого `any`
-- Стили по **БЭМ**, используй SCSS переменные из `styles.scss`
+- Стили по **БЭМ**, используй SCSS переменные из `src/styles/_variables.scss`
 - Интерфейс на **русском языке**
 - Prettier: табы, одинарные кавычки, точки с запятой, ширина строки 120
 
@@ -104,6 +110,13 @@ src/
 | ------------------- | --------------------------------- | ----------------------- |
 | `VITE_API_BASE_URL` | Базовый URL API                   | `http://localhost:3001` |
 | `VITE_HELP_URL`     | URL для иконки помощи в NavHeader | —                       |
+
+## Кастомные скиллы
+
+| Команда      | Описание                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------- |
+| `/check`     | Регрессионное тестирование: сборка, unit/E2E тесты, API, страницы, валидация данных, качество кода             |
+| `/docs-sync` | Сверка документации `docs/*.md` и `CLAUDE.md` с фактическим состоянием кодовой базы (пути, строки, структура) |
 
 ## Перед коммитом
 
