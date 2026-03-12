@@ -198,6 +198,7 @@
 import UiSelect from '../components/UiSelect.vue';
 import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
+import { roundInt } from '../utils/format';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
@@ -265,11 +266,6 @@ let hideTimer: number | null = null;
 onMounted(() => {
 	store.fetchAll();
 });
-
-function roundInt(value: unknown): number {
-	const n = Number(value) || 0;
-	return Math.round(n);
-}
 
 function splitTotalToQuarters(total: number): [number, number, number, number] {
 	total = roundInt(total);

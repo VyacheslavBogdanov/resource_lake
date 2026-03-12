@@ -2,6 +2,7 @@
 import { onMounted, ref, computed } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
 import { sortByPosition, moveItemById, buildPositionUpdates } from '../stores/resource/utils';
+import { roundInt } from '../utils/format';
 import type { Group } from '../types/domain';
 
 const store = useResourceStore();
@@ -93,11 +94,6 @@ function onDragEnd() {
 }
 
 onMounted(() => store.fetchAll());
-
-function roundInt(value: unknown): number {
-	const n = Number(value) || 0;
-	return Math.round(n);
-}
 
 async function addGroup() {
 	const name = newName.value.trim();

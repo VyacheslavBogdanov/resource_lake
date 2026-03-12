@@ -541,6 +541,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, computed, nextTick, ref, watch } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
+import { roundInt } from '../utils/format';
 import type { Project } from '../types/domain';
 
 type ViewMode = 'total' | 'quarterSingle' | 'quarterSplit';
@@ -797,12 +798,6 @@ watch(
 function resetFilters() {
 	selectedCustomers.value = [];
 	selectedManagers.value = [];
-}
-
-function roundInt(value: unknown): number {
-	const n = Number(value);
-	if (!Number.isFinite(n)) return 0;
-	return Math.round(n);
 }
 
 /** Получить все уникальные типы ресурсов из групп. */
