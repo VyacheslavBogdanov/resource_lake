@@ -13,11 +13,7 @@ export function sortProjectsForView(list: Project[]): Project[] {
 }
 
 // сортировшик для pages/Groups
-export function moveItemById<T extends { id: number }>(
-	list: T[],
-	fromId: number,
-	toId: number,
-): T[] {
+export function moveItemById<T extends { id: number }>(list: T[], fromId: number, toId: number): T[] {
 	if (fromId === toId) return list;
 
 	const fromIndex = list.findIndex((x) => x.id === fromId);
@@ -34,7 +30,5 @@ export function buildPositionUpdates<T extends { id: number }>(list: T[]) {
 	return list.map((item, idx) => ({ id: item.id, position: idx + 1 }));
 }
 export function sortByPosition<T extends { id: number; position?: number | null }>(list: T[]): T[] {
-  return [...list].sort(
-    (a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0),
-  );
+	return [...list].sort((a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0));
 }

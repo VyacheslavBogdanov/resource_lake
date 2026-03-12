@@ -3,3 +3,10 @@ dist
 *.log
 test-results/
 playwright-report/
+
+.env
+.env.*
+.env.local
+*.local
+.DS_Store
+.firebase/

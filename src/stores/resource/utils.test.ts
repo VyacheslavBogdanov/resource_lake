@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-	orderValue,
-	sortProjectsForView,
-	moveItemById,
-	buildPositionUpdates,
-	sortByPosition,
-} from './utils';
+import { orderValue, sortProjectsForView, moveItemById, buildPositionUpdates, sortByPosition } from './utils';
 import type { Project } from '../../types/domain';
 
 describe('orderValue', () => {

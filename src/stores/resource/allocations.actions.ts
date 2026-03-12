@@ -7,15 +7,8 @@ type StoreInstance = {
 	allocations: Allocation[];
 };
 
-export async function setAllocation(
-	store: StoreInstance,
-	projectId: number,
-	groupId: number,
-	hours: number,
-) {
-	const existing = store.allocations.find(
-		(a) => a.projectId === projectId && a.groupId === groupId,
-	);
+export async function setAllocation(store: StoreInstance, projectId: number, groupId: number, hours: number) {
+	const existing = store.allocations.find((a) => a.projectId === projectId && a.groupId === groupId);
 	if (existing) {
 		await api.update<Allocation>('allocations', existing.id, { hours });
 	} else if (hours > 0) {
@@ -48,9 +41,7 @@ export async function batchSetAllocationsForGroup(
 			q4,
 		};
 
-		const existing = store.allocations.find(
-			(a) => a.projectId === p.id && a.groupId === groupId,
-		);
+		const existing = store.allocations.find((a) => a.projectId === p.id && a.groupId === groupId);
 
 		if (existing) {
 			ops.push(api.update<Allocation>('allocations', existing.id, patch));

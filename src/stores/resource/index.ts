@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { api } from '../../services/http';
 import type { Project, Group, Allocation } from '../../types/domain';
-import type { ResourceState } from './types';
+import type { AllocationPayloadByProject, ResourceState } from './types';
 import { sortProjectsForView } from './utils';
 import { loadHiddenGroupIds, saveHiddenGroupIds } from './storage';
 import * as projectActions from './projects.actions';
@@ -30,16 +30,13 @@ export const useResourceStore = defineStore('resource', {
 		valueByPair:
 			(state) =>
 			(projectId: number, groupId: number): number =>
-				state.allocations.find((a) => a.projectId === projectId && a.groupId === groupId)
-					?.hours ?? 0,
+				state.allocations.find((a) => a.projectId === projectId && a.groupId === groupId)?.hours ?? 0,
 
 		// сумма по проекту (строка)
 		rowTotalByProject:
 			(state) =>
 			(projectId: number): number =>
-				state.allocations
-					.filter((a) => a.projectId === projectId)
-					.reduce((s, a) => s + (a.hours || 0), 0),
+				state.allocations.filter((a) => a.projectId === projectId).reduce((s, a) => s + (a.hours || 0), 0),
 
 		// суммы по группам (колонки) — без архивных проектов
 		colTotals(): Record<number, number> {
@@ -75,9 +72,7 @@ export const useResourceStore = defineStore('resource', {
 				!state.hiddenGroupIds.includes(id),
 
 		quarterByPair: (state) => (projectId: number, groupId: number) => {
-			const a = state.allocations.find(
-				(x) => x.projectId === projectId && x.groupId === groupId,
-			);
+			const a = state.allocations.find((x) => x.projectId === projectId && x.groupId === groupId);
 			if (!a) return null;
 
 			const q1 = a.q1 ?? 0;
@@ -105,8 +100,8 @@ export const useResourceStore = defineStore('resource', {
 				]);
 				this.projects = sortProjectsForView(projects);
 				this.groups = [...groups].sort(
-	                (a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0),
-                    );
+					(a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0),
+				);
 				this.allocations = allocations;
 
 				const validIds = new Set(this.groups.map((g) => g.id));
@@ -126,15 +121,7 @@ export const useResourceStore = defineStore('resource', {
 			projectManager?: string,
 			description?: string,
 		) {
-			return projectActions.addProject(
-				this,
-				name,
-				url,
-				customer,
-				projectType,
-				projectManager,
-				description,
-			);
+			return projectActions.addProject(this, name, url, customer, projectType, projectManager, description);
 		},
 
 		async toggleArchiveProject(id: number, archived: boolean) {
@@ -177,12 +164,18 @@ export const useResourceStore = defineStore('resource', {
 		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
 			return groupActions.addGroup(this, name, capacityHours, supportPercent);
 		},
-        async updateGroupPositions(updates: { id: number; position: number }[]) {
-	        return groupActions.updateGroupPositions(this, updates);
-        },
+		async updateGroupPositions(updates: { id: number; position: number }[]) {
+			return groupActions.updateGroupPositions(this, updates);
+		},
 		async updateGroup(
 			id: number,
-			patch: { name?: string; capacityHours?: number; supportPercent?: number; resourceType?: string; position?: number },
+			patch: {
+				name?: string;
+				capacityHours?: number;
+				supportPercent?: number;
+				resourceType?: string;
+				position?: number;
+			},
 		) {
 			return groupActions.updateGroup(this, id, patch);
 		},
@@ -200,7 +193,7 @@ export const useResourceStore = defineStore('resource', {
 			return allocationActions.setAllocation(this, projectId, groupId, hours);
 		},
 
-		async batchSetAllocationsForGroup(groupId: number, payloadByProject: any) {
+		async batchSetAllocationsForGroup(groupId: number, payloadByProject: AllocationPayloadByProject) {
 			return allocationActions.batchSetAllocationsForGroup(this, groupId, payloadByProject);
 		},
 	},

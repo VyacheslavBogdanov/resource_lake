@@ -101,7 +101,7 @@ function roundInt(value: unknown): number {
 
 async function addGroup() {
 	const name = newName.value.trim();
-	let cap = roundInt(newCap.value);
+	const cap = roundInt(newCap.value);
 	let sp = newSupport.value === null ? 0 : roundInt(newSupport.value);
 
 	if (!name) return;
@@ -129,8 +129,8 @@ async function saveEdit(g: Group) {
 	if (editingId.value !== g.id) return;
 
 	const name = editName.value.trim();
-	let cap = roundInt(editCap.value);
-	let sp = roundInt(editSupport.value);
+	const cap = roundInt(editCap.value);
+	const sp = roundInt(editSupport.value);
 
 	if (!name) {
 		alert('Название не может быть пустым');
@@ -218,8 +218,7 @@ async function removeGroup(g: Group) {
 					:key="g.id"
 					class="groups__row"
 					:class="{
-						'groups__row--drag-over':
-							dragState.overId === g.id && dragState.draggingId !== null,
+						'groups__row--drag-over': dragState.overId === g.id && dragState.draggingId !== null,
 					}"
 					@dragenter.prevent="onDragEnter(g.id)"
 					@dragover.prevent
@@ -313,10 +312,20 @@ async function removeGroup(g: Group) {
 							<button v-if="editingId !== g.id" class="btn" :disabled="reordering" @click="startEdit(g)">
 								Редактировать
 							</button>
-							<button v-else class="btn btn--primary" :disabled="saving || reordering" @click="saveEdit(g)">
+							<button
+								v-else
+								class="btn btn--primary"
+								:disabled="saving || reordering"
+								@click="saveEdit(g)"
+							>
 								Сохранить
 							</button>
-							<button v-if="editingId !== g.id" class="btn btn--danger" :disabled="reordering" @click="removeGroup(g)">
+							<button
+								v-if="editingId !== g.id"
+								class="btn btn--danger"
+								:disabled="reordering"
+								@click="removeGroup(g)"
+							>
 								Удалить
 							</button>
 						</div>

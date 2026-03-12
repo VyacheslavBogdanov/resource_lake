@@ -46,10 +46,13 @@ describe('projects.actions', () => {
 
 			await actions.addProject(store, 'Test', '  url  ', '  customer  ');
 
-			expect(mockApi.create).toHaveBeenCalledWith('projects', expect.objectContaining({
-				url: 'url',
-				customer: 'customer',
-			}));
+			expect(mockApi.create).toHaveBeenCalledWith(
+				'projects',
+				expect.objectContaining({
+					url: 'url',
+					customer: 'customer',
+				}),
+			);
 		});
 	});
 
