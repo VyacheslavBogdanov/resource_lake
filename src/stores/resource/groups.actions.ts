@@ -9,21 +9,11 @@ type StoreInstance = {
 };
 
 function sortGroups(groups: Group[]) {
-	return [...groups].sort(
-		(a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0),
-	);
+	return [...groups].sort((a, b) => (Number(a.position ?? a.id) || 0) - (Number(b.position ?? b.id) || 0));
 }
 
-export async function addGroup(
-	store: StoreInstance,
-	name: string,
-	capacityHours: number,
-	supportPercent = 0,
-) {
-	const maxPos = store.groups.reduce(
-		(m, g) => Math.max(m, Number(g.position ?? g.id) || 0),
-		0,
-	);
+export async function addGroup(store: StoreInstance, name: string, capacityHours: number, supportPercent = 0) {
+	const maxPos = store.groups.reduce((m, g) => Math.max(m, Number(g.position ?? g.id) || 0), 0);
 	const position = maxPos + 1;
 
 	await api.create<Group>('groups', { name, capacityHours, supportPercent, position });
@@ -82,10 +72,7 @@ export async function updateGroup(
 	store.groups = sortGroups(await api.list<Group>('groups'));
 }
 
-export async function updateGroupPositions(
-	store: StoreInstance,
-	updates: { id: number; position: number }[],
-) {
+export async function updateGroupPositions(store: StoreInstance, updates: { id: number; position: number }[]) {
 	await Promise.all(updates.map((u) => api.update('groups', u.id, { position: u.position })));
 	store.groups = sortGroups(await api.list<Group>('groups'));
 }

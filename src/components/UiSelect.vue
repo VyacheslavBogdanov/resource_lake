@@ -166,20 +166,8 @@ watch(
 			<span class="c-select__value" :class="{ 'is-placeholder': !selected }">
 				{{ displayLabel }}
 			</span>
-			<svg
-				class="c-select__caret"
-				viewBox="0 0 24 24"
-				width="18"
-				height="18"
-				aria-hidden="true"
-			>
-				<path
-					d="M7 10l5 5 5-5"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-				/>
+			<svg class="c-select__caret" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+				<path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
 			</svg>
 		</button>
 
@@ -254,7 +242,10 @@ watch(
 		background: #fff;
 		color: #0a1a2b;
 		cursor: pointer;
-		transition: box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+		transition:
+			box-shadow 0.15s ease,
+			background 0.15s ease,
+			border-color 0.15s ease;
 	}
 	&__trigger:hover {
 		background: #f4f8ff;

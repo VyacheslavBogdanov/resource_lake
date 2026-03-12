@@ -3,34 +3,12 @@
 		<h1 class="projects__title">Проекты</h1>
 
 		<form class="projects__form" @submit.prevent="addProject">
-			<input
-				class="projects__input"
-				v-model.trim="newName"
-				placeholder="Название проекта"
-				required
-			/>
-			<input
-				class="projects__input projects__input--url"
-				v-model.trim="newUrl"
-				placeholder="Ссылка"
-				type="url"
-			/>
+			<input class="projects__input" v-model.trim="newName" placeholder="Название проекта" required />
+			<input class="projects__input projects__input--url" v-model.trim="newUrl" placeholder="Ссылка" type="url" />
 			<input class="projects__input" v-model.trim="newCustomer" placeholder="Заказчик" />
-			<input
-				class="projects__input"
-				v-model.trim="newProjectManager"
-				placeholder="Руководитель проекта"
-			/>
-			<input
-				class="projects__input"
-				v-model.trim="newProjectType"
-				placeholder="Тип проекта"
-			/>
-			<input
-				class="projects__input"
-				v-model.trim="newDescription"
-				placeholder="Описание"
-			/>
+			<input class="projects__input" v-model.trim="newProjectManager" placeholder="Руководитель проекта" />
+			<input class="projects__input" v-model.trim="newProjectType" placeholder="Тип проекта" />
+			<input class="projects__input" v-model.trim="newDescription" placeholder="Описание" />
 			<button class="btn btn--primary" type="submit">Добавить</button>
 		</form>
 
@@ -79,8 +57,7 @@
 						class="projects__row"
 						:class="{
 							'projects__row--archived': p.archived,
-							'projects__row--drag-over':
-								dragState.overId === p.id && dragState.draggingId !== null,
+							'projects__row--drag-over': dragState.overId === p.id && dragState.draggingId !== null,
 						}"
 						@dragenter.prevent="onDragEnter(p.id)"
 						@dragover.prevent
@@ -162,10 +139,7 @@
 
 						<td class="projects__cell">
 							<div class="projects__cell-inner">
-								<span
-									class="badge"
-									:class="p.archived ? 'badge--muted' : 'badge--ok'"
-								>
+								<span class="badge" :class="p.archived ? 'badge--muted' : 'badge--ok'">
 									{{ p.archived ? 'В архиве' : 'Активен' }}
 								</span>
 							</div>

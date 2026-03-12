@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { loadHiddenGroupIds, saveHiddenGroupIds } from './storage';
 import { HIDDEN_GROUPS_STORAGE_KEY } from './constants';
 

@@ -3,16 +3,11 @@
 		<h1 class="plan__title">Ресурсный план</h1>
 
 		<div class="plan__toolbar">
-			<button type="button" class="plan__btn plan__btn--primary" @click="exportCsv">
-				Выгрузить в CSV
-			</button>
+			<button type="button" class="plan__btn plan__btn--primary" @click="exportCsv">Выгрузить в CSV</button>
 
 			<div class="plan__actions" v-if="store.projects.length && store.groups.length">
 				<div class="plan__row-type-switch">
-					<span
-						class="plan__switch-label"
-						:class="{ 'plan__switch-label--active': !displayByResourceType }"
-					>
+					<span class="plan__switch-label" :class="{ 'plan__switch-label--active': !displayByResourceType }">
 						По группе ресурса
 					</span>
 					<button
@@ -25,10 +20,7 @@
 					>
 						<span class="plan__switch-thumb"></span>
 					</button>
-					<span
-						class="plan__switch-label"
-						:class="{ 'plan__switch-label--active': displayByResourceType }"
-					>
+					<span class="plan__switch-label" :class="{ 'plan__switch-label--active': displayByResourceType }">
 						По типу ресурса
 					</span>
 				</div>
@@ -36,32 +28,17 @@
 				<div class="plan__actions-row">
 					<div class="plan__view-modes">
 						<label class="plan__mode">
-							<input
-								type="radio"
-								class="plan__mode-input"
-								value="total"
-								v-model="viewMode"
-							/>
+							<input type="radio" class="plan__mode-input" value="total" v-model="viewMode" />
 							<span class="plan__mode-label">Общий</span>
 						</label>
 
 						<label class="plan__mode">
-							<input
-								type="radio"
-								class="plan__mode-input"
-								value="quarterSingle"
-								v-model="viewMode"
-							/>
+							<input type="radio" class="plan__mode-input" value="quarterSingle" v-model="viewMode" />
 							<span class="plan__mode-label">По квартально</span>
 						</label>
 
 						<label class="plan__mode">
-							<input
-								type="radio"
-								class="plan__mode-input"
-								value="quarterSplit"
-								v-model="viewMode"
-							/>
+							<input type="radio" class="plan__mode-input" value="quarterSplit" v-model="viewMode" />
 							<span class="plan__mode-label">Квартально (4 колонки)</span>
 						</label>
 
@@ -116,22 +93,11 @@
 								<div class="plan__filter-group">
 									<div class="plan__filter-group-title">Заказчик</div>
 									<div class="plan__filter-options">
-										<label
-											v-for="c in customerOptions"
-											:key="c"
-											class="plan__filter-option"
-										>
-											<input
-												type="checkbox"
-												:value="c"
-												v-model="selectedCustomers"
-											/>
+										<label v-for="c in customerOptions" :key="c" class="plan__filter-option">
+											<input type="checkbox" :value="c" v-model="selectedCustomers" />
 											<span>{{ c }}</span>
 										</label>
-										<p
-											v-if="!customerOptions.length"
-											class="plan__filter-empty"
-										>
+										<p v-if="!customerOptions.length" class="plan__filter-empty">
 											Нет заполненных заказчиков
 										</p>
 									</div>
@@ -140,16 +106,8 @@
 								<div class="plan__filter-group">
 									<div class="plan__filter-group-title">Руководитель проекта</div>
 									<div class="plan__filter-options">
-										<label
-											v-for="m in managerOptions"
-											:key="m"
-											class="plan__filter-option"
-										>
-											<input
-												type="checkbox"
-												:value="m"
-												v-model="selectedManagers"
-											/>
+										<label v-for="m in managerOptions" :key="m" class="plan__filter-option">
+											<input type="checkbox" :value="m" v-model="selectedManagers" />
 											<span>{{ m }}</span>
 										</label>
 										<p v-if="!managerOptions.length" class="plan__filter-empty">
@@ -200,372 +158,324 @@
 		<template v-if="store.projects.length && store.groups.length">
 			<div class="plan__table-wrapper" ref="tableWrapperRef">
 				<table class="plan__table" aria-label="Таблица ресурсного плана" ref="tableRef">
-				<colgroup>
-					<col style="width: 21ch" />
-
-					<template v-if="viewMode !== 'quarterSplit'">
-						<col
-							v-for="col in tableColumns"
-							:key="'col-' + col.id"
-							style="width: 12ch"
-						/>
-					</template>
-					<template v-else>
-						<template v-for="col in tableColumns" :key="'colg-' + col.id">
-							<col
-								v-for="q in quarterNumbers"
-								:key="`col-${col.id}-${q}`"
-								style="width: 10ch"
-							/>
-						</template>
-					</template>
-
-					<col style="width: 16ch" />
-					<col style="width: 18ch" />
-				</colgroup>
-
-				<thead>
-					<tr class="plan__head-row">
-						<th
-							class="plan__th plan__th--sticky plan__th--left"
-							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
-						>
-							<div class="plan__th-inner" title="Проект">Проект</div>
-						</th>
+					<colgroup>
+						<col style="width: 21ch" />
 
 						<template v-if="viewMode !== 'quarterSplit'">
+							<col v-for="col in tableColumns" :key="'col-' + col.id" style="width: 12ch" />
+						</template>
+						<template v-else>
+							<template v-for="col in tableColumns" :key="'colg-' + col.id">
+								<col v-for="q in quarterNumbers" :key="`col-${col.id}-${q}`" style="width: 10ch" />
+							</template>
+						</template>
+
+						<col style="width: 16ch" />
+						<col style="width: 18ch" />
+					</colgroup>
+
+					<thead>
+						<tr class="plan__head-row">
 							<th
-								v-for="col in tableColumns"
-								:key="col.id"
-								class="plan__th plan__th--sortable"
-								:class="{
-									'plan__th--over': isColumnOverCapacity(col),
-									'plan__th--over-bg': isColumnOverCapacity(col),
-									'plan__th--sorted':
-										sortState.field === 'group' &&
-										sortState.columnId === col.id,
-								}"
-								:title="columnHeaderTitle(col)"
-								@click="onColumnSort(col.id)"
+								class="plan__th plan__th--sticky plan__th--left"
+								:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
 							>
-								<div class="plan__th-inner">
-									<span class="plan__th-name" :title="col.name">
-										{{ col.name }}
-										<span
-											v-if="
-												sortState.field === 'group' &&
-												sortState.columnId === col.id
-											"
-											class="plan__sort-icon"
-										>
+								<div class="plan__th-inner" title="Проект">Проект</div>
+							</th>
+
+							<template v-if="viewMode !== 'quarterSplit'">
+								<th
+									v-for="col in tableColumns"
+									:key="col.id"
+									class="plan__th plan__th--sortable"
+									:class="{
+										'plan__th--over': isColumnOverCapacity(col),
+										'plan__th--over-bg': isColumnOverCapacity(col),
+										'plan__th--sorted':
+											sortState.field === 'group' && sortState.columnId === col.id,
+									}"
+									:title="columnHeaderTitle(col)"
+									@click="onColumnSort(col.id)"
+								>
+									<div class="plan__th-inner">
+										<span class="plan__th-name" :title="col.name">
+											{{ col.name }}
+											<span
+												v-if="sortState.field === 'group' && sortState.columnId === col.id"
+												class="plan__sort-icon"
+											>
+												{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+											</span>
+										</span>
+										<small class="plan__capacity">
+											доступно:
+											{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
+										</small>
+										<div class="plan__th-progress" aria-hidden="true">
+											<div
+												class="plan__th-progress-bar"
+												:style="{
+													width: headerBarsByColumn[col.id]?.fillPct + '%',
+													background: headerBarsByColumn[col.id]?.fillColor,
+												}"
+											></div>
+										</div>
+									</div>
+								</th>
+							</template>
+
+							<template v-else>
+								<th
+									v-for="col in tableColumns"
+									:key="'g-span-' + col.id"
+									class="plan__th plan__th--group-span plan__th--sortable"
+									:class="{
+										'plan__th--over': isAnyQuarterOverCapacityByColumn(col),
+										'plan__th--over-bg': isAnyQuarterOverCapacityByColumn(col),
+										'plan__th--sorted':
+											sortState.field === 'group' && sortState.columnId === col.id,
+									}"
+									:colspan="4"
+									:title="columnHeaderTitle(col)"
+									@click="onColumnSort(col.id)"
+								>
+									<div class="plan__th-inner">
+										<span class="plan__th-name" :title="col.name">
+											{{ col.name }}
+											<span
+												v-if="sortState.field === 'group' && sortState.columnId === col.id"
+												class="plan__sort-icon"
+											>
+												{{ sortState.direction === 'asc' ? '↑' : '↓' }}
+											</span>
+										</span>
+										<small class="plan__capacity">
+											доступно:
+											{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
+										</small>
+										<div class="plan__th-progress" aria-hidden="true">
+											<div
+												class="plan__th-progress-bar"
+												:style="{
+													width: headerBarsByColumn[col.id]?.fillPct + '%',
+													background: headerBarsByColumn[col.id]?.fillColor,
+												}"
+											></div>
+										</div>
+									</div>
+								</th>
+							</template>
+
+							<th
+								class="plan__th plan__th--total plan__th--sortable"
+								:class="{ 'plan__th--sorted': sortState.field === 'total' }"
+								@click="onTotalSort"
+								:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
+							>
+								<div class="plan__th-inner" title="Итого (по проекту)">
+									<span>
+										Итого (по проекту)
+										<span v-if="sortState.field === 'total'" class="plan__sort-icon">
 											{{ sortState.direction === 'asc' ? '↑' : '↓' }}
 										</span>
 									</span>
-									<small class="plan__capacity">
-										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
-									</small>
-									<div class="plan__th-progress" aria-hidden="true">
-										<div
-											class="plan__th-progress-bar"
-											:style="{
-												width: headerBarsByColumn[col.id]?.fillPct + '%',
-												background: headerBarsByColumn[col.id]?.fillColor,
-											}"
-										></div>
-									</div>
 								</div>
 							</th>
-						</template>
 
-						<template v-else>
-							<th
-								v-for="col in tableColumns"
-								:key="'g-span-' + col.id"
-								class="plan__th plan__th--group-span plan__th--sortable"
-								:class="{
-									'plan__th--over': isAnyQuarterOverCapacityByColumn(col),
-									'plan__th--over-bg': isAnyQuarterOverCapacityByColumn(col),
-									'plan__th--sorted':
-										sortState.field === 'group' &&
-										sortState.columnId === col.id,
-								}"
-								:colspan="4"
-								:title="columnHeaderTitle(col)"
-								@click="onColumnSort(col.id)"
-							>
-								<div class="plan__th-inner">
-									<span class="plan__th-name" :title="col.name">
-										{{ col.name }}
-										<span
-											v-if="
-												sortState.field === 'group' &&
-												sortState.columnId === col.id
-											"
-											class="plan__sort-icon"
-										>
-											{{ sortState.direction === 'asc' ? '↑' : '↓' }}
-										</span>
-									</span>
-									<small class="plan__capacity">
-										доступно:
-										{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
-									</small>
-									<div class="plan__th-progress" aria-hidden="true">
-										<div
-											class="plan__th-progress-bar"
-											:style="{
-												width: headerBarsByColumn[col.id]?.fillPct + '%',
-												background: headerBarsByColumn[col.id]?.fillColor,
-											}"
-										></div>
-									</div>
-								</div>
+							<th class="plan__th plan__th--total" :rowspan="viewMode === 'quarterSplit' ? 2 : 1">
+								<div class="plan__th-inner" title="Доля проекта от общего пула">Размер проекта, %</div>
 							</th>
-						</template>
+						</tr>
 
-						<th
-							class="plan__th plan__th--total plan__th--sortable"
-							:class="{ 'plan__th--sorted': sortState.field === 'total' }"
-							@click="onTotalSort"
-							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
-						>
-							<div class="plan__th-inner" title="Итого (по проекту)">
-								<span>
-									Итого (по проекту)
-									<span
-										v-if="sortState.field === 'total'"
-										class="plan__sort-icon"
-									>
-										{{ sortState.direction === 'asc' ? '↑' : '↓' }}
-									</span>
-								</span>
-							</div>
-						</th>
-
-						<th
-							class="plan__th plan__th--total"
-							:rowspan="viewMode === 'quarterSplit' ? 2 : 1"
-						>
-							<div class="plan__th-inner" title="Доля проекта от общего пула">
-								Размер проекта, %
-							</div>
-						</th>
-					</tr>
-
-					<tr
-						v-if="viewMode === 'quarterSplit'"
-						class="plan__head-row plan__head-row--quarters"
-					>
-						<template v-for="col in tableColumns" :key="'qrow-' + col.id">
-							<th
-								v-for="q in quarterNumbers"
-								:key="`q-${col.id}-${q}`"
-								class="plan__th plan__th--quarter"
-								:class="{
-									'plan__th--over': isQuarterOverCapacityByColumn(col, q),
-									'plan__th--over-bg': isQuarterOverCapacityByColumn(col, q),
-								}"
-							>
-								<div class="plan__th-inner">
-									<span class="plan__capacity">{{ quarterLabel[q] }}</span>
-								</div>
-							</th>
-						</template>
-					</tr>
-				</thead>
-
-				<tbody>
-					<tr
-						v-for="p in sortedProjects"
-						:key="p.id"
-						class="plan__row"
-						:class="{
-							'plan__row--archived': p.archived,
-							'plan__row--selected': selectedProjectId === p.id,
-						}"
-						@click="onProjectRowClick(p.id)"
-					>
-						<th class="plan__cell plan__sticky plan__sticky--left">
-							<div class="plan__cell-inner plan__cell-inner--left">
-								<div class="plan__project-header">
-									<button
-										type="button"
-										class="plan__project-link"
-										:disabled="!projectUrl(p)"
-										:title="
-											projectUrl(p)
-												? 'Открыть в новом окне'
-												: 'Ссылка не задана'
-										"
-										@click.stop="openProjectUrl(p)"
-										aria-label="Открыть проект в новом окне"
-									>
-										<svg
-											class="plan__project-link-icon"
-											viewBox="0 0 24 24"
-											width="16"
-											height="16"
-											aria-hidden="true"
-										>
-											<path
-												fill="currentColor"
-												d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Zm5 18H5V5h7V3H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7Z"
-											/>
-										</svg>
-									</button>
-
-									<span class="plan__project-name" :title="projectHoverTitle(p)">
-										{{ p.name }}
-									</span>
-
-									<span
-										v-if="isProjectWithoutResources(p.id, p.archived)"
-										class="plan__project-warning"
-										title="Проект без назначенных ресурсов"
-										aria-label="Проект без назначенных ресурсов"
-										@click.stop
-									>
-										<svg
-											class="plan__project-warning-icon"
-											viewBox="0 0 24 24"
-											width="16"
-											height="16"
-											aria-hidden="true"
-										>
-											<path
-												fill="currentColor"
-												d="M11 4h2v11h-2V4zm0 13h2v3h-2v-3z"
-											/>
-										</svg>
-									</span>
-								</div>
-							</div>
-						</th>
-
-						<template v-if="viewMode !== 'quarterSplit'">
-							<td
-								v-for="col in tableColumns"
-								:key="col.id"
-								class="plan__cell"
-								:class="{
-									'plan__cell--over': isColumnOverCapacity(col),
-									'plan__cell--over-bg': isColumnOverCapacity(col),
-								}"
-							>
-								<div class="plan__cell-inner" :title="`${p.name} • ${col.name}`">
-									{{ p.archived ? '—' : cellValueByColumn(p.id, col, false) }}
-								</div>
-							</td>
-						</template>
-
-						<template v-else>
-							<template v-for="col in tableColumns" :key="'row-g-' + col.id">
-								<td
+						<tr v-if="viewMode === 'quarterSplit'" class="plan__head-row plan__head-row--quarters">
+							<template v-for="col in tableColumns" :key="'qrow-' + col.id">
+								<th
 									v-for="q in quarterNumbers"
-									:key="`cell-${p.id}-${col.id}-${q}`"
+									:key="`q-${col.id}-${q}`"
+									class="plan__th plan__th--quarter"
+									:class="{
+										'plan__th--over': isQuarterOverCapacityByColumn(col, q),
+										'plan__th--over-bg': isQuarterOverCapacityByColumn(col, q),
+									}"
+								>
+									<div class="plan__th-inner">
+										<span class="plan__capacity">{{ quarterLabel[q] }}</span>
+									</div>
+								</th>
+							</template>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr
+							v-for="p in sortedProjects"
+							:key="p.id"
+							class="plan__row"
+							:class="{
+								'plan__row--archived': p.archived,
+								'plan__row--selected': selectedProjectId === p.id,
+							}"
+							@click="onProjectRowClick(p.id)"
+						>
+							<th class="plan__cell plan__sticky plan__sticky--left">
+								<div class="plan__cell-inner plan__cell-inner--left">
+									<div class="plan__project-header">
+										<button
+											type="button"
+											class="plan__project-link"
+											:disabled="!projectUrl(p)"
+											:title="projectUrl(p) ? 'Открыть в новом окне' : 'Ссылка не задана'"
+											@click.stop="openProjectUrl(p)"
+											aria-label="Открыть проект в новом окне"
+										>
+											<svg
+												class="plan__project-link-icon"
+												viewBox="0 0 24 24"
+												width="16"
+												height="16"
+												aria-hidden="true"
+											>
+												<path
+													fill="currentColor"
+													d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Zm5 18H5V5h7V3H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7Z"
+												/>
+											</svg>
+										</button>
+
+										<span class="plan__project-name" :title="projectHoverTitle(p)">
+											{{ p.name }}
+										</span>
+
+										<span
+											v-if="isProjectWithoutResources(p.id, p.archived)"
+											class="plan__project-warning"
+											title="Проект без назначенных ресурсов"
+											aria-label="Проект без назначенных ресурсов"
+											@click.stop
+										>
+											<svg
+												class="plan__project-warning-icon"
+												viewBox="0 0 24 24"
+												width="16"
+												height="16"
+												aria-hidden="true"
+											>
+												<path fill="currentColor" d="M11 4h2v11h-2V4zm0 13h2v3h-2v-3z" />
+											</svg>
+										</span>
+									</div>
+								</div>
+							</th>
+
+							<template v-if="viewMode !== 'quarterSplit'">
+								<td
+									v-for="col in tableColumns"
+									:key="col.id"
 									class="plan__cell"
 									:class="{
-										'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
-										'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
+										'plan__cell--over': isColumnOverCapacity(col),
+										'plan__cell--over-bg': isColumnOverCapacity(col),
 									}"
 								>
-									<div
-										class="plan__cell-inner"
-										:title="`${p.name} • ${col.name} • ${quarterLabel[q]}`"
-									>
-										{{
-											p.archived
-												? '—'
-												: getQuarterCellByColumn(p.id, col, q, false)
-										}}
+									<div class="plan__cell-inner" :title="`${p.name} • ${col.name}`">
+										{{ p.archived ? '—' : cellValueByColumn(p.id, col, false) }}
 									</div>
 								</td>
 							</template>
-						</template>
 
-						<td class="plan__cell plan__cell--total">
-							<div class="plan__cell-inner" :title="`Итого по проекту ${p.name}`">
-								{{ projectTotalDisplay(p.id, p.archived) }}
-							</div>
-						</td>
+							<template v-else>
+								<template v-for="col in tableColumns" :key="'row-g-' + col.id">
+									<td
+										v-for="q in quarterNumbers"
+										:key="`cell-${p.id}-${col.id}-${q}`"
+										class="plan__cell"
+										:class="{
+											'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
+											'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
+										}"
+									>
+										<div
+											class="plan__cell-inner"
+											:title="`${p.name} • ${col.name} • ${quarterLabel[q]}`"
+										>
+											{{ p.archived ? '—' : getQuarterCellByColumn(p.id, col, q, false) }}
+										</div>
+									</td>
+								</template>
+							</template>
 
-						<td class="plan__cell plan__cell--total">
-							<div class="plan__cell-inner" :title="`Доля проекта ${p.name}`">
-								{{ projectShareDisplay(p.id, p.archived) }}
-							</div>
-						</td>
-					</tr>
-				</tbody>
-
-				<tfoot>
-					<tr>
-						<th class="plan__th plan__th--sticky plan__th--left">
-							<div class="plan__th-inner">
-								{{
-									displayByResourceType ? 'Итого (по типу)' : 'Итого (по группе)'
-								}}
-							</div>
-						</th>
-
-						<template v-if="viewMode !== 'quarterSplit'">
-							<td
-								v-for="col in tableColumns"
-								:key="col.id"
-								class="plan__cell plan__cell--footer"
-								:class="{
-									'plan__cell--over': isColumnOverCapacity(col),
-									'plan__cell--over-bg': isColumnOverCapacity(col),
-								}"
-							>
-								<div class="plan__cell-inner" :title="`Итого: ${col.name}`">
-									{{ columnTotal(col) || 0 }}
+							<td class="plan__cell plan__cell--total">
+								<div class="plan__cell-inner" :title="`Итого по проекту ${p.name}`">
+									{{ projectTotalDisplay(p.id, p.archived) }}
 								</div>
 							</td>
-						</template>
 
-						<template v-else>
-							<template v-for="col in tableColumns" :key="'foot-g-' + col.id">
+							<td class="plan__cell plan__cell--total">
+								<div class="plan__cell-inner" :title="`Доля проекта ${p.name}`">
+									{{ projectShareDisplay(p.id, p.archived) }}
+								</div>
+							</td>
+						</tr>
+					</tbody>
+
+					<tfoot>
+						<tr>
+							<th class="plan__th plan__th--sticky plan__th--left">
+								<div class="plan__th-inner">
+									{{ displayByResourceType ? 'Итого (по типу)' : 'Итого (по группе)' }}
+								</div>
+							</th>
+
+							<template v-if="viewMode !== 'quarterSplit'">
 								<td
-									v-for="q in quarterNumbers"
-									:key="`foot-${col.id}-${q}`"
+									v-for="col in tableColumns"
+									:key="col.id"
 									class="plan__cell plan__cell--footer"
 									:class="{
-										'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
-										'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
+										'plan__cell--over': isColumnOverCapacity(col),
+										'plan__cell--over-bg': isColumnOverCapacity(col),
 									}"
 								>
-									<div
-										class="plan__cell-inner"
-										:title="`Итого: ${col.name}, ${quarterLabel[q]}`"
-									>
-										{{ columnQuarterTotal(col, q) || 0 }}
+									<div class="plan__cell-inner" :title="`Итого: ${col.name}`">
+										{{ columnTotal(col) || 0 }}
 									</div>
 								</td>
 							</template>
-						</template>
 
-						<td class="plan__cell plan__cell--total">
-							<div class="plan__cell-inner" title="Итог по всем проектам">
-								{{ activeGrandTotal }}
-							</div>
-						</td>
-						<td class="plan__cell plan__cell--total">
-							<div class="plan__cell-inner" title="Суммарная доля">100%</div>
-						</td>
-					</tr>
-				</tfoot>
+							<template v-else>
+								<template v-for="col in tableColumns" :key="'foot-g-' + col.id">
+									<td
+										v-for="q in quarterNumbers"
+										:key="`foot-${col.id}-${q}`"
+										class="plan__cell plan__cell--footer"
+										:class="{
+											'plan__cell--over': isQuarterOverCapacityByColumn(col, q),
+											'plan__cell--over-bg': isQuarterOverCapacityByColumn(col, q),
+										}"
+									>
+										<div class="plan__cell-inner" :title="`Итого: ${col.name}, ${quarterLabel[q]}`">
+											{{ columnQuarterTotal(col, q) || 0 }}
+										</div>
+									</td>
+								</template>
+							</template>
+
+							<td class="plan__cell plan__cell--total">
+								<div class="plan__cell-inner" title="Итог по всем проектам">
+									{{ activeGrandTotal }}
+								</div>
+							</td>
+							<td class="plan__cell plan__cell--total">
+								<div class="plan__cell-inner" title="Суммарная доля">100%</div>
+							</td>
+						</tr>
+					</tfoot>
 				</table>
 			</div>
 
-		<div
-			v-show="showHScroll"
-			ref="hScrollRef"
-			class="plan__hscroll"
-			aria-hidden="true"
-		>
-			<div ref="hScrollInnerRef" class="plan__hscroll-inner"></div>
-		</div>
+			<div v-show="showHScroll" ref="hScrollRef" class="plan__hscroll" aria-hidden="true">
+				<div ref="hScrollInnerRef" class="plan__hscroll-inner"></div>
+			</div>
 		</template>
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
@@ -574,16 +484,8 @@
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">
 					<label class="plan__bar-label-inner">
-						<input
-							type="checkbox"
-							class="plan__bar-checkbox"
-							v-model="allGroupsChecked"
-						/>
-						<span>{{
-							displayByResourceType
-								? 'Загрузка по типу ресурса'
-								: 'Загрузка по группам'
-						}}</span>
+						<input type="checkbox" class="plan__bar-checkbox" v-model="allGroupsChecked" />
+						<span>{{ displayByResourceType ? 'Загрузка по типу ресурса' : 'Загрузка по группам' }}</span>
 					</label>
 				</h2>
 				<div class="plan__legend">
@@ -602,11 +504,7 @@
 			</div>
 
 			<div class="plan__bars">
-				<div
-					v-for="row in chartRows"
-					:key="row.rowKind + '-' + row.id"
-					class="plan__bar-row"
-				>
+				<div v-for="row in chartRows" :key="row.rowKind + '-' + row.id" class="plan__bar-row">
 					<div class="plan__bar-label" :title="row.name">
 						<label class="plan__bar-label-inner">
 							<input
@@ -633,9 +531,7 @@
 							:title="`Заложено: ${roundInt(row.allocated)} ч`"
 						></div>
 					</div>
-					<div class="plan__bar-value">
-						{{ roundInt(row.allocated) }} / {{ roundInt(row.capacity) }} ч
-					</div>
+					<div class="plan__bar-value">{{ roundInt(row.allocated) }} / {{ roundInt(row.capacity) }} ч</div>
 				</div>
 			</div>
 		</div>
@@ -861,9 +757,7 @@ const managerOptions = computed(() => {
 	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
 });
 
-const hasActiveFilters = computed(
-	() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0,
-);
+const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
 
 const filteredProjects = computed(() => {
 	if (!hasActiveFilters.value) return store.projects;
@@ -964,18 +858,14 @@ function onGroupToggle(id: number, e: Event) {
 }
 
 function isResourceTypeVisible(typeName: string): boolean {
-	const groupsOfType = store.groups.filter(
-		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
-	);
+	const groupsOfType = store.groups.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
 	return groupsOfType.length > 0 && groupsOfType.every((g) => store.isGroupVisible(g.id));
 }
 
 function onResourceTypeToggle(typeName: string, e: Event) {
 	const input = e.target as HTMLInputElement | null;
 	const checked = input?.checked ?? true;
-	const groupsOfType = store.groups.filter(
-		(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
-	);
+	const groupsOfType = store.groups.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
 	for (const g of groupsOfType) {
 		store.setGroupVisibility(g.id, checked);
 	}
@@ -1012,19 +902,9 @@ function groupQuarterTotal(groupId: number, quarter: Quarter): number {
 	return sum;
 }
 
-function groupFooterValue(groupId: number): number {
-	if (viewMode.value === 'quarterSingle') {
-		return groupQuarterTotal(groupId, selectedQuarter.value);
-	}
-	return activeColTotals.value[groupId] || 0;
-}
-
 function columnTotal(col: TableColumn): number {
 	if (viewMode.value === 'quarterSingle') {
-		return col.groupIds.reduce(
-			(s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value),
-			0,
-		);
+		return col.groupIds.reduce((s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value), 0);
 	}
 	return col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 }
@@ -1046,12 +926,7 @@ function cellValueByColumn(projectId: number, col: TableColumn, archived?: boole
 	return sum;
 }
 
-function getQuarterCellByColumn(
-	projectId: number,
-	col: TableColumn,
-	quarter: Quarter,
-	archived?: boolean,
-): number {
+function getQuarterCellByColumn(projectId: number, col: TableColumn, quarter: Quarter, archived?: boolean): number {
 	if (archived) return 0;
 	let sum = 0;
 	for (const gid of col.groupIds) {
@@ -1060,18 +935,9 @@ function getQuarterCellByColumn(
 	return sum;
 }
 
-function isYearOverCapacityByColumn(col: TableColumn): boolean {
-	const capacity = effectiveCapacityByColumn(col);
-	const allocated = col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
-	if (capacity <= 0) return allocated > 0;
-	return allocated > capacity;
-}
-
 function isQuarterOverCapacityByColumn(col: TableColumn, quarter: Quarter): boolean {
 	const capacity = effectiveCapacityByColumn(col);
-	const allocated = col.groupIds.reduce(
-		(s, gid) => s + groupQuarterTotal(gid, quarter), 0,
-	);
+	const allocated = col.groupIds.reduce((s, gid) => s + groupQuarterTotal(gid, quarter), 0);
 	if (capacity <= 0) return allocated > 0;
 	return allocated > capacity;
 }
@@ -1085,12 +951,8 @@ function isColumnOverCapacity(col: TableColumn): boolean {
 		return isQuarterOverCapacityByColumn(col, selectedQuarter.value);
 	}
 	const annualCapacity = effectiveCapacityByColumn(col) * 4;
-	const annualAllocated = col.groupIds.reduce(
-		(s, gid) => s + (activeColTotals.value[gid] || 0), 0,
-	);
-	const annualOver = annualCapacity <= 0
-		? annualAllocated > 0
-		: annualAllocated > annualCapacity;
+	const annualAllocated = col.groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
+	const annualOver = annualCapacity <= 0 ? annualAllocated > 0 : annualAllocated > annualCapacity;
 	return annualOver || isAnyQuarterOverCapacityByColumn(col);
 }
 
@@ -1105,12 +967,7 @@ const activeGrandTotal = computed(() => {
 	return tableColumns.value.reduce((s, col) => s + columnTotal(col), 0);
 });
 
-function getQuarterCell(
-	projectId: number,
-	groupId: number,
-	quarter: Quarter,
-	archived?: boolean,
-): number {
+function getQuarterCell(projectId: number, groupId: number, quarter: Quarter, archived?: boolean): number {
 	if (archived) return 0;
 	const q = store.quarterByPair(projectId, groupId);
 	if (!q) return 0;
@@ -1132,21 +989,6 @@ function cellValue(projectId: number, groupId: number, archived?: boolean): numb
 	}
 
 	return store.valueByPair(projectId, groupId);
-}
-
-function cellDisplayValue(projectId: number, groupId: number, archived?: boolean): string {
-	if (archived) return '—';
-	return String(cellValue(projectId, groupId, false));
-}
-
-function cellQuarterDisplayValue(
-	projectId: number,
-	groupId: number,
-	quarter: Quarter,
-	archived?: boolean,
-): string {
-	if (archived) return '—';
-	return String(getQuarterCell(projectId, groupId, quarter, false));
 }
 
 function projectQuarterTotal(projectId: number, quarter: Quarter): number {
@@ -1192,7 +1034,7 @@ const sortState = ref<{
 
 const sortedProjects = computed(() => {
 	const projects = [...filteredProjects.value].filter((p) => !p.archived);
-	const { field, columnId, direction } = sortState.value;
+	const { field, direction } = sortState.value;
 
 	if (!field) return projects;
 
@@ -1240,21 +1082,6 @@ function onTotalSort() {
 	}
 }
 
-function groupHeaderTitle(groupId: number): string {
-	const g = store.groups.find((x) => x.id === groupId);
-	if (!g) return '';
-	const base = g.name;
-	const allocated = activeColTotals.value[groupId] || 0;
-	const capacity = store.effectiveCapacityById[g.id] || 0;
-
-	if (viewMode.value === 'quarterSingle') {
-		const quarterTotal = groupQuarterTotal(groupId, selectedQuarter.value);
-		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)`;
-	}
-
-	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
-}
-
 function columnHeaderTitle(col: TableColumn): string {
 	const base = col.name;
 	const allocated = columnTotal(col);
@@ -1266,13 +1093,6 @@ function columnHeaderTitle(col: TableColumn): string {
 	}
 
 	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
-}
-
-function isYearOverCapacity(groupId: number): boolean {
-	const capacity = Number(store.effectiveCapacityById[groupId] || 0);
-	const allocated = Number(activeColTotals.value[groupId] || 0);
-	if (capacity <= 0) return allocated > 0;
-	return allocated > capacity;
 }
 
 const totalCapacity = computed(() => {
@@ -1292,9 +1112,7 @@ const totalSupport = computed(() => {
 const totalAllocated = computed(() => Number(activeGrandTotal.value) || 0);
 
 const utilization = computed(() =>
-	totalCapacity.value
-		? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100))
-		: 0,
+	totalCapacity.value ? Math.min(100, Math.round((totalAllocated.value / totalCapacity.value) * 100)) : 0,
 );
 
 const utilClass = computed(() => {
@@ -1507,9 +1325,7 @@ function exportCsv() {
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement('a');
 	link.href = url;
-	link.download = displayByResourceType.value
-		? 'resource-plan-by-type.csv'
-		: 'resource-plan-by-group.csv';
+	link.download = displayByResourceType.value ? 'resource-plan-by-type.csv' : 'resource-plan-by-group.csv';
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -1517,35 +1333,6 @@ function exportCsv() {
 }
 
 type HeaderBar = { fillPct: number; fillColor: string };
-const headerBars = computed<Record<number, HeaderBar>>(() => {
-	const map: Record<number, HeaderBar> = {};
-	for (const g of store.groups) {
-		const capacity = Number(store.effectiveCapacityById[g.id] || 0);
-		const allocated = Number(activeColTotals.value[g.id] || 0);
-		let fillPct = 0;
-		let fillColor = 'var(--blue-600)';
-
-		if (capacity <= 0) {
-			if (allocated > 0) {
-				fillPct = 100;
-				fillColor = '#ef4444';
-			} else {
-				fillPct = 0;
-			}
-		} else if (allocated === capacity) {
-			fillPct = 100;
-			fillColor = 'var(--blue-600)';
-		} else if (allocated > capacity) {
-			fillPct = 100;
-			fillColor = '#ef4444';
-		} else {
-			fillPct = Math.max(0, Math.min(100, (allocated / capacity) * 100));
-			fillColor = 'var(--blue-600)';
-		}
-		map[g.id] = { fillPct, fillColor };
-	}
-	return map;
-});
 
 const headerBarsByColumn = computed<Record<string, HeaderBar>>(() => {
 	const map: Record<string, HeaderBar> = {};
@@ -1633,17 +1420,11 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 	return Array.from(byType.entries())
 		.map(([typeName, groupIds]): ChartRowType => {
-			const capacityRaw = groupIds.reduce(
-				(s, gid) => s + Number(store.effectiveCapacityById[gid] || 0),
-				0,
-			);
+			const capacityRaw = groupIds.reduce((s, gid) => s + Number(store.effectiveCapacityById[gid] || 0), 0);
 			const capacity = capacityRaw * mult;
 			const allocated =
 				viewMode.value === 'quarterSingle'
-					? groupIds.reduce(
-							(s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value),
-							0,
-					  )
+					? groupIds.reduce((s, gid) => s + groupQuarterTotal(gid, selectedQuarter.value), 0)
 					: groupIds.reduce((s, gid) => s + (activeColTotals.value[gid] || 0), 0);
 			const { fillPct, fillColor } = barFill(capacity, allocated);
 			return {
@@ -2296,7 +2077,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		height: 100%;
 		width: 0%;
 		border-radius: 999px;
-		transition: width 0.25s ease, background-color 0.2s ease;
+		transition:
+			width 0.25s ease,
+			background-color 0.2s ease;
 	}
 
 	&__empty {
@@ -2407,7 +2190,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		left: 0;
 		height: 100%;
 		border-radius: 999px;
-		transition: width 0.3s ease, background-color 0.2s ease;
+		transition:
+			width 0.3s ease,
+			background-color 0.2s ease;
 	}
 
 	&__bar-value {

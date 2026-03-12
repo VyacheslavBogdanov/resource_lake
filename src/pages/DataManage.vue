@@ -48,13 +48,7 @@
 					:aria-pressed="isFilterOpen"
 					aria-label="Фильтр проектов"
 				>
-					<svg
-						class="manage__filter-icon"
-						viewBox="0 0 24 24"
-						width="16"
-						height="16"
-						aria-hidden="true"
-					>
+					<svg class="manage__filter-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
 						<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
 					</svg>
 					<span class="manage__filter-label">Фильтр</span>
@@ -80,11 +74,7 @@
 						<div class="manage__filter-group">
 							<div class="manage__filter-group-title">Заказчик</div>
 							<div class="manage__filter-options">
-								<label
-									v-for="c in customerOptions"
-									:key="c"
-									class="manage__filter-option"
-								>
+								<label v-for="c in customerOptions" :key="c" class="manage__filter-option">
 									<input type="checkbox" :value="c" v-model="selectedCustomers" />
 									<span>{{ c }}</span>
 								</label>
@@ -97,11 +87,7 @@
 						<div class="manage__filter-group">
 							<div class="manage__filter-group-title">Руководитель проекта</div>
 							<div class="manage__filter-options">
-								<label
-									v-for="m in managerOptions"
-									:key="m"
-									class="manage__filter-option"
-								>
+								<label v-for="m in managerOptions" :key="m" class="manage__filter-option">
 									<input type="checkbox" :value="m" v-model="selectedManagers" />
 									<span>{{ m }}</span>
 								</label>
@@ -238,9 +224,7 @@ const managerOptions = computed(() => {
 	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
 });
 
-const hasActiveFilters = computed(
-	() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0,
-);
+const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
 
 const filteredProjects = computed(() => {
 	if (!hasActiveFilters.value) return store.projects;

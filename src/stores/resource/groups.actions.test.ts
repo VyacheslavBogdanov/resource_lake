@@ -26,9 +26,7 @@ describe('groups.actions', () => {
 
 	describe('addGroup', () => {
 		it('creates a group with auto-increment position', async () => {
-			const store = makeStore([
-				{ id: 1, name: 'Existing', capacityHours: 100, position: 1 },
-			]);
+			const store = makeStore([{ id: 1, name: 'Existing', capacityHours: 100, position: 1 }]);
 			mockApi.create.mockResolvedValue({});
 			mockApi.list.mockResolvedValue([
 				{ id: 1, name: 'Existing', capacityHours: 100, position: 1 },

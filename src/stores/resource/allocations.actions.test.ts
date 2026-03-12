@@ -59,9 +59,7 @@ describe('allocations.actions', () => {
 
 	describe('batchSetAllocationsForGroup', () => {
 		it('updates existing and creates new allocations', async () => {
-			const store = makeStore([
-				{ id: 10, projectId: 1, groupId: 5, hours: 50 },
-			]);
+			const store = makeStore([{ id: 10, projectId: 1, groupId: 5, hours: 50 }]);
 			store.projects = [
 				{ id: 1, name: 'P1' },
 				{ id: 2, name: 'P2' },

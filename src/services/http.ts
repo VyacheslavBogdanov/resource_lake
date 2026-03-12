@@ -16,7 +16,7 @@ async function http<T>(input: RequestInfo, init: RequestInit = {}): Promise<T> {
 }
 
 // Приводим ответ к массиву: поддерживаем и [] и { key: [] }
-function pickList<T>(key: string, data: any): T[] {
+function pickList<T>(key: string, data: Record<string, unknown>): T[] {
 	if (Array.isArray(data)) return data as T[];
 	if (data && Array.isArray(data[key])) return data[key] as T[];
 	if (data && data.data && Array.isArray(data.data[key])) return data.data[key] as T[];
@@ -26,7 +26,7 @@ function pickList<T>(key: string, data: any): T[] {
 export const api = {
 	list: async <T>(path: string) => {
 		const key = path.replace(/^\//, '').split('/').pop() || path; // 'projects' | 'groups' | 'allocations'
-		const data = await http<any>(`${BASE}/${path}`);
+		const data = await http<Record<string, unknown>>(`${BASE}/${path}`);
 		return pickList<T>(key, data);
 	},
 	get: <T>(path: string, id: number) => http<T>(`${BASE}/${path}/${id}`),

@@ -89,11 +89,7 @@ export async function updateProjectType(store: StoreInstance, id: number, projec
 	store.projects = sortProjectsForView(projects);
 }
 
-export async function updateProjectManager(
-	store: StoreInstance,
-	id: number,
-	projectManager: string,
-) {
+export async function updateProjectManager(store: StoreInstance, id: number, projectManager: string) {
 	const trimmed = (projectManager ?? '').trim();
 	const body: Partial<Project> = { projectManager: trimmed || '' };
 	await api.update<Project>('projects', id, body);
@@ -101,11 +97,7 @@ export async function updateProjectManager(
 	store.projects = sortProjectsForView(projects);
 }
 
-export async function updateProjectDescription(
-	store: StoreInstance,
-	id: number,
-	description: string,
-) {
+export async function updateProjectDescription(store: StoreInstance, id: number, description: string) {
 	const trimmed = (description ?? '').trim();
 	const body: Partial<Project> = { description: trimmed || '' };
 	await api.update<Project>('projects', id, body);
