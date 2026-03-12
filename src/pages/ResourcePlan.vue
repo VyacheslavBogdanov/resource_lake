@@ -1452,11 +1452,11 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__switch-label {
 		font-size: 13px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		transition: color 0.15s ease;
 
 		&--active {
-			color: #111827;
+			color: $color-text-heading;
 			font-weight: 500;
 		}
 	}
@@ -1466,21 +1466,21 @@ const chartRows = computed<ChartRow[]>(() => {
 		width: 44px;
 		height: 24px;
 		border-radius: 999px;
-		background: #d1d5db;
+		background: $color-border-separator;
 		border: none;
 		cursor: pointer;
 		flex-shrink: 0;
 		transition: background 0.2s ease;
 
 		&:hover {
-			background: #9ca3af;
+			background: $color-border-light;
 		}
 
 		&--on {
-			background: var(--blue-600);
+			background: $color-primary-600;
 
 			&:hover {
-				background: #2563eb;
+				background: $color-primary-600;
 			}
 		}
 	}
@@ -1492,7 +1492,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		width: 20px;
 		height: 20px;
 		border-radius: 50%;
-		background: #fff;
+		background: $color-bg-surface;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 		transition: transform 0.2s ease;
 	}
@@ -1522,20 +1522,20 @@ const chartRows = computed<ChartRow[]>(() => {
 		height: var(--ctl-h);
 		padding: 0 10px;
 		border-radius: 999px;
-		border: 1px solid #d4e0f5;
-		background: #ffffff;
+		border: 1px solid $color-border-input;
+		background: $color-bg-surface;
 		cursor: pointer;
 		font-size: 13px;
-		color: #1f2937;
+		color: $color-text-muted;
 	}
 
 	&__filter-btn:hover {
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__filter-icon {
 		display: block;
-		color: #2563eb;
+		color: $color-primary-600;
 	}
 
 	&__filter-label {
@@ -1546,8 +1546,8 @@ const chartRows = computed<ChartRow[]>(() => {
 		font-size: 11px;
 		padding: 2px 6px;
 		border-radius: 999px;
-		background: #eef2ff;
-		color: #3730a3;
+		background: $color-bg-badge;
+		color: $color-badge-text;
 	}
 
 	&__filter-panel {
@@ -1558,9 +1558,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		max-width: 360px;
 		padding: 10px 12px;
 		border-radius: 10px;
-		background: #ffffff;
+		background: $color-bg-surface;
 		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
-		border: 1px solid #dbe7ff;
+		border: 1px solid $color-border-accent;
 		z-index: 10;
 	}
 
@@ -1575,13 +1575,13 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__filter-title {
 		font-size: 13px;
 		font-weight: 600;
-		color: #111827;
+		color: $color-text-heading;
 	}
 
 	&__filter-reset {
 		border: none;
 		background: transparent;
-		color: #2563eb;
+		color: $color-primary-600;
 		cursor: pointer;
 		font-size: 12px;
 		padding: 2px 4px;
@@ -1597,7 +1597,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		font-size: 12px;
 		font-weight: 600;
 		margin-bottom: 4px;
-		color: #4b5563;
+		color: $color-text-link;
 	}
 
 	&__filter-options {
@@ -1613,7 +1613,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: #111827;
+		color: $color-text-heading;
 	}
 
 	&__filter-option input {
@@ -1622,7 +1622,7 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__filter-empty {
 		font-size: 12px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		margin: 0;
 	}
 
@@ -1632,15 +1632,15 @@ const chartRows = computed<ChartRow[]>(() => {
 		gap: 4px;
 		padding: 4px 10px;
 		border-radius: 999px;
-		background: #f3f7ff;
-		border: 1px solid #dbe7ff;
+		background: $color-bg-subtle;
+		border: 1px solid $color-border-accent;
 		font-size: 13px;
 		cursor: pointer;
 	}
 
 	&__mode-input {
 		cursor: pointer;
-		accent-color: var(--blue-600);
+		accent-color: $color-primary-600;
 	}
 
 	&__mode-label {
@@ -1658,8 +1658,8 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__quarter-select {
 		padding: 4px 8px;
 		border-radius: 6px;
-		border: 1px solid #cfe1ff;
-		background: #fff;
+		border: 1px solid $color-border;
+		background: $color-bg-surface;
 		font-size: 13px;
 	}
 
@@ -1669,23 +1669,23 @@ const chartRows = computed<ChartRow[]>(() => {
 		justify-content: center;
 		height: var(--ctl-h);
 		padding: 0 12px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
-		background: #fff;
+		background: $color-bg-surface;
 		cursor: pointer;
 		font: inherit;
 		font-size: 13px;
 	}
 
 	&__btn--primary {
-		background: var(--blue-600);
-		color: #fff;
-		border-color: var(--blue-600);
+		background: $color-primary-600;
+		color: $color-text-inverse;
+		border-color: $color-primary-600;
 	}
 
 	&__btn--outline {
-		background: #fff;
-		color: #0a1a2b;
+		background: $color-bg-surface;
+		color: $color-text-primary;
 	}
 
 	&__kpis {
@@ -1696,10 +1696,10 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__kpi {
-		background: #fff;
-		border: 1px solid #e6eef7;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
 		border-radius: 12px;
-		box-shadow: var(--shadow);
+		box-shadow: $shadow-sm;
 		padding: 10px 12px;
 		min-height: 72px;
 		display: flex;
@@ -1709,14 +1709,14 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__kpi-label {
 		font-size: 12px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		margin-bottom: 4px;
 	}
 
 	&__kpi-value {
 		font-size: 18px;
 		font-weight: 700;
-		color: #0a1a2b;
+		color: $color-text-primary;
 	}
 
 	&__kpi--util .plan__kpi-value {
@@ -1730,9 +1730,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 999px;
-		background: #ecfdf5;
-		border: 1px solid #bbf7d0;
-		color: #065f46;
+		background: $color-success-bg;
+		border: 1px solid $color-success-border;
+		color: $color-success-text;
 		font-size: 13px;
 		font-weight: 600;
 	}
@@ -1743,30 +1743,30 @@ const chartRows = computed<ChartRow[]>(() => {
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 999px;
-		border: 1px solid #cfe1ff;
-		background: #e7f3ff;
-		color: #0a1a2b;
+		border: 1px solid $color-border;
+		background: $color-bg-cell-edit;
+		color: $color-text-primary;
 		font-size: 13px;
 
 		&.is-ok {
-			background: #e7f3ff;
-			border-color: #cfe1ff;
+			background: $color-bg-cell-edit;
+			border-color: $color-border;
 		}
 		&.is-warn {
-			background: #fff7e6;
-			border-color: #ffe1a6;
+			background: $color-warning-bg;
+			border-color: $color-warning-border;
 		}
 		&.is-over {
-			background: #fff1f0;
-			border-color: #ffc9c7;
-			color: #a40000;
+			background: $color-danger-bg-alt;
+			border-color: $color-danger-border-light;
+			color: $color-danger-text-dark;
 		}
 	}
 
 	&__table-wrapper {
 		overflow: auto;
-		background: #fff;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
 		border-radius: 12px;
 	}
 
@@ -1780,7 +1780,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		overflow-y: hidden;
 		background: rgba(245, 249, 255, 0.92);
 		backdrop-filter: blur(6px);
-		border-top: 1px solid #dbe7ff;
+		border-top: 1px solid $color-border-accent;
 		z-index: 50;
 	}
 
@@ -1799,22 +1799,22 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__table th + th,
 	&__table th + td,
 	&__table td + td {
-		border-left: 1px solid #d7dbe0;
+		border-left: 1px solid $color-border-muted;
 	}
 
 	.plan__head-row {
-		background: var(--blue-100, #eef5ff);
+		background: $color-bg-selected;
 	}
 
 	.plan__head-row--quarters {
-		background: var(--blue-50, #f5f7ff);
+		background: $color-bg-row-alt;
 	}
 
 	&__th,
 	&__cell {
 		padding: 0 10px;
 		text-align: center;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1886,16 +1886,16 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid #cfe0ff;
-		background: #ffffff;
-		color: #2a66ff;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
 		cursor: pointer;
 		flex: 0 0 auto;
 	}
 
 	&__project-link:hover:not(:disabled) {
-		background: #f2f7ff;
-		border-color: #b7d0ff;
+		background: $color-bg-row-hover;
+		border-color: $color-border-hover;
 	}
 
 	&__project-link:disabled {
@@ -1914,9 +1914,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid rgb(239, 68, 68);
-		background: #fff7e6;
-		color: rgb(239, 68, 68);
+		border: 1px solid $color-danger;
+		background: $color-warning-bg;
+		color: $color-danger;
 		flex: 0 0 auto;
 		margin-left: auto;
 	}
@@ -1926,11 +1926,11 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	tbody .plan__row:nth-child(odd) {
-		background: #fbfdff;
+		background: $color-bg-row-alt;
 	}
 
 	tbody .plan__row:hover {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 
 	tbody .plan__row {
@@ -1938,16 +1938,16 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	tbody .plan__row--selected {
-		background: #e7f3ff;
+		background: $color-bg-cell-edit;
 	}
 
 	tbody .plan__row--selected:hover {
-		background: #dbeafe;
+		background: $color-border-selected;
 	}
 
 	tbody .plan__row--selected > th,
 	tbody .plan__row--selected > td {
-		background: #d2e7fd !important;
+		background: $color-border-cell-edit !important;
 	}
 
 	&__th--left,
@@ -1959,7 +1959,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__sticky {
 		position: sticky;
 		left: 0;
-		background: #f8fbff;
+		background: $color-bg-active;
 		text-align: left;
 		z-index: 1;
 		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08);
@@ -1967,18 +1967,18 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	thead .plan__th--sticky {
 		z-index: 2;
-		background: var(--blue-100, #eef5ff);
+		background: $color-bg-selected;
 	}
 
 	tfoot .plan__th--sticky {
 		z-index: 2;
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__th--total,
 	&__cell--total {
 		font-weight: 700;
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__cell--footer {
@@ -1991,13 +1991,13 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__th--over,
 	&__cell--over {
-		color: #a40000;
+		color: $color-danger-text-dark;
 		font-weight: 600;
 	}
 
 	&__th--over-bg,
 	&__cell--over-bg {
-		background: #f8e9e9;
+		background: $color-danger-bg-subtle;
 	}
 
 	&__th-name {
@@ -2008,7 +2008,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__capacity {
-		color: #446;
+		color: $color-text-soft;
 		opacity: 0.75;
 	}
 
@@ -2028,8 +2028,8 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__th-progress {
 		width: 100%;
 		height: 6px;
-		background: #eef4ff;
-		border: 1px solid #dbe7ff;
+		background: $color-highlight-row;
+		border: 1px solid $color-border-accent;
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -2044,15 +2044,15 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 		margin-top: 8px;
 	}
 
 	&__chart {
 		margin-top: 18px;
-		background: #fff;
-		border: 1px solid #e6eef7;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
+		box-shadow: $shadow-sm;
 		padding: 14px;
 		border-radius: 12px;
 	}
@@ -2080,7 +2080,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		color: #334155;
+		color: $color-text-field;
 		font-size: 13px;
 	}
 
@@ -2092,15 +2092,15 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__legend-swatch--alloc {
-		background: var(--blue-600);
+		background: $color-primary-600;
 	}
 
 	&__legend-swatch--cap {
-		background: #cfe1ff;
+		background: $color-border;
 	}
 
 	&__legend-swatch--overspending {
-		background: rgb(239, 68, 68);
+		background: $color-danger;
 	}
 
 	&__bars {
@@ -2120,7 +2120,7 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__bar-label {
 		font-size: 14px;
-		color: #0a1a2b;
+		color: $color-text-primary;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -2139,8 +2139,8 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__bar-track {
 		position: relative;
 		height: var(--bar-h);
-		background: #eef4ff;
-		border: 1px solid #dbe7ff;
+		background: $color-highlight-row;
+		border: 1px solid $color-border-accent;
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -2159,7 +2159,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__bar-value {
 		font-variant-numeric: tabular-nums;
 		font-size: 13px;
-		color: #334155;
+		color: $color-text-field;
 		white-space: nowrap;
 		text-align: right;
 	}

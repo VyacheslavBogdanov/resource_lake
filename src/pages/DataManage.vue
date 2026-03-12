@@ -409,9 +409,9 @@ async function saveAll() {
 		gap: 8px;
 		padding: 6px 10px;
 		border-radius: 999px;
-		border: 1px solid #bbf7d0;
-		background: #ecfdf5;
-		color: #065f46;
+		border: 1px solid $color-success-border;
+		background: $color-success-bg;
+		color: $color-success-text;
 		font-weight: 600;
 		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
 	}
@@ -430,20 +430,20 @@ async function saveAll() {
 		height: var(--ctl-h);
 		padding: 0 10px;
 		border-radius: 999px;
-		border: 1px solid #d4e0f5;
-		background: #ffffff;
+		border: 1px solid $color-border-input;
+		background: $color-bg-surface;
 		cursor: pointer;
 		font-size: 13px;
-		color: #1f2937;
+		color: $color-text-muted;
 	}
 
 	&__filter-btn:hover {
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__filter-icon {
 		display: block;
-		color: #2563eb;
+		color: $color-primary-600;
 	}
 
 	&__filter-label {
@@ -454,8 +454,8 @@ async function saveAll() {
 		font-size: 11px;
 		padding: 2px 6px;
 		border-radius: 999px;
-		background: #eef2ff;
-		color: #3730a3;
+		background: $color-bg-badge;
+		color: $color-badge-text;
 	}
 
 	&__filter-panel {
@@ -466,9 +466,9 @@ async function saveAll() {
 		max-width: 360px;
 		padding: 10px 12px;
 		border-radius: 10px;
-		background: #ffffff;
+		background: $color-bg-surface;
 		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
-		border: 1px solid #dbe7ff;
+		border: 1px solid $color-border-accent;
 		z-index: 10;
 	}
 
@@ -483,13 +483,13 @@ async function saveAll() {
 	&__filter-title {
 		font-size: 13px;
 		font-weight: 600;
-		color: #111827;
+		color: $color-text-heading;
 	}
 
 	&__filter-reset {
 		border: none;
 		background: transparent;
-		color: #2563eb;
+		color: $color-primary-600;
 		cursor: pointer;
 		font-size: 12px;
 		padding: 2px 4px;
@@ -505,7 +505,7 @@ async function saveAll() {
 		font-size: 12px;
 		font-weight: 600;
 		margin-bottom: 4px;
-		color: #4b5563;
+		color: $color-text-link;
 	}
 
 	&__filter-options {
@@ -521,7 +521,7 @@ async function saveAll() {
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: #111827;
+		color: $color-text-heading;
 	}
 
 	&__filter-option input {
@@ -530,16 +530,16 @@ async function saveAll() {
 
 	&__filter-empty {
 		font-size: 12px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		margin: 0;
 	}
 
 	&__table {
 		width: 100%;
-		background: #fff;
-		border: 1px solid #e6eef7;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
 		border-radius: 12px;
-		box-shadow: var(--shadow);
+		box-shadow: $shadow-sm;
 		border-collapse: separate;
 		border-spacing: 0;
 		table-layout: auto;
@@ -549,7 +549,7 @@ async function saveAll() {
 	&__th,
 	&__cell {
 		padding: 0 12px;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		vertical-align: middle;
 		height: var(--row-h);
 		white-space: nowrap;
@@ -575,17 +575,17 @@ async function saveAll() {
 	}
 
 	tbody .manage__row:nth-child(odd) {
-		background: #fbfdff;
+		background: $color-bg-row-alt;
 	}
 	tbody .manage__row:hover {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 
 	&__cell {
 		transition: background-color 0.15s ease;
 	}
 	&__row:focus-within &__cell {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 	&__row:focus-within &__cell--left {
 		position: relative;
@@ -597,7 +597,7 @@ async function saveAll() {
 		top: -1px;
 		bottom: -1px;
 		width: 4px;
-		background: var(--blue-600);
+		background: $color-primary-600;
 		border-radius: 4px 0 0 4px;
 	}
 
@@ -606,9 +606,9 @@ async function saveAll() {
 		height: var(--ctl-h);
 		line-height: var(--ctl-h);
 		padding: 0 10px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
-		background: #fff;
+		background: $color-bg-surface;
 		box-sizing: border-box;
 		text-align: center;
 		display: inline-block;
@@ -622,7 +622,7 @@ async function saveAll() {
 
 	&__input:focus-visible {
 		outline: none;
-		border-color: var(--blue-600);
+		border-color: $color-primary-600;
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 	}
 
@@ -637,7 +637,7 @@ async function saveAll() {
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 	}
 }
 
@@ -656,18 +656,18 @@ async function saveAll() {
 .btn {
 	height: var(--ctl-h);
 	padding: 0 12px;
-	border: 1px solid #cfe1ff;
+	border: 1px solid $color-border;
 	border-radius: 8px;
-	background: #fff;
+	background: $color-bg-surface;
 	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 
 	&--primary {
-		background: var(--blue-600);
-		color: #fff;
-		border-color: var(--blue-600);
+		background: $color-primary-600;
+		color: $color-text-inverse;
+		border-color: $color-primary-600;
 	}
 
 	&:disabled {

@@ -353,16 +353,16 @@ async function removeGroup(g: Group) {
 	&__input {
 		padding: 0 10px;
 		height: var(--ctl-h);
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
-		background: #fff;
+		background: $color-bg-surface;
 		box-sizing: border-box;
 		font: inherit;
 		text-align: center;
 
 		&:focus-visible {
 			outline: none;
-			border-color: var(--blue-600);
+			border-color: $color-primary-600;
 			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 		}
 	}
@@ -389,8 +389,8 @@ async function removeGroup(g: Group) {
 
 	&__table {
 		width: 100%;
-		background: #fff;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
 		border-collapse: separate;
 		border-spacing: 0;
 		table-layout: fixed;
@@ -401,7 +401,7 @@ async function removeGroup(g: Group) {
 	&__th,
 	&__cell {
 		padding: 0 12px;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		text-align: center;
 		vertical-align: middle;
 	}
@@ -420,31 +420,31 @@ async function removeGroup(g: Group) {
 	}
 
 	&__row:hover {
-		background: #fbfdff;
+		background: $color-bg-row-alt;
 	}
 
 	&__row--drag-over {
-		outline: 2px dashed #7aa4ff;
+		outline: 2px dashed $color-border-active;
 		outline-offset: -4px;
-		background: #f5f8ff;
+		background: $color-bg-focus-row;
 	}
 
 	&__drag-handle {
 		width: 24px;
 		height: 24px;
 		border-radius: 999px;
-		border: 1px solid #d6e2ff;
-		background: #fff;
+		border: 1px solid $color-border-cell;
+		background: $color-bg-surface;
 		cursor: grab;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 13px;
-		color: #445;
+		color: $color-text-subtle;
 		padding: 0;
 
 		&:hover {
-			background: #eef3ff;
+			background: $color-bg-header;
 		}
 
 		&:active {
@@ -458,7 +458,7 @@ async function removeGroup(g: Group) {
 	}
 
 	&__cell--editing {
-		background: #f8fbff;
+		background: $color-bg-active;
 	}
 
 	&__cell--actions {
@@ -482,7 +482,7 @@ async function removeGroup(g: Group) {
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 	}
 }
 
@@ -492,21 +492,21 @@ async function removeGroup(g: Group) {
 	justify-content: center;
 	height: var(--ctl-h);
 	padding: 0 12px;
-	border: 1px solid #cfe1ff;
+	border: 1px solid $color-border;
 	border-radius: 8px;
-	background: #fff;
+	background: $color-bg-surface;
 	cursor: pointer;
 
 	&--primary {
-		background: #2563eb;
-		color: #fff;
-		border-color: #2563eb;
+		background: $color-primary-600;
+		color: $color-text-inverse;
+		border-color: $color-primary-600;
 	}
 
 	&--danger {
-		border-color: #ffb3b3;
-		color: #8a0000;
-		background: #fff5f5;
+		border-color: $color-danger-border;
+		color: $color-danger-text;
+		background: $color-danger-bg;
 	}
 }
 </style>
