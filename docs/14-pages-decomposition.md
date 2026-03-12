@@ -10,15 +10,15 @@
 
 | Файл               | Строк | План                                        | Целевой оркестратор |
 | ------------------ | ----- | ------------------------------------------- | ------------------- |
-| `ResourcePlan.vue` | 2432  | [doc 06](06-resource-plan-decomposition.md) | ~200 строк          |
-| `DataManage.vue`   | 731   | Ниже                                        | ~100 строк          |
+| `ResourcePlan.vue` | 1982  | [doc 06](06-resource-plan-decomposition.md) | ~200 строк          |
+| `DataManage.vue`   | 491   | Ниже                                        | ~100 строк          |
 | `Projects.vue`     | 688   | Ниже                                        | ~150 строк          |
 | `Groups.vue`       | 507   | Ниже                                        | ~120 строк          |
 | `UiSelect.vue`     | 338   | Ниже                                        | ~100 строк          |
 
 ---
 
-## DataManage.vue (731 строк → ≤ 300)
+## DataManage.vue (491 строк → ≤ 300)
 
 ### Текущая структура
 

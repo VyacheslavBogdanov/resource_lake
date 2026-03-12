@@ -16,9 +16,9 @@
 			</label>
 
 			<div class="manage__save-row">
-				<button class="btn btn--primary" :disabled="!selectedGroupId" @click="saveAll">
+				<BaseButton variant="primary" :disabled="!selectedGroupId" @click="saveAll">
 					Сохранить изменения
-				</button>
+				</BaseButton>
 				<transition name="fade">
 					<div
 						v-if="showSaved"
@@ -40,65 +40,19 @@
 				</transition>
 			</div>
 
-			<div class="manage__filters" v-if="selectedGroupId && store.projects.length">
-				<button
-					type="button"
-					class="manage__filter-btn"
-					@click="isFilterOpen = !isFilterOpen"
-					:aria-pressed="isFilterOpen"
-					aria-label="Фильтр проектов"
-				>
-					<svg class="manage__filter-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-						<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
-					</svg>
-					<span class="manage__filter-label">Фильтр</span>
-					<span v-if="hasActiveFilters" class="manage__filter-badge">
-						{{ filteredProjectsCount }} / {{ store.projects.length }}
-					</span>
-				</button>
-
-				<div v-if="isFilterOpen" class="manage__filter-panel">
-					<div class="manage__filter-header">
-						<span class="manage__filter-title">Фильтр проектов</span>
-						<button
-							type="button"
-							class="manage__filter-reset"
-							@click="resetFilters"
-							v-if="hasActiveFilters"
-						>
-							Сбросить
-						</button>
-					</div>
-
-					<div class="manage__filter-groups">
-						<div class="manage__filter-group">
-							<div class="manage__filter-group-title">Заказчик</div>
-							<div class="manage__filter-options">
-								<label v-for="c in customerOptions" :key="c" class="manage__filter-option">
-									<input type="checkbox" :value="c" v-model="selectedCustomers" />
-									<span>{{ c }}</span>
-								</label>
-								<p v-if="!customerOptions.length" class="manage__filter-empty">
-									Нет заполненных заказчиков
-								</p>
-							</div>
-						</div>
-
-						<div class="manage__filter-group">
-							<div class="manage__filter-group-title">Руководитель проекта</div>
-							<div class="manage__filter-options">
-								<label v-for="m in managerOptions" :key="m" class="manage__filter-option">
-									<input type="checkbox" :value="m" v-model="selectedManagers" />
-									<span>{{ m }}</span>
-								</label>
-								<p v-if="!managerOptions.length" class="manage__filter-empty">
-									Нет заполненных руководителей
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			<FilterPanel
+				v-if="selectedGroupId && store.projects.length"
+				:customer-options="customerOptions"
+				:manager-options="managerOptions"
+				:selected-customers="selectedCustomers"
+				:selected-managers="selectedManagers"
+				:has-active-filters="hasActiveFilters"
+				:filtered-count="filteredProjectsCount"
+				:total-count="store.projects.length"
+				@update:selected-customers="selectedCustomers = $event"
+				@update:selected-managers="selectedManagers = $event"
+				@reset="resetFilters"
+			/>
 		</div>
 
 		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
@@ -196,58 +150,26 @@
 
 <script setup lang="ts">
 import UiSelect from '../components/UiSelect.vue';
+import FilterPanel from '../components/shared/FilterPanel.vue';
+import BaseButton from '../components/ui/BaseButton.vue';
 import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
 import { useResourceStore } from '../stores/resource/index';
+import { useProjectFilters } from '../composables/useProjectFilters';
+import { roundInt } from '../utils/format';
 
 const store = useResourceStore();
 const selectedGroupId = ref<number>(0);
 
-const isFilterOpen = ref(false);
-const selectedCustomers = ref<string[]>([]);
-const selectedManagers = ref<string[]>([]);
-
-const customerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.customer ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const managerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.projectManager ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
-
-const filteredProjects = computed(() => {
-	if (!hasActiveFilters.value) return store.projects;
-
-	const customers = new Set(selectedCustomers.value);
-	const managers = new Set(selectedManagers.value);
-
-	return store.projects.filter((p) => {
-		const customer = (p.customer ?? '').trim();
-		const manager = (p.projectManager ?? '').trim();
-
-		if (customers.size && !customers.has(customer)) return false;
-		if (managers.size && !managers.has(manager)) return false;
-		return true;
-	});
-});
-
-const filteredProjectsCount = computed(() => filteredProjects.value.length);
-
-function resetFilters() {
-	selectedCustomers.value = [];
-	selectedManagers.value = [];
-}
+const {
+	selectedCustomers,
+	selectedManagers,
+	customerOptions,
+	managerOptions,
+	hasActiveFilters,
+	filteredProjects,
+	filteredProjectsCount,
+	resetFilters,
+} = useProjectFilters(computed(() => store.projects));
 
 type RowBuffer = {
 	total: number;
@@ -265,11 +187,6 @@ let hideTimer: number | null = null;
 onMounted(() => {
 	store.fetchAll();
 });
-
-function roundInt(value: unknown): number {
-	const n = Number(value) || 0;
-	return Math.round(n);
-}
 
 function splitTotalToQuarters(total: number): [number, number, number, number] {
 	total = roundInt(total);
@@ -446,137 +363,19 @@ async function saveAll() {
 		gap: 8px;
 		padding: 6px 10px;
 		border-radius: 999px;
-		border: 1px solid #bbf7d0;
-		background: #ecfdf5;
-		color: #065f46;
+		border: 1px solid $color-success-border;
+		background: $color-success-bg;
+		color: $color-success-text;
 		font-weight: 600;
 		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
 	}
 
-	&__filters {
-		margin-left: auto;
-		position: relative;
-		display: inline-flex;
-		align-items: flex-start;
-	}
-
-	&__filter-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		height: var(--ctl-h);
-		padding: 0 10px;
-		border-radius: 999px;
-		border: 1px solid #d4e0f5;
-		background: #ffffff;
-		cursor: pointer;
-		font-size: 13px;
-		color: #1f2937;
-	}
-
-	&__filter-btn:hover {
-		background: #f3f7ff;
-	}
-
-	&__filter-icon {
-		display: block;
-		color: #2563eb;
-	}
-
-	&__filter-label {
-		white-space: nowrap;
-	}
-
-	&__filter-badge {
-		font-size: 11px;
-		padding: 2px 6px;
-		border-radius: 999px;
-		background: #eef2ff;
-		color: #3730a3;
-	}
-
-	&__filter-panel {
-		position: absolute;
-		top: calc(100% + 4px);
-		right: 0;
-		min-width: 260px;
-		max-width: 360px;
-		padding: 10px 12px;
-		border-radius: 10px;
-		background: #ffffff;
-		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
-		border: 1px solid #dbe7ff;
-		z-index: 10;
-	}
-
-	&__filter-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-		gap: 8px;
-	}
-
-	&__filter-title {
-		font-size: 13px;
-		font-weight: 600;
-		color: #111827;
-	}
-
-	&__filter-reset {
-		border: none;
-		background: transparent;
-		color: #2563eb;
-		cursor: pointer;
-		font-size: 12px;
-		padding: 2px 4px;
-	}
-
-	&__filter-groups {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
-	}
-
-	&__filter-group-title {
-		font-size: 12px;
-		font-weight: 600;
-		margin-bottom: 4px;
-		color: #4b5563;
-	}
-
-	&__filter-options {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		max-height: 180px;
-		overflow: auto;
-	}
-
-	&__filter-option {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		color: #111827;
-	}
-
-	&__filter-option input {
-		cursor: pointer;
-	}
-
-	&__filter-empty {
-		font-size: 12px;
-		color: #6b7280;
-		margin: 0;
-	}
-
 	&__table {
 		width: 100%;
-		background: #fff;
-		border: 1px solid #e6eef7;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
 		border-radius: 12px;
-		box-shadow: var(--shadow);
+		box-shadow: $shadow-sm;
 		border-collapse: separate;
 		border-spacing: 0;
 		table-layout: auto;
@@ -586,7 +385,7 @@ async function saveAll() {
 	&__th,
 	&__cell {
 		padding: 0 12px;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		vertical-align: middle;
 		height: var(--row-h);
 		white-space: nowrap;
@@ -612,17 +411,17 @@ async function saveAll() {
 	}
 
 	tbody .manage__row:nth-child(odd) {
-		background: #fbfdff;
+		background: $color-bg-row-alt;
 	}
 	tbody .manage__row:hover {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 
 	&__cell {
 		transition: background-color 0.15s ease;
 	}
 	&__row:focus-within &__cell {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 	&__row:focus-within &__cell--left {
 		position: relative;
@@ -634,7 +433,7 @@ async function saveAll() {
 		top: -1px;
 		bottom: -1px;
 		width: 4px;
-		background: var(--blue-600);
+		background: $color-primary-600;
 		border-radius: 4px 0 0 4px;
 	}
 
@@ -643,9 +442,9 @@ async function saveAll() {
 		height: var(--ctl-h);
 		line-height: var(--ctl-h);
 		padding: 0 10px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
-		background: #fff;
+		background: $color-bg-surface;
 		box-sizing: border-box;
 		text-align: center;
 		display: inline-block;
@@ -659,7 +458,7 @@ async function saveAll() {
 
 	&__input:focus-visible {
 		outline: none;
-		border-color: var(--blue-600);
+		border-color: $color-primary-600;
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 	}
 
@@ -674,7 +473,7 @@ async function saveAll() {
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 	}
 }
 
@@ -688,28 +487,5 @@ async function saveAll() {
 .fade-leave-to {
 	opacity: 0;
 	transform: translateY(-4px);
-}
-
-.btn {
-	height: var(--ctl-h);
-	padding: 0 12px;
-	border: 1px solid #cfe1ff;
-	border-radius: 8px;
-	background: #fff;
-	cursor: pointer;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-
-	&--primary {
-		background: var(--blue-600);
-		color: #fff;
-		border-color: var(--blue-600);
-	}
-
-	&:disabled {
-		opacity: 0.6;
-		cursor: default;
-	}
 }
 </style>

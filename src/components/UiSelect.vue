@@ -237,10 +237,10 @@ watch(
 		justify-content: space-between;
 		gap: 8px;
 		padding: 8px 12px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
-		background: #fff;
-		color: #0a1a2b;
+		background: $color-bg-surface;
+		color: $color-text-primary;
 		cursor: pointer;
 		transition:
 			box-shadow 0.15s ease,
@@ -248,11 +248,11 @@ watch(
 			border-color 0.15s ease;
 	}
 	&__trigger:hover {
-		background: #f4f8ff;
+		background: $color-bg-input;
 	}
 	&__trigger:focus-visible {
 		outline: none;
-		box-shadow: var(--ring, 0 0 0 3px rgba(37, 99, 235, 0.25));
+		box-shadow: $shadow-focus;
 	}
 
 	&__value {
@@ -263,7 +263,7 @@ watch(
 		text-overflow: ellipsis;
 	}
 	&__value.is-placeholder {
-		color: #6b7280;
+		color: $color-text-secondary;
 	}
 
 	&__caret {
@@ -281,8 +281,8 @@ watch(
 		left: 0;
 		right: 0;
 		top: calc(100% + 6px);
-		background: #fff;
-		border: 1px solid #e6eef7;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
 		border-radius: 10px;
 		box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
 		padding: 6px;
@@ -301,17 +301,17 @@ watch(
 		border-radius: 8px;
 		cursor: pointer;
 		transition: background 0.1s ease;
-		color: #0a1a2b;
+		color: $color-text-primary;
 
 		&.is-disabled {
 			opacity: 0.5;
 			cursor: not-allowed;
 		}
 		&:not(.is-disabled):hover {
-			background: #f2f7ff;
+			background: $color-bg-row-hover;
 		}
 		&.is-active {
-			background: #eef5ff;
+			background: $color-bg-selected;
 		}
 		&.is-selected {
 			font-weight: 600;

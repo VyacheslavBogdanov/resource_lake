@@ -30,7 +30,7 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 
 <style lang="scss" scoped>
 .header {
-	background: var(--blue-600);
+	background: $color-primary-600;
 	padding: 12px 16px;
 	display: flex;
 	align-items: center;
@@ -41,17 +41,17 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 		flex-wrap: wrap;
 	}
 	&__link {
-		color: #fff;
+		color: $color-text-inverse;
 		text-decoration: none;
 		font-weight: 600;
 		padding: 6px 10px;
 		border-radius: 8px;
 		&.router-link-active {
-			background: var(--blue-700);
+			background: $color-primary-700;
 		}
 	}
 	&__help {
-		color: #fff;
+		color: $color-text-inverse;
 		opacity: 0.85;
 		transition: opacity 0.15s;
 		display: flex;
@@ -60,7 +60,7 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 		border-radius: 8px;
 		&:hover {
 			opacity: 1;
-			background: var(--blue-700);
+			background: $color-primary-700;
 		}
 	}
 }

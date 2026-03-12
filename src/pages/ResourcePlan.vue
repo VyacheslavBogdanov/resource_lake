@@ -3,7 +3,7 @@
 		<h1 class="plan__title">Ресурсный план</h1>
 
 		<div class="plan__toolbar">
-			<button type="button" class="plan__btn plan__btn--primary" @click="exportCsv">Выгрузить в CSV</button>
+			<BaseButton variant="primary" @click="exportCsv">Выгрузить в CSV</BaseButton>
 
 			<div class="plan__actions" v-if="store.projects.length && store.groups.length">
 				<div class="plan__row-type-switch">
@@ -53,71 +53,18 @@
 						</div>
 					</div>
 
-					<div class="plan__filters">
-						<button
-							type="button"
-							class="plan__filter-btn"
-							@click="isFilterOpen = !isFilterOpen"
-							:aria-pressed="isFilterOpen"
-							aria-label="Фильтр проектов"
-						>
-							<svg
-								class="plan__filter-icon"
-								viewBox="0 0 24 24"
-								width="16"
-								height="16"
-								aria-hidden="true"
-							>
-								<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
-							</svg>
-							<span class="plan__filter-label">Фильтр</span>
-							<span v-if="hasActiveFilters" class="plan__filter-badge">
-								{{ filteredProjectsCount }} / {{ store.projects.length }}
-							</span>
-						</button>
-
-						<div v-if="isFilterOpen" class="plan__filter-panel">
-							<div class="plan__filter-header">
-								<span class="plan__filter-title">Фильтр проектов</span>
-								<button
-									type="button"
-									class="plan__filter-reset"
-									@click="resetFilters"
-									v-if="hasActiveFilters"
-								>
-									Сбросить
-								</button>
-							</div>
-
-							<div class="plan__filter-groups">
-								<div class="plan__filter-group">
-									<div class="plan__filter-group-title">Заказчик</div>
-									<div class="plan__filter-options">
-										<label v-for="c in customerOptions" :key="c" class="plan__filter-option">
-											<input type="checkbox" :value="c" v-model="selectedCustomers" />
-											<span>{{ c }}</span>
-										</label>
-										<p v-if="!customerOptions.length" class="plan__filter-empty">
-											Нет заполненных заказчиков
-										</p>
-									</div>
-								</div>
-
-								<div class="plan__filter-group">
-									<div class="plan__filter-group-title">Руководитель проекта</div>
-									<div class="plan__filter-options">
-										<label v-for="m in managerOptions" :key="m" class="plan__filter-option">
-											<input type="checkbox" :value="m" v-model="selectedManagers" />
-											<span>{{ m }}</span>
-										</label>
-										<p v-if="!managerOptions.length" class="plan__filter-empty">
-											Нет заполненных руководителей
-										</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					<FilterPanel
+						:customer-options="customerOptions"
+						:manager-options="managerOptions"
+						:selected-customers="selectedCustomers"
+						:selected-managers="selectedManagers"
+						:has-active-filters="hasActiveFilters"
+						:filtered-count="filteredProjectsCount"
+						:total-count="store.projects.length"
+						@update:selected-customers="selectedCustomers = $event"
+						@update:selected-managers="selectedManagers = $event"
+						@reset="resetFilters"
+					/>
 				</div>
 			</div>
 		</div>
@@ -540,7 +487,11 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, computed, nextTick, ref, watch } from 'vue';
+import BaseButton from '../components/ui/BaseButton.vue';
+import FilterPanel from '../components/shared/FilterPanel.vue';
 import { useResourceStore } from '../stores/resource/index';
+import { useProjectFilters } from '../composables/useProjectFilters';
+import { roundInt } from '../utils/format';
 import type { Project } from '../types/domain';
 
 type ViewMode = 'total' | 'quarterSingle' | 'quarterSplit';
@@ -735,48 +686,16 @@ function isProjectWithoutResources(projectId: number, archived?: boolean): boole
 	return !hasAllocationsByProjectId.value[projectId];
 }
 
-const isFilterOpen = ref(false);
-const selectedCustomers = ref<string[]>([]);
-const selectedManagers = ref<string[]>([]);
-
-const customerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.customer ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const managerOptions = computed(() => {
-	const set = new Set<string>();
-	for (const p of store.projects) {
-		const value = (p.projectManager ?? '').trim();
-		if (value) set.add(value);
-	}
-	return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
-});
-
-const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
-
-const filteredProjects = computed(() => {
-	if (!hasActiveFilters.value) return store.projects;
-
-	const customers = new Set(selectedCustomers.value);
-	const managers = new Set(selectedManagers.value);
-
-	return store.projects.filter((p) => {
-		const customer = (p.customer ?? '').trim();
-		const manager = (p.projectManager ?? '').trim();
-
-		if (customers.size && !customers.has(customer)) return false;
-		if (managers.size && !managers.has(manager)) return false;
-
-		return true;
-	});
-});
-
-const filteredProjectsCount = computed(() => filteredProjects.value.length);
+const {
+	selectedCustomers,
+	selectedManagers,
+	customerOptions,
+	managerOptions,
+	hasActiveFilters,
+	filteredProjects,
+	filteredProjectsCount,
+	resetFilters,
+} = useProjectFilters(computed(() => store.projects));
 
 watch(
 	() => [
@@ -793,17 +712,6 @@ watch(
 		ensureScrollUi();
 	},
 );
-
-function resetFilters() {
-	selectedCustomers.value = [];
-	selectedManagers.value = [];
-}
-
-function roundInt(value: unknown): number {
-	const n = Number(value);
-	if (!Number.isFinite(n)) return 0;
-	return Math.round(n);
-}
 
 /** Получить все уникальные типы ресурсов из групп. */
 function getAllResourceTypes(): string[] {
@@ -1491,11 +1399,11 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__switch-label {
 		font-size: 13px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		transition: color 0.15s ease;
 
 		&--active {
-			color: #111827;
+			color: $color-text-heading;
 			font-weight: 500;
 		}
 	}
@@ -1505,21 +1413,21 @@ const chartRows = computed<ChartRow[]>(() => {
 		width: 44px;
 		height: 24px;
 		border-radius: 999px;
-		background: #d1d5db;
+		background: $color-border-separator;
 		border: none;
 		cursor: pointer;
 		flex-shrink: 0;
 		transition: background 0.2s ease;
 
 		&:hover {
-			background: #9ca3af;
+			background: $color-border-light;
 		}
 
 		&--on {
-			background: var(--blue-600);
+			background: $color-primary-600;
 
 			&:hover {
-				background: #2563eb;
+				background: $color-primary-600;
 			}
 		}
 	}
@@ -1531,7 +1439,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		width: 20px;
 		height: 20px;
 		border-radius: 50%;
-		background: #fff;
+		background: $color-bg-surface;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 		transition: transform 0.2s ease;
 	}
@@ -1547,139 +1455,21 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 	}
 
-	&__filters {
-		margin-left: auto;
-		position: relative;
-		display: inline-flex;
-		align-items: flex-start;
-	}
-
-	&__filter-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		height: var(--ctl-h);
-		padding: 0 10px;
-		border-radius: 999px;
-		border: 1px solid #d4e0f5;
-		background: #ffffff;
-		cursor: pointer;
-		font-size: 13px;
-		color: #1f2937;
-	}
-
-	&__filter-btn:hover {
-		background: #f3f7ff;
-	}
-
-	&__filter-icon {
-		display: block;
-		color: #2563eb;
-	}
-
-	&__filter-label {
-		white-space: nowrap;
-	}
-
-	&__filter-badge {
-		font-size: 11px;
-		padding: 2px 6px;
-		border-radius: 999px;
-		background: #eef2ff;
-		color: #3730a3;
-	}
-
-	&__filter-panel {
-		position: absolute;
-		top: calc(100% + 4px);
-		right: 0;
-		min-width: 260px;
-		max-width: 360px;
-		padding: 10px 12px;
-		border-radius: 10px;
-		background: #ffffff;
-		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
-		border: 1px solid #dbe7ff;
-		z-index: 10;
-	}
-
-	&__filter-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-		gap: 8px;
-	}
-
-	&__filter-title {
-		font-size: 13px;
-		font-weight: 600;
-		color: #111827;
-	}
-
-	&__filter-reset {
-		border: none;
-		background: transparent;
-		color: #2563eb;
-		cursor: pointer;
-		font-size: 12px;
-		padding: 2px 4px;
-	}
-
-	&__filter-groups {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
-	}
-
-	&__filter-group-title {
-		font-size: 12px;
-		font-weight: 600;
-		margin-bottom: 4px;
-		color: #4b5563;
-	}
-
-	&__filter-options {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		max-height: 180px;
-		overflow: auto;
-	}
-
-	&__filter-option {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		color: #111827;
-	}
-
-	&__filter-option input {
-		cursor: pointer;
-	}
-
-	&__filter-empty {
-		font-size: 12px;
-		color: #6b7280;
-		margin: 0;
-	}
-
 	&__mode {
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
 		padding: 4px 10px;
 		border-radius: 999px;
-		background: #f3f7ff;
-		border: 1px solid #dbe7ff;
+		background: $color-bg-subtle;
+		border: 1px solid $color-border-accent;
 		font-size: 13px;
 		cursor: pointer;
 	}
 
 	&__mode-input {
 		cursor: pointer;
-		accent-color: var(--blue-600);
+		accent-color: $color-primary-600;
 	}
 
 	&__mode-label {
@@ -1697,34 +1487,9 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__quarter-select {
 		padding: 4px 8px;
 		border-radius: 6px;
-		border: 1px solid #cfe1ff;
-		background: #fff;
+		border: 1px solid $color-border;
+		background: $color-bg-surface;
 		font-size: 13px;
-	}
-
-	&__btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		height: var(--ctl-h);
-		padding: 0 12px;
-		border: 1px solid #cfe1ff;
-		border-radius: 8px;
-		background: #fff;
-		cursor: pointer;
-		font: inherit;
-		font-size: 13px;
-	}
-
-	&__btn--primary {
-		background: var(--blue-600);
-		color: #fff;
-		border-color: var(--blue-600);
-	}
-
-	&__btn--outline {
-		background: #fff;
-		color: #0a1a2b;
 	}
 
 	&__kpis {
@@ -1735,10 +1500,10 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__kpi {
-		background: #fff;
-		border: 1px solid #e6eef7;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
 		border-radius: 12px;
-		box-shadow: var(--shadow);
+		box-shadow: $shadow-sm;
 		padding: 10px 12px;
 		min-height: 72px;
 		display: flex;
@@ -1748,14 +1513,14 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__kpi-label {
 		font-size: 12px;
-		color: #6b7280;
+		color: $color-text-secondary;
 		margin-bottom: 4px;
 	}
 
 	&__kpi-value {
 		font-size: 18px;
 		font-weight: 700;
-		color: #0a1a2b;
+		color: $color-text-primary;
 	}
 
 	&__kpi--util .plan__kpi-value {
@@ -1769,9 +1534,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 999px;
-		background: #ecfdf5;
-		border: 1px solid #bbf7d0;
-		color: #065f46;
+		background: $color-success-bg;
+		border: 1px solid $color-success-border;
+		color: $color-success-text;
 		font-size: 13px;
 		font-weight: 600;
 	}
@@ -1782,30 +1547,30 @@ const chartRows = computed<ChartRow[]>(() => {
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 999px;
-		border: 1px solid #cfe1ff;
-		background: #e7f3ff;
-		color: #0a1a2b;
+		border: 1px solid $color-border;
+		background: $color-bg-cell-edit;
+		color: $color-text-primary;
 		font-size: 13px;
 
 		&.is-ok {
-			background: #e7f3ff;
-			border-color: #cfe1ff;
+			background: $color-bg-cell-edit;
+			border-color: $color-border;
 		}
 		&.is-warn {
-			background: #fff7e6;
-			border-color: #ffe1a6;
+			background: $color-warning-bg;
+			border-color: $color-warning-border;
 		}
 		&.is-over {
-			background: #fff1f0;
-			border-color: #ffc9c7;
-			color: #a40000;
+			background: $color-danger-bg-alt;
+			border-color: $color-danger-border-light;
+			color: $color-danger-text-dark;
 		}
 	}
 
 	&__table-wrapper {
 		overflow: auto;
-		background: #fff;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
 		border-radius: 12px;
 	}
 
@@ -1819,7 +1584,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		overflow-y: hidden;
 		background: rgba(245, 249, 255, 0.92);
 		backdrop-filter: blur(6px);
-		border-top: 1px solid #dbe7ff;
+		border-top: 1px solid $color-border-accent;
 		z-index: 50;
 	}
 
@@ -1838,22 +1603,22 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__table th + th,
 	&__table th + td,
 	&__table td + td {
-		border-left: 1px solid #d7dbe0;
+		border-left: 1px solid $color-border-muted;
 	}
 
 	.plan__head-row {
-		background: var(--blue-100, #eef5ff);
+		background: $color-bg-selected;
 	}
 
 	.plan__head-row--quarters {
-		background: var(--blue-50, #f5f7ff);
+		background: $color-bg-row-alt;
 	}
 
 	&__th,
 	&__cell {
 		padding: 0 10px;
 		text-align: center;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1925,16 +1690,16 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid #cfe0ff;
-		background: #ffffff;
-		color: #2a66ff;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
 		cursor: pointer;
 		flex: 0 0 auto;
 	}
 
 	&__project-link:hover:not(:disabled) {
-		background: #f2f7ff;
-		border-color: #b7d0ff;
+		background: $color-bg-row-hover;
+		border-color: $color-border-hover;
 	}
 
 	&__project-link:disabled {
@@ -1953,9 +1718,9 @@ const chartRows = computed<ChartRow[]>(() => {
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid rgb(239, 68, 68);
-		background: #fff7e6;
-		color: rgb(239, 68, 68);
+		border: 1px solid $color-danger;
+		background: $color-warning-bg;
+		color: $color-danger;
 		flex: 0 0 auto;
 		margin-left: auto;
 	}
@@ -1965,11 +1730,11 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	tbody .plan__row:nth-child(odd) {
-		background: #fbfdff;
+		background: $color-bg-row-alt;
 	}
 
 	tbody .plan__row:hover {
-		background: #f2f7ff;
+		background: $color-bg-row-hover;
 	}
 
 	tbody .plan__row {
@@ -1977,16 +1742,16 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	tbody .plan__row--selected {
-		background: #e7f3ff;
+		background: $color-bg-cell-edit;
 	}
 
 	tbody .plan__row--selected:hover {
-		background: #dbeafe;
+		background: $color-border-selected;
 	}
 
 	tbody .plan__row--selected > th,
 	tbody .plan__row--selected > td {
-		background: #d2e7fd !important;
+		background: $color-border-cell-edit !important;
 	}
 
 	&__th--left,
@@ -1998,7 +1763,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__sticky {
 		position: sticky;
 		left: 0;
-		background: #f8fbff;
+		background: $color-bg-active;
 		text-align: left;
 		z-index: 1;
 		box-shadow: 4px 0 8px -6px rgba(0, 0, 0, 0.08);
@@ -2006,18 +1771,18 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	thead .plan__th--sticky {
 		z-index: 2;
-		background: var(--blue-100, #eef5ff);
+		background: $color-bg-selected;
 	}
 
 	tfoot .plan__th--sticky {
 		z-index: 2;
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__th--total,
 	&__cell--total {
 		font-weight: 700;
-		background: #f3f7ff;
+		background: $color-bg-subtle;
 	}
 
 	&__cell--footer {
@@ -2030,13 +1795,13 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__th--over,
 	&__cell--over {
-		color: #a40000;
+		color: $color-danger-text-dark;
 		font-weight: 600;
 	}
 
 	&__th--over-bg,
 	&__cell--over-bg {
-		background: #f8e9e9;
+		background: $color-danger-bg-subtle;
 	}
 
 	&__th-name {
@@ -2047,7 +1812,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__capacity {
-		color: #446;
+		color: $color-text-soft;
 		opacity: 0.75;
 	}
 
@@ -2067,8 +1832,8 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__th-progress {
 		width: 100%;
 		height: 6px;
-		background: #eef4ff;
-		border: 1px solid #dbe7ff;
+		background: $color-highlight-row;
+		border: 1px solid $color-border-accent;
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -2083,15 +1848,15 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 		margin-top: 8px;
 	}
 
 	&__chart {
 		margin-top: 18px;
-		background: #fff;
-		border: 1px solid #e6eef7;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
+		box-shadow: $shadow-sm;
 		padding: 14px;
 		border-radius: 12px;
 	}
@@ -2119,7 +1884,7 @@ const chartRows = computed<ChartRow[]>(() => {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		color: #334155;
+		color: $color-text-field;
 		font-size: 13px;
 	}
 
@@ -2131,15 +1896,15 @@ const chartRows = computed<ChartRow[]>(() => {
 	}
 
 	&__legend-swatch--alloc {
-		background: var(--blue-600);
+		background: $color-primary-600;
 	}
 
 	&__legend-swatch--cap {
-		background: #cfe1ff;
+		background: $color-border;
 	}
 
 	&__legend-swatch--overspending {
-		background: rgb(239, 68, 68);
+		background: $color-danger;
 	}
 
 	&__bars {
@@ -2159,7 +1924,7 @@ const chartRows = computed<ChartRow[]>(() => {
 
 	&__bar-label {
 		font-size: 14px;
-		color: #0a1a2b;
+		color: $color-text-primary;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -2178,8 +1943,8 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__bar-track {
 		position: relative;
 		height: var(--bar-h);
-		background: #eef4ff;
-		border: 1px solid #dbe7ff;
+		background: $color-highlight-row;
+		border: 1px solid $color-border-accent;
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -2198,7 +1963,7 @@ const chartRows = computed<ChartRow[]>(() => {
 	&__bar-value {
 		font-variant-numeric: tabular-nums;
 		font-size: 13px;
-		color: #334155;
+		color: $color-text-field;
 		white-space: nowrap;
 		text-align: right;
 	}

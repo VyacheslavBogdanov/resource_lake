@@ -9,7 +9,7 @@
 			<input class="projects__input" v-model.trim="newProjectManager" placeholder="Руководитель проекта" />
 			<input class="projects__input" v-model.trim="newProjectType" placeholder="Тип проекта" />
 			<input class="projects__input" v-model.trim="newDescription" placeholder="Описание" />
-			<button class="btn btn--primary" type="submit">Добавить</button>
+			<BaseButton variant="primary" type="submit">Добавить</BaseButton>
 		</form>
 
 		<div v-if="store.projects.length" class="projects__table-wrap">
@@ -215,6 +215,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import BaseButton from '../components/ui/BaseButton.vue';
 import { useResourceStore } from '../stores/resource/index';
 import type { Project } from '../types/domain';
 
@@ -429,7 +430,7 @@ function onDragEnd() {
 		flex: 0 1 260px;
 		padding: 0 10px;
 		height: var(--ctl-h);
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
 		box-sizing: border-box;
 		font: inherit;
@@ -444,8 +445,8 @@ function onDragEnd() {
 	&__table {
 		width: 100%;
 		min-width: 880px;
-		background: #fff;
-		box-shadow: var(--shadow);
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
 		border-collapse: separate;
 		border-spacing: 0;
 		table-layout: fixed;
@@ -454,7 +455,7 @@ function onDragEnd() {
 	&__th,
 	&__cell {
 		padding: 0 12px;
-		border-bottom: 1px solid #e9eef6;
+		border-bottom: 1px solid $color-border-row;
 		text-align: left;
 		vertical-align: middle;
 	}
@@ -478,9 +479,9 @@ function onDragEnd() {
 	}
 
 	&__row--drag-over {
-		outline: 2px dashed #7aa4ff;
+		outline: 2px dashed $color-border-active;
 		outline-offset: -4px;
-		background: #f5f8ff;
+		background: $color-bg-focus-row;
 	}
 
 	&__text {
@@ -507,38 +508,38 @@ function onDragEnd() {
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid #cfe0ff;
-		background: #ffffff;
-		color: #2a66ff;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
 		cursor: pointer;
 		padding: 0;
 
 		&:hover {
-			background: #f2f7ff;
-			border-color: #b7d0ff;
+			background: $color-bg-row-hover;
+			border-color: $color-border-hover;
 		}
 	}
 
 	&__icon-btn--archive {
-		border-color: #d6e2ff;
-		color: #445;
+		border-color: $color-border-cell;
+		color: $color-text-subtle;
 	}
 
 	&__icon-btn--archive:hover {
-		background: #eef3ff;
-		border-color: #b7d0ff;
-		color: #123;
+		background: $color-bg-header;
+		border-color: $color-border-hover;
+		color: $color-text-primary;
 	}
 
 	&__icon-btn--danger {
-		border-color: #ffb3b3;
-		background: #fff5f5;
-		color: #8a0000;
+		border-color: $color-danger-border;
+		background: $color-danger-bg;
+		color: $color-danger-text;
 	}
 
 	&__icon-btn--danger:hover {
-		background: #ffecec;
-		border-color: #ff9a9a;
+		background: $color-danger-bg-hover;
+		border-color: $color-danger-border-alt;
 	}
 
 	&__cell--url {
@@ -551,8 +552,8 @@ function onDragEnd() {
 	&__input {
 		&:focus-visible {
 			outline: none;
-			border-color: var(--blue-600);
-			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+			border-color: $color-primary-600;
+			box-shadow: $shadow-focus;
 		}
 	}
 
@@ -560,7 +561,7 @@ function onDragEnd() {
 		width: 100%;
 		height: var(--ctl-h);
 		padding: 0 10px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
@@ -570,32 +571,32 @@ function onDragEnd() {
 		width: 100%;
 		height: var(--ctl-h);
 		padding: 0 10px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
 	}
 
 	&__empty {
-		color: #446;
+		color: $color-text-soft;
 	}
 
 	&__drag-handle {
 		width: 24px;
 		height: 24px;
 		border-radius: 999px;
-		border: 1px solid #d6e2ff;
-		background: #fff;
+		border: 1px solid $color-border-cell;
+		background: $color-bg-surface;
 		cursor: grab;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 13px;
-		color: #445;
+		color: $color-text-subtle;
 		padding: 0;
 
 		&:hover {
-			background: #eef3ff;
+			background: $color-bg-header;
 		}
 
 		&:active {
@@ -607,7 +608,7 @@ function onDragEnd() {
 		width: 100%;
 		height: var(--ctl-h);
 		padding: 0 10px;
-		border: 1px solid #cfe1ff;
+		border: 1px solid $color-border;
 		border-radius: 8px;
 		box-sizing: border-box;
 		font-size: 13px;
@@ -626,37 +627,14 @@ function onDragEnd() {
 	border: 1px solid transparent;
 
 	&--ok {
-		background: #e7f3ff;
-		color: #124;
-		border-color: #cfe1ff;
+		background: $color-bg-cell-edit;
+		color: $color-text-primary;
+		border-color: $color-border;
 	}
 	&--muted {
-		background: #eef0f3;
-		color: #556;
-		border-color: #e1e5ea;
-	}
-}
-
-.btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: var(--ctl-h);
-	padding: 0 12px;
-	border: 1px solid #cfe1ff;
-	border-radius: 8px;
-	background: #fff;
-	cursor: pointer;
-
-	&--primary {
-		background: var(--blue-600);
-		color: #fff;
-		border-color: var(--blue-600);
-	}
-	&--danger {
-		border-color: #ffb3b3;
-		color: #8a0000;
-		background: #fff5f5;
+		background: $color-disabled-bg;
+		color: $color-disabled-text;
+		border-color: $color-disabled-border;
 	}
 }
 </style>

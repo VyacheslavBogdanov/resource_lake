@@ -63,26 +63,36 @@ resource-planner/
 ├── src/
 │   ├── App.vue                     # Корневой компонент, вызывает store.fetchAll()
 │   ├── main.ts                     # Точка входа
-│   ├── styles.scss                 # Глобальные стили (32 строки, 3 CSS-переменных)
+│   ├── styles/
+│   │   ├── _variables.scss         # SCSS дизайн-токены
+│   │   ├── _mixins.scss            # SCSS миксины
+│   │   ├── _reset.scss             # Сброс стилей
+│   │   └── index.scss              # Точка входа (@use всех partials)
 │   ├── pages/
-│   │   ├── ResourcePlan.vue        # 2432 строки — основная таблица распределения
-│   │   ├── DataManage.vue          # 731 строка  — импорт/экспорт данных
-│   │   ├── Projects.vue            # 688 строк   — управление проектами
-│   │   └── Groups.vue              # 507 строк   — управление группами
+│   │   ├── ResourcePlan.vue        # 1982 строки — основная таблица распределения
+│   │   ├── DataManage.vue          # 491 строка  — импорт/экспорт данных
+│   │   ├── Projects.vue            # 640 строк   — управление проектами
+│   │   └── Groups.vue              # 484 строки  — управление группами
 │   ├── stores/resource/
 │   │   ├── index.ts                # 207 строк — монолитный Pinia-стор
 │   │   ├── projects.actions.ts     # Экшены для проектов
 │   │   ├── groups.actions.ts       # Экшены для групп
 │   │   ├── allocations.actions.ts  # Экшены для аллокаций
-│   │   ├── utils.ts                # Утилиты сортировки (41 строка)
+│   │   ├── utils.ts                # Утилиты сортировки (34 строки)
 │   │   ├── storage.ts              # localStorage для скрытых групп
 │   │   ├── types.ts                # ResourceState
 │   │   └── constants.ts            # Константы
 │   ├── services/
 │   │   └── http.ts                 # 38 строк — обёртка над fetch
 │   ├── components/
+│   │   ├── ui/                     # UI-кит (BaseButton, BaseInput)
+│   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
 │   │   └── UiSelect.vue            # Компонент выбора
+│   ├── composables/
+│   │   └── useProjectFilters.ts    # Общий composable фильтрации проектов
+│   ├── utils/
+│   │   └── format.ts               # Утилиты форматирования (roundInt)
 │   ├── router/
 │   │   └── index.ts                # 16 строк — маршруты без name и lazy-loading
 │   └── types/
@@ -136,12 +146,12 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 2. ~~Зависимость `xlsx` не используется в коде~~ — удалено (P0)
 3. ~~`.gitignore` не содержит `.env`, `.firebase/`, `.DS_Store`~~ — расширено (P0)
 4. ~~Firebase-артефакты~~ — удалены (P0)
-5. Только 3 CSS-переменных, 193 хардкоженных цвета в HEX
-6. Всего 2 общих компонента (NavHeader, UiSelect)
+5. ~~Только 3 CSS-переменных, 193 хардкоженных цвета в HEX~~ — SCSS-архитектура с дизайн-токенами (P1)
+6. ~~Всего 2 общих компонента~~ — добавлены BaseButton, BaseInput, FilterPanel (P1)
 7. Монолитный стор (все сущности в одном defineStore)
-8. `ResourcePlan.vue` — 2432 строки (крупнейший файл)
-9. `roundInt()` дублируется 3 раза (ResourcePlan:908, Groups:97, DataManage:285)
-10. Фильтрация customer/manager дублируется в ResourcePlan и DataManage
+8. `ResourcePlan.vue` — 1982 строки (крупнейший файл)
+9. ~~`roundInt()` дублируется 3 раза~~ — вынесен в `src/utils/format.ts` (P1)
+10. ~~Фильтрация customer/manager дублируется в ResourcePlan и DataManage~~ — вынесена в `useProjectFilters` (P1)
 11. Drag-n-drop код дублируется в Projects и Groups
 12. `valueByPair()` и `quarterByPair()` используют `.find()` = O(n) на ячейку
 13. Маршруты без `name`, навигация по строковым path, нет lazy-loading

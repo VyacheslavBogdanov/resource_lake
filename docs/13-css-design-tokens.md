@@ -28,16 +28,17 @@
 
 > **Важно:** используем именно SCSS переменные (`$color-primary-600`) и миксины (`@mixin`), а **не** CSS custom properties (`var(--color-primary)`). SCSS переменные компилируются в конкретные значения на этапе сборки, что проще для текущего проекта и не требует `:root`-блока.
 
-### Целевая SCSS-архитектура
+### SCSS-архитектура
 
 ```
 src/styles/
-├── _variables.scss    # SCSS переменные (дизайн-токены)
+├── _variables.scss    # SCSS переменные (дизайн-токены + типографика)
 ├── _mixins.scss       # SCSS миксины для повторяющихся паттернов
-├── _reset.scss        # Сброс стилей (текущее содержимое styles.scss)
-├── _typography.scss   # Типографика
+├── _reset.scss        # Сброс стилей
 └── index.scss         # Точка входа (@use всех partials)
 ```
+
+> Типографика включена в `_variables.scss` (секции `$font-*`), отдельный файл `_typography.scss` не создан.
 
 ### \_variables.scss — дизайн-токены
 
@@ -518,20 +519,19 @@ import '@/styles/index.scss';
 @use 'variables' as *;
 @use 'mixins' as *;
 @use 'reset';
-@use 'typography';
 ```
 
 ## Порядок выполнения
 
-1. Создать `src/styles/_variables.scss` с SCSS-токенами
-2. Создать `src/styles/_mixins.scss` с миксинами
-3. Создать `src/styles/_reset.scss` (перенести из `styles.scss`)
-4. Создать `src/styles/_typography.scss` (шрифты, базовые стили текста)
-5. Создать `src/styles/index.scss` (точка входа)
-6. Настроить `additionalData` в `vite.config.ts`
-7. Заменить `import './styles.scss'` на `import './styles/index.scss'` в `main.ts`
-8. Пофайлово заменять хардкоженные значения на SCSS-переменные и миксины (начать с `styles.scss` и `NavHeader.vue`, затем крупные файлы)
-9. Удалить старый `src/styles.scss`
+1. ~~Создать `src/styles/_variables.scss` с SCSS-токенами~~ — ✅
+2. ~~Создать `src/styles/_mixins.scss` с миксинами~~ — ✅
+3. ~~Создать `src/styles/_reset.scss` (перенести из `styles.scss`)~~ — ✅
+4. ~~Создать `src/styles/_typography.scss`~~ — типографика включена в `_variables.scss`
+5. ~~Создать `src/styles/index.scss` (точка входа)~~ — ✅
+6. ~~Настроить `additionalData` в `vite.config.ts`~~ — ✅
+7. ~~Заменить `import './styles.scss'` на `import './styles/index.scss'` в `main.ts`~~ — ✅
+8. Пофайлово заменять хардкоженные значения на SCSS-переменные и миксины — в процессе (последующие фазы)
+9. ~~Удалить старый `src/styles.scss`~~ — ✅
 
 ## Связанные документы
 

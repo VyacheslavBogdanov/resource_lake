@@ -77,14 +77,20 @@ json-server обслуживает три JSON-файла из `data/` как RE
 
 ```
 src/
-├── components/    # UI-компоненты (NavHeader, UiSelect)
+├── components/
+│   ├── ui/        # UI-кит (BaseButton, BaseInput)
+│   ├── shared/    # Общие компоненты (FilterPanel)
+│   ├── NavHeader.vue
+│   └── UiSelect.vue
+├── composables/   # Общие composables (useProjectFilters)
 ├── pages/         # Страницы (ResourcePlan, Projects, Groups, DataManage)
 ├── stores/        # Pinia store
 │   └── resource/  # Модульный store (actions, utils, types, constants)
 ├── services/      # HTTP-клиент (http.ts)
 ├── router/        # Маршрутизация
 ├── types/         # TypeScript типы (domain.ts)
-└── styles.scss    # Глобальные стили
+├── utils/         # Утилиты (format.ts)
+└── styles/        # SCSS-архитектура (_variables, _mixins, _reset, index)
 ```
 
 **Маршруты:** `/` → редирект на `/plan` | `/plan` — таблица распределения | `/projects` — проекты | `/groups` — группы | `/manage` — импорт/экспорт
@@ -94,7 +100,7 @@ src/
 - **Следуй [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md)** — основной документ по стилю кода
 - Компонент не более **300 строк** — декомпозируй при превышении
 - TypeScript **strict mode**, никакого `any`
-- Стили по **БЭМ**, используй SCSS переменные из `styles.scss`
+- Стили по **БЭМ**, используй SCSS переменные из `src/styles/_variables.scss`
 - Интерфейс на **русском языке**
 - Prettier: табы, одинарные кавычки, точки с запятой, ширина строки 120
 
@@ -104,6 +110,69 @@ src/
 | ------------------- | --------------------------------- | ----------------------- |
 | `VITE_API_BASE_URL` | Базовый URL API                   | `http://localhost:3001` |
 | `VITE_HELP_URL`     | URL для иконки помощи в NavHeader | —                       |
+
+## Кастомные скиллы
+
+| Команда      | Описание                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------- |
+| `/check`     | Регрессионное тестирование: сборка, unit/E2E тесты, API, страницы, валидация данных, качество кода             |
+| `/docs-sync` | Сверка документации `docs/*.md` и `CLAUDE.md` с фактическим состоянием кодовой базы (пути, строки, структура) |
+
+## GitHub Project
+
+Проект [`resource_lake_refactoring`](https://github.com/users/VyacheslavBogdanov/projects/2) (номер 2) используется для трекинга фаз рефакторинга P0–P6. **Claude выполняет эти действия автоматически** — пользователю не нужно запускать команды вручную.
+
+### Реквизиты
+
+| Параметр            | Значение                              |
+| ------------------- | ------------------------------------- |
+| Project ID          | `PVT_kwHOBpIZZc4BRW3s`               |
+| Owner               | `VyacheslavBogdanov`                  |
+| Status field ID     | `PVTSSF_lAHOBpIZZc4BRW3szg_NXnk`     |
+| Status: To Do       | `17c49709`                            |
+| Status: In progress | `c849bf8b`                            |
+| Status: Done        | `e848cdcf`                            |
+
+### Автоматический workflow
+
+#### Начало фазы
+
+**Когда:** Claude создаёт ветку под фазу (например, `p2-store`).
+**Действие:** автоматически перевести все тикеты фазы в «In progress».
+
+```bash
+# Подставить нужный лейбл фазы (P2, P3, …)
+for ISSUE in $(gh issue list --label P2 --state open --json number --jq '.[].number'); do
+  ITEM_ID=$(gh project item-list 2 --owner VyacheslavBogdanov --format json \
+    | jq -r ".items[] | select(.content.number == $ISSUE) | .id")
+  [ -n "$ITEM_ID" ] && gh project item-edit \
+    --project-id PVT_kwHOBpIZZc4BRW3s \
+    --id "$ITEM_ID" \
+    --field-id PVTSSF_lAHOBpIZZc4BRW3szg_NXnk \
+    --single-select-option-id c849bf8b
+  echo "Issue #$ISSUE → In progress"
+done
+```
+
+#### Завершение фазы
+
+**Когда:** PR фазы смержен в main.
+**Действие:** автоматически закрыть тикеты с комментарием и перевести в «Done».
+
+```bash
+# Подставить нужный лейбл фазы (P2, P3, …)
+for ISSUE in $(gh issue list --label P2 --state open --json number --jq '.[].number'); do
+  gh issue close "$ISSUE" --comment "Завершено в рамках фазы P2"
+  ITEM_ID=$(gh project item-list 2 --owner VyacheslavBogdanov --format json \
+    | jq -r ".items[] | select(.content.number == $ISSUE) | .id")
+  [ -n "$ITEM_ID" ] && gh project item-edit \
+    --project-id PVT_kwHOBpIZZc4BRW3s \
+    --id "$ITEM_ID" \
+    --field-id PVTSSF_lAHOBpIZZc4BRW3szg_NXnk \
+    --single-select-option-id e848cdcf
+  echo "Issue #$ISSUE → Done (closed)"
+done
+```
 
 ## Перед коммитом
 

@@ -1,8 +1,10 @@
+@use 'variables' as *;
+
 :root {
-	--blue-600: #2563eb;
-	--blue-700: #1d4ed8;
-	--shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+	--blue-600: #{$color-primary-600};
+	--blue-700: #{$color-primary-700};
 }
+
 * {
 	box-sizing: border-box;
 }
@@ -10,8 +12,8 @@ html,
 body,
 #app {
 	height: 100%;
-	background: #f5f9ff;
-	color: #0a1a2b;
+	background: $color-bg-page;
+	color: $color-text-primary;
 	font-family:
 		system-ui,
 		-apple-system,
@@ -24,7 +26,7 @@ body,
 		'Noto Sans';
 }
 h1 {
-	font-size: 22px;
+	font-size: $font-size-xl;
 	margin: 0 0 4px;
 }
 table {
@@ -32,8 +34,8 @@ table {
 }
 th,
 td {
-	font-size: 14px;
+	font-size: $font-size-base;
 }
 small {
-	font-size: 12px;
+	font-size: $font-size-xs;
 }
