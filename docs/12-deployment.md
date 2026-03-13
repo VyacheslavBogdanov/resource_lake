@@ -1,109 +1,45 @@
 # 12. Деплой
 
-**Приоритет:** P4 (деплой) / P0 (firebase-артефакты) | **Сложность:** S
+## GitHub Pages
 
-## Важно: бэкенд не рефакторим
+Фронтенд деплоится на GitHub Pages через GitHub Actions. Деплой срабатывает автоматически при push в `main`.
 
-**json-server (`api.js`) и файлы данных (`data/*.json`) остаются без изменений.** Это сознательное архитектурное решение. Рефакторинг затрагивает только фронтенд.
+**URL:** `https://vyacheslavbogdanov.github.io/resource_lake/`
 
-## Firebase-артефакты
+### Как это работает
 
-В проекте присутствуют файлы Firebase:
+1. Push в `main` → запускается workflow `.github/workflows/deploy.yml`
+2. CI: checkout → setup-node 20 → `npm ci` → `npm run lint` → `npm run build`
+3. `cp dist/index.html dist/404.html` — SPA-роутинг на GitHub Pages (GitHub отдаёт `404.html` при неизвестных путях, vue-router подхватывает путь)
+4. Upload artifact → deploy на GitHub Pages
 
-| Файл            | Содержимое                          |
-| --------------- | ----------------------------------- |
-| `firebase.json` | Конфиг Firebase Hosting             |
-| `.firebaserc`   | Project alias                       |
-| `.firebase/`    | Кэш деплоя (`hosting.ZGlzdA.cache`) |
+### Конфигурация
 
-### Действие
+**`vite.config.ts`** — `base: '/resource_lake/'` добавляет префикс ко всем ассетам в production-сборке.
 
-**Если Firebase используется для деплоя** — оставить файлы, добавить `.firebase/` в `.gitignore`.
+**`src/router/index.ts`** — `createWebHistory(import.meta.env.BASE_URL)` использует `base` из Vite:
+- Dev: `BASE_URL = '/'` → роутинг работает на `/plan`, `/projects` и т.д.
+- Production: `BASE_URL = '/resource_lake/'` → роутинг на `/resource_lake/plan` и т.д.
 
-**Если Firebase НЕ используется** — удалить все три:
+### Ручная настройка (одноразово)
 
-```bash
-rm firebase.json .firebaserc
-rm -rf .firebase/
-```
+В Settings → Pages выбрать Source: **GitHub Actions**.
 
-И убрать упоминание `firebase deploy` из документации.
+### Переменные окружения
 
-**Рекомендация:** уточнить у владельца проекта, используется ли Firebase для деплоя.
-
-## Варианты деплоя фронтенда
-
-### Вариант A: Firebase Hosting (текущий)
-
-Уже настроен. Команда: `firebase deploy`.
-
-Убедиться, что `firebase.json` содержит корректный `rewrites` для SPA:
-
-```json
-{
-	"hosting": {
-		"public": "dist",
-		"rewrites": [{ "source": "**", "destination": "/index.html" }]
-	}
-}
-```
-
-### Вариант B: Vercel
-
-```bash
-npm i -g vercel
-vercel
-```
-
-Vercel автоматически определяет Vite-проект. Настройки:
-
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Environment Variables: `VITE_API_BASE_URL`
-
-### Вариант C: Netlify
-
-Файл `netlify.toml` в корне:
-
-```toml
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-```
-
-### Вариант D: GitHub Pages
-
-Настройка `base` в `vite.config.ts`:
-
-```typescript
-export default defineConfig({
-	base: '/resource-planner/', // имя репозитория
-	// ...
-});
-```
-
-GitHub Actions workflow для автодеплоя.
-
-## Переменные окружения для production
+Задаются через Settings → Secrets and variables → Actions → Variables (Repository variables):
 
 | Переменная          | Назначение              | Пример                     |
 | ------------------- | ----------------------- | -------------------------- |
 | `VITE_API_BASE_URL` | URL API-сервера         | `https://api.example.com`  |
 | `VITE_HELP_URL`     | URL справки в NavHeader | `https://docs.example.com` |
 
-**Важно:** в production `VITE_API_BASE_URL` должен указывать на реальный API-сервер (или json-server, развёрнутый отдельно), а не на `localhost:3001`.
+Переменные опциональны. Без `VITE_API_BASE_URL` приложение использует `http://localhost:3001` (API-вызовы не будут работать на production — это ожидаемо для frontend-демо).
 
-## Файлы для изменения
+### Ручной запуск
 
-| Файл             | Действие                                       |
-| ---------------- | ---------------------------------------------- |
-| `.gitignore`     | Добавить `.firebase/` (если Firebase остаётся) |
-| `firebase.json`  | Проверить конфиг / удалить если не нужен       |
-| `.firebaserc`    | Проверить / удалить если не нужен              |
-| `.firebase/`     | Добавить в .gitignore / удалить если не нужен  |
-| `vite.config.ts` | Настроить `base` при деплое на GitHub Pages    |
+Workflow поддерживает `workflow_dispatch` — можно запустить вручную через Actions → Deploy to GitHub Pages → Run workflow.
+
+## Важно: бэкенд не деплоится
+
+**json-server (`api.js`) и файлы данных (`data/*.json`) не деплоятся на GitHub Pages.** API-вызовы на production не будут работать — приложение задеплоено как frontend-демо. Для подключения реального API — задать `VITE_API_BASE_URL` в Repository variables.

@@ -10,7 +10,7 @@
 | P1   | Фундамент                  | Завершена   | 2026-03-12      | p1-foundation |
 | P2   | Архитектура                | Завершена   | 2026-03-13      | p2-store |
 | P3   | Декомпозиция компонентов   | Завершена   | 2026-03-13      | p3-decomposition |
-| P4   | Инфраструктура             | Не начата   | —               | —   |
+| P4   | Инфраструктура             | Завершена   | 2026-03-13      | p4-deployment |
 | P5   | Кастомные модальные окна   | Не начата   | —               | —   |
 | P6   | Улучшение UI               | Не начата   | —               | —   |
 
@@ -158,26 +158,34 @@
 
 ## Фаза 4 (P4) — Инфраструктура
 
-**Статус:** Не начата
-**Дата завершения:** —
+**Статус:** Завершена
+**Дата завершения:** 2026-03-13
 
 ### Выполненные задачи
 
-- [ ] Настройка деплоя фронтенда
+- [x] `base: '/resource_lake/'` в `vite.config.ts`
+- [x] `createWebHistory(import.meta.env.BASE_URL)` в роутере
+- [x] GitHub Actions workflow (`.github/workflows/deploy.yml`): CI + деплой на GitHub Pages
+- [x] `404.html` = `index.html` для SPA-роутинга на GitHub Pages
+- [x] Документация `docs/12-deployment.md` обновлена
 
 ### Ссылки на PR
 
-— (будет заполнено)
+Ветка: `p4-deployment`
 
 ### Результаты регрессионного тестирования
 
 Чеклист: [02-refactoring-priorities.md → Чеклист регрессионного тестирования](02-refactoring-priorities.md#чеклист-регрессионного-тестирования)
 
-— (будет заполнено)
+- `npm run lint` — OK
+- `npm run format` — OK
+- `npm run build` — OK, пути с `/resource_lake/` в `dist/index.html`
 
 ### Заметки / проблемы
 
-— (будет заполнено)
+- API (json-server) не деплоится — на production API-вызовы не работают (ожидаемо, frontend-демо)
+- Для реального API: задать `VITE_API_BASE_URL` в GitHub Repository variables
+- Ручной шаг: Settings → Pages → Source: GitHub Actions
 
 ---
 
