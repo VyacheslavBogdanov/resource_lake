@@ -61,7 +61,7 @@ resource-planner/
 │   ├── groups.json                 # Данные ресурсных групп
 │   └── data.json                   # Данные аллокаций
 ├── src/
-│   ├── App.vue                     # Корневой компонент, вызывает store.fetchAll()
+│   ├── App.vue                     # Корневой компонент, вызывает fetchAllData()
 │   ├── main.ts                     # Точка входа
 │   ├── styles/
 │   │   ├── _variables.scss         # SCSS дизайн-токены
@@ -69,10 +69,24 @@ resource-planner/
 │   │   ├── _reset.scss             # Сброс стилей
 │   │   └── index.scss              # Точка входа (@use всех partials)
 │   ├── pages/
-│   │   ├── ResourcePlan.vue        # 1985 строк — основная таблица распределения
-│   │   ├── DataManage.vue          # 484 строки  — импорт/экспорт данных
-│   │   ├── Projects.vue            # 639 строк   — управление проектами
-│   │   └── Groups.vue              # 482 строки  — управление группами
+│   │   ├── ResourcePlan/           # 294 строки — основная таблица распределения
+│   │   │   ├── ResourcePlan.vue
+│   │   │   ├── composables/        # useViewMode, useGroupVisibility, useColumnTotals,
+│   │   │   │                       # useCsvExport, useTableScroll, useProjectSort, useChartData
+│   │   │   └── components/         # PlanToolbar, PlanTableHeader, PlanTableRow,
+│   │   │                           # PlanTableFooter, PlanCapacityChart, PlanKpis
+│   │   ├── DataManage/             # 110 строк — импорт/экспорт данных
+│   │   │   ├── DataManage.vue
+│   │   │   ├── composables/        # useAllocationBuffer, useBatchSave
+│   │   │   └── components/         # ManageToolbar, ManageTable
+│   │   ├── Projects/               # 119 строк — управление проектами
+│   │   │   ├── Projects.vue
+│   │   │   ├── composables/        # useProjectForm, useProjectInlineEdit
+│   │   │   └── components/         # ProjectAddForm, ProjectTable, ProjectTableRow
+│   │   └── Groups/                 # 82 строки — управление группами
+│   │       ├── Groups.vue
+│   │       ├── composables/        # useGroupForm, useGroupInlineEdit
+│   │       └── components/         # GroupAddForm, GroupTable, GroupTableRow
 │   ├── stores/
 │   │   ├── projects.ts             # useProjectsStore — проекты (152 строки)
 │   │   ├── groups.ts               # useGroupsStore — группы ресурсов (144 строки)
@@ -88,14 +102,19 @@ resource-planner/
 │   │   ├── ui/                     # UI-кит (BaseButton, BaseInput)
 │   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
-│   │   └── UiSelect.vue            # Компонент выбора
+│   │   └── UiSelect/               # Компонент выбора (169 строк)
+│   │       ├── UiSelect.vue
+│   │       ├── composables/        # useDropdown
+│   │       └── components/         # SelectTrigger, SelectDropdown
 │   ├── composables/
 │   │   ├── useProjectFilters.ts    # Общий composable фильтрации проектов
+│   │   ├── useDragReorder.ts       # Общий composable drag-and-drop (Projects, Groups)
 │   │   └── useInitialFetch.ts      # Инициализация данных (fetchAllData)
 │   ├── utils/
 │   │   └── format.ts               # Утилиты форматирования (roundInt)
 │   ├── router/
-│   │   └── index.ts                # 16 строк — маршруты без name и lazy-loading
+│   │   ├── index.ts                # Маршруты с name и lazy-loading (33 строки)
+│   │   └── names.ts                # Enum RouteNames (6 строк)
 │   └── types/
 │       └── domain.ts               # 41 строк — Project, Group, Allocation, AllocationPayload
 ├── eslint.config.mjs               # Конфиг ESLint
@@ -150,10 +169,10 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 5. ~~Только 3 CSS-переменных, 193 хардкоженных цвета в HEX~~ — SCSS-архитектура с дизайн-токенами (P1)
 6. ~~Всего 2 общих компонента~~ — добавлены BaseButton, BaseInput, FilterPanel (P1)
 7. ~~Монолитный стор (все сущности в одном defineStore)~~ — решено (P2): декомпозиция на 4 модуля
-8. `ResourcePlan.vue` — 1985 строк (крупнейший файл)
+8. ~~`ResourcePlan.vue` — 1985 строк (крупнейший файл)~~ — решено (P3): декомпозиция на 294 строки + 6 composables + 6 компонентов
 9. ~~`roundInt()` дублируется 3 раза~~ — вынесен в `src/utils/format.ts` (P1)
 10. ~~Фильтрация customer/manager дублируется в ResourcePlan и DataManage~~ — вынесена в `useProjectFilters` (P1)
-11. Drag-n-drop код дублируется в Projects и Groups
+11. ~~Drag-n-drop код дублируется в Projects и Groups~~ — решено (P3): общий composable `useDragReorder`
 12. ~~`valueByPair()` и `quarterByPair()` используют `.find()` = O(n) на ячейку~~ — решено (P2): `byPairIndex` Map для O(1)
-13. Маршруты без `name`, навигация по строковым path, нет lazy-loading
+13. ~~Маршруты без `name`, навигация по строковым path, нет lazy-loading~~ — решено (P3): enum RouteNames + lazy-loading
 14. Несогласованность: Projects используют `order`, Groups используют `position`

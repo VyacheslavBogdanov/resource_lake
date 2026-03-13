@@ -61,7 +61,7 @@
 | Навигация по `name`, lazy-loading маршрутов        | [11-routing-and-navigation.md](11-routing-and-navigation.md)           | S         |
 
 **Зависимости:** Фаза 2 (новые сторы используются в composables)
-**Результат:** каждый файл < 300 строк, чистые composables
+**Результат:** каждый файл < 300 строк, чистые composables. **Завершено 2026-03-13.**
 
 ---
 
@@ -119,10 +119,10 @@
 | ~~Декомпозиция стора~~      | [05](05-store-decomposition.md)          | P2   | L         | ✅                     |
 | ~~API + обработка ошибок~~  | [08](08-api-layer-and-error-handling.md) | P2   | M         | ✅                     |
 | ~~Индекс allocationsByPair~~| [09](09-performance-optimization.md)     | P2   | S         | ✅                     |
-| Декомпозиция ResourcePlan   | [06](06-resource-plan-decomposition.md)  | P3   | XL        | P2                     |
-| Декомпозиция страниц        | [14](14-pages-decomposition.md)          | P3   | L         | P2                     |
-| useDragReorder              | [10](10-drag-and-drop-refactoring.md)    | P3   | M         | P2                     |
-| Роутинг (name + lazy)       | [11](11-routing-and-navigation.md)       | P3   | S         | —                      |
+| ~~Декомпозиция ResourcePlan~~| [06](06-resource-plan-decomposition.md)  | P3   | XL        | ✅                     |
+| ~~Декомпозиция страниц~~    | [14](14-pages-decomposition.md)          | P3   | L         | ✅                     |
+| ~~useDragReorder~~           | [10](10-drag-and-drop-refactoring.md)    | P3   | M         | ✅                     |
+| ~~Роутинг (name + lazy)~~   | [11](11-routing-and-navigation.md)       | P3   | S         | ✅                     |
 | Деплой фронтенда            | [12](12-deployment.md)                   | P4   | S         | P0–P3                  |
 | ConfirmDialog.vue           | —                                        | P5   | S         | P1 (UI-кит)            |
 | useConfirm composable       | —                                        | P5   | S         | P1 (UI-кит)            |

@@ -1,10 +1,16 @@
+<script setup lang="ts">
+import { RouteNames } from '../router/names';
+
+const helpUrl = import.meta.env.VITE_HELP_URL || '';
+</script>
+
 <template>
 	<header class="header">
 		<nav class="header__nav">
-			<RouterLink class="header__link" to="/plan">Ресурсный план</RouterLink>
-			<RouterLink class="header__link" to="/projects">Проекты</RouterLink>
-			<RouterLink class="header__link" to="/groups">Группы ресурсов</RouterLink>
-			<RouterLink class="header__link" to="/manage">Управление данными</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Plan }">Ресурсный план</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Projects }">Проекты</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Groups }">Группы ресурсов</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Manage }">Управление данными</RouterLink>
 		</nav>
 		<a
 			v-if="helpUrl"
@@ -23,10 +29,6 @@
 		</a>
 	</header>
 </template>
-
-<script setup lang="ts">
-const helpUrl = import.meta.env.VITE_HELP_URL || '';
-</script>
 
 <style lang="scss" scoped>
 .header {

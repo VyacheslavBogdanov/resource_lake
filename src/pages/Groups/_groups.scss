@@ -1,0 +1,144 @@
+@use '../../styles/variables' as *;
+
+.groups {
+	--row-h: 44px;
+	--ctl-h: 32px;
+
+	&__form {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 14px;
+		flex-wrap: wrap;
+	}
+
+	&__input {
+		padding: 0 10px;
+		height: var(--ctl-h);
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		background: $color-bg-surface;
+		box-sizing: border-box;
+		font: inherit;
+		text-align: center;
+
+		&:focus-visible {
+			outline: none;
+			border-color: $color-primary-600;
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
+	}
+
+	&__input--num {
+		width: 200px;
+	}
+
+	&__input--pct {
+		width: 165px;
+	}
+
+	&__input--inline {
+		width: 80%;
+	}
+
+	&__input--cell {
+		width: 100%;
+	}
+
+	&__input--left {
+		text-align: left;
+	}
+
+	&__table {
+		width: 100%;
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
+		border-collapse: separate;
+		border-spacing: 0;
+		table-layout: fixed;
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	&__th,
+	&__cell {
+		padding: 0 12px;
+		border-bottom: 1px solid $color-border-row;
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	&__cell-inner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: var(--row-h);
+		height: var(--row-h);
+		gap: 8px;
+	}
+
+	&__cell-inner--left {
+		justify-content: flex-start;
+	}
+
+	&__row:hover {
+		background: $color-bg-row-alt;
+	}
+
+	&__row--drag-over {
+		outline: 2px dashed $color-border-active;
+		outline-offset: -4px;
+		background: $color-bg-focus-row;
+	}
+
+	&__drag-handle {
+		width: 24px;
+		height: 24px;
+		border-radius: 999px;
+		border: 1px solid $color-border-cell;
+		background: $color-bg-surface;
+		cursor: grab;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		color: $color-text-subtle;
+		padding: 0;
+
+		&:hover {
+			background: $color-bg-header;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.6;
+		}
+	}
+
+	&__cell--editing {
+		background: $color-bg-active;
+	}
+
+	&__cell--actions {
+		white-space: normal;
+	}
+
+	&__actions {
+		display: inline-flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	&__text {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		line-height: 1;
+	}
+}
