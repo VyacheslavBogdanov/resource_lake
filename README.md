@@ -72,12 +72,16 @@ resource-planner/
 │   │   ├── ui/               # UI-кит (BaseButton, BaseInput)
 │   │   ├── shared/           # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue
-│   │   └── UiSelect.vue
-│   ├── composables/          # Composables (useProjectFilters, useInitialFetch)
-│   ├── pages/                # Страницы (ResourcePlan, Projects, Groups, DataManage)
+│   │   └── UiSelect/         # Компонент выбора (composables/, components/)
+│   ├── composables/          # Composables (useProjectFilters, useDragReorder, useInitialFetch)
+│   ├── pages/                # Страницы — каждая в папке с composables/ и components/
+│   │   ├── ResourcePlan/     # Таблица распределения
+│   │   ├── Projects/         # Управление проектами
+│   │   ├── Groups/           # Управление группами
+│   │   └── DataManage/       # Импорт/экспорт данных
 │   ├── stores/               # Pinia сторы (projects, groups, allocations, ui)
 │   ├── services/             # HTTP-клиент (http.ts, errors.ts)
-│   ├── router/               # Маршрутизация
+│   ├── router/               # Маршрутизация (именованные маршруты, lazy-loading)
 │   ├── types/                # TypeScript типы (domain.ts)
 │   ├── utils/                # Утилиты (format.ts)
 │   └── styles/               # SCSS-архитектура (_variables, _mixins, _reset, index)

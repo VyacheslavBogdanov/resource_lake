@@ -83,9 +83,13 @@ src/
 │   ├── ui/        # UI-кит (BaseButton, BaseInput)
 │   ├── shared/    # Общие компоненты (FilterPanel)
 │   ├── NavHeader.vue
-│   └── UiSelect.vue
-├── composables/   # Общие composables (useProjectFilters, useInitialFetch)
-├── pages/         # Страницы (ResourcePlan, Projects, Groups, DataManage)
+│   └── UiSelect/  # Компонент выбора (composables/, components/)
+├── composables/   # Общие composables (useProjectFilters, useDragReorder, useInitialFetch)
+├── pages/         # Страницы — каждая в папке с composables/ и components/
+│   ├── ResourcePlan/   # Таблица распределения (294 строки)
+│   ├── Projects/       # Управление проектами (119 строк)
+│   ├── Groups/         # Управление группами (82 строки)
+│   └── DataManage/     # Импорт/экспорт данных (110 строк)
 ├── stores/        # Pinia сторы
 │   ├── projects.ts     # useProjectsStore — проекты
 │   ├── groups.ts       # useGroupsStore — группы ресурсов
@@ -95,7 +99,7 @@ src/
 │   ├── constants.ts    # Константы (ключи localStorage)
 │   └── storage.ts      # Работа с localStorage
 ├── services/      # HTTP-клиент (http.ts, errors.ts)
-├── router/        # Маршрутизация
+├── router/        # Маршрутизация (names.ts — RouteNames, index.ts — lazy-loading)
 ├── types/         # TypeScript типы (domain.ts)
 ├── utils/         # Утилиты (format.ts)
 └── styles/        # SCSS-архитектура (_variables, _mixins, _reset, index)
