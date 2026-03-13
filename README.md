@@ -7,7 +7,7 @@
 - Матрица распределения ресурсов (проекты × группы)
 - Поквартальная разбивка часов (q1–q4)
 - Автоматический расчёт итогов и загрузки мощностей
-- Импорт/экспорт данных (Excel)
+- Импорт/экспорт данных
 - Управление проектами и ресурсными группами
 
 ## Технологии
@@ -19,9 +19,10 @@
 | Vite        | ^5.4.1  | Сборка и dev-сервер   |
 | Pinia       | ^2.2.4  | Управление состоянием |
 | vue-router  | ^4.4.5  | Маршрутизация         |
-| SCSS (sass) | ^1.77.8 | Препроцессор стилей   |
+| SCSS (sass) | ^1.77.8 | Стили                 |
 | json-server | ^0.17.4 | Локальный REST API    |
-| xlsx        | ^0.18.5 | Импорт/экспорт Excel  |
+| ESLint      | ^9.x    | Линтинг               |
+| Prettier    | ^3.x    | Форматирование кода   |
 
 ## Начало работы
 
@@ -46,6 +47,8 @@ npm run dev:client   # Только Vite dev server
 npm run dev:api      # Только json-server API
 npm run build        # Production-сборка
 npm run preview      # Превью сборки (порт 5173)
+npm run lint         # ESLint --fix
+npm run format       # Prettier --write src/
 ```
 
 ### Утилиты для данных
@@ -65,14 +68,21 @@ resource-planner/
 │   ├── groups.json           # Данные ресурсных групп
 │   └── data.json             # Данные аллокаций
 ├── src/
-│   ├── components/           # UI-компоненты (NavHeader, UiSelect)
+│   ├── components/
+│   │   ├── ui/               # UI-кит (BaseButton, BaseInput)
+│   │   ├── shared/           # Общие компоненты (FilterPanel)
+│   │   ├── NavHeader.vue
+│   │   └── UiSelect.vue
+│   ├── composables/          # Composables (useProjectFilters, useInitialFetch)
 │   ├── pages/                # Страницы (ResourcePlan, Projects, Groups, DataManage)
-│   ├── stores/resource/      # Pinia store (actions, utils, types, constants)
-│   ├── services/             # HTTP-клиент (http.ts)
+│   ├── stores/               # Pinia сторы (projects, groups, allocations, ui)
+│   ├── services/             # HTTP-клиент (http.ts, errors.ts)
 │   ├── router/               # Маршрутизация
 │   ├── types/                # TypeScript типы (domain.ts)
-│   └── styles.scss           # Глобальные стили
-├── firebase.json             # Firebase Hosting конфиг
+│   ├── utils/                # Утилиты (format.ts)
+│   └── styles/               # SCSS-архитектура (_variables, _mixins, _reset, index)
+├── eslint.config.mjs         # Конфиг ESLint
+├── .prettierrc.json          # Конфиг Prettier
 └── package.json              # Зависимости и скрипты
 ```
 
@@ -100,21 +110,27 @@ json-server обслуживает три JSON-файла из `data/` как RE
 
 ## Деплой
 
-Приложение разворачивается на Firebase Hosting. Директория `dist/` раздаётся как статика с перенаправлением всех маршрутов на `index.html` (SPA-режим).
-
-```bash
-npm run build
-firebase deploy
-```
+Настройка деплоя планируется в фазе P4 рефакторинга.
 
 ## Документация
 
-Подробная документация находится в директории [`docs/`](docs/README.md).
+Подробная документация находится в директории [`docs/`](docs/).
 
-| Файл                                                                | Описание                           |
-| ------------------------------------------------------------------- | ---------------------------------- |
-| [`01-project-overview.md`](docs/01-project-overview.md)             | Обзор проекта                      |
-| [`02-refactoring-priorities.md`](docs/02-refactoring-priorities.md) | Приоритеты рефакторинга            |
-| [`13-css-design-tokens.md`](docs/13-css-design-tokens.md)           | SCSS дизайн-токены                 |
-| [`14-pages-decomposition.md`](docs/14-pages-decomposition.md)       | Декомпозиция страниц и компонентов |
-| [`16-coding-conventions.md`](docs/16-coding-conventions.md)         | Соглашения по коду                 |
+| Файл                                                                            | Описание                           |
+| ------------------------------------------------------------------------------- | ---------------------------------- |
+| [`01-project-overview.md`](docs/01-project-overview.md)                         | Обзор проекта                      |
+| [`02-refactoring-priorities.md`](docs/02-refactoring-priorities.md)             | Приоритеты рефакторинга            |
+| [`03-tooling-and-linting.md`](docs/03-tooling-and-linting.md)                   | Тулинг и линтинг                   |
+| [`04-ui-kit-and-shared-components.md`](docs/04-ui-kit-and-shared-components.md) | UI-кит и общие компоненты          |
+| [`05-store-decomposition.md`](docs/05-store-decomposition.md)                   | Декомпозиция стора                 |
+| [`06-resource-plan-decomposition.md`](docs/06-resource-plan-decomposition.md)   | Декомпозиция ResourcePlan.vue      |
+| [`07-code-deduplication.md`](docs/07-code-deduplication.md)                     | Устранение дублирования кода       |
+| [`08-api-layer-and-error-handling.md`](docs/08-api-layer-and-error-handling.md) | API-слой и обработка ошибок        |
+| [`09-performance-optimization.md`](docs/09-performance-optimization.md)         | Оптимизация производительности     |
+| [`10-drag-and-drop-refactoring.md`](docs/10-drag-and-drop-refactoring.md)       | Рефакторинг drag-and-drop          |
+| [`11-routing-and-navigation.md`](docs/11-routing-and-navigation.md)             | Роутинг и навигация                |
+| [`12-deployment.md`](docs/12-deployment.md)                                     | Деплой                             |
+| [`13-css-design-tokens.md`](docs/13-css-design-tokens.md)                       | SCSS дизайн-токены                 |
+| [`14-pages-decomposition.md`](docs/14-pages-decomposition.md)                   | Декомпозиция страниц и компонентов |
+| [`15-refactoring-progress.md`](docs/15-refactoring-progress.md)                 | Прогресс рефакторинга              |
+| [`16-coding-conventions.md`](docs/16-coding-conventions.md)                     | Соглашения по коду                 |

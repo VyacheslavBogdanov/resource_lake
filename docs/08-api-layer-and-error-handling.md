@@ -2,6 +2,8 @@
 
 **Приоритет:** P2 | **Сложность:** M
 
+> **Статус: Частично реализовано (P2, 2026-03-13).** ApiError, retry и try/catch в actions реализованы. useToast/AppToast — не реализованы (вне scope P2).
+
 ## Текущее состояние
 
 `src/services/http.ts` (38 строк):

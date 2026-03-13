@@ -56,6 +56,8 @@ npm run build        # Production-сборка
 npm run preview      # Превью сборки (порт 5173)
 npm run lint         # ESLint --fix
 npm run format       # Prettier --write src/
+npm run seed         # Генерация тестовых данных (30 проектов, 15 групп, allocations)
+npm run reset        # Очистка всех данных (пустые JSON-файлы)
 ```
 
 ## API

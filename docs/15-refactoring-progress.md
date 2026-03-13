@@ -72,7 +72,10 @@
 
 Чеклист: [02-refactoring-priorities.md → Чеклист регрессионного тестирования](02-refactoring-priorities.md#чеклист-регрессионного-тестирования)
 
-— (будет заполнено после мержа)
+- `npm run build` — OK
+- Unit-тесты (vitest): passed
+- E2E-тесты (playwright): passed
+- Нет `any` в src/
 
 ### Заметки / проблемы
 
@@ -122,7 +125,7 @@
 
 ### Выполненные задачи
 
-- [ ] Декомпозиция ResourcePlan.vue (1982 строки → ~200)
+- [ ] Декомпозиция ResourcePlan.vue (1985 строк → ~200)
 - [ ] Декомпозиция страниц и компонентов
 - [ ] Composable `useDragReorder`
 - [ ] Навигация по `name`, lazy-loading маршрутов

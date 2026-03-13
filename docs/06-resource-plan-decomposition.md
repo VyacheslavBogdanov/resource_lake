@@ -4,7 +4,7 @@
 
 ## Масштаб проблемы
 
-`src/pages/ResourcePlan.vue` — 2432 строки:
+`src/pages/ResourcePlan.vue` — 1985 строк:
 
 - `<template>` — ~644 строки
 - `<script setup>` — ~1017 строк
