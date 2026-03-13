@@ -1,0 +1,149 @@
+@use '../../styles/variables' as *;
+
+.manage {
+	--row-h: 44px;
+	--ctl-h: 32px;
+
+	&__controls {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		margin-bottom: 14px;
+		flex-wrap: wrap;
+	}
+
+	&__toolbar-row {
+		display: contents;
+	}
+
+	&__save-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	&__label {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+	}
+
+	&__select {
+		min-width: 280px;
+	}
+
+	&__notice {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 10px;
+		border-radius: 999px;
+		border: 1px solid $color-success-border;
+		background: $color-success-bg;
+		color: $color-success-text;
+		font-weight: 600;
+		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
+	}
+
+	&__table {
+		width: 100%;
+		background: $color-bg-surface;
+		border: 1px solid $color-border-divider;
+		border-radius: 12px;
+		box-shadow: $shadow-sm;
+		border-collapse: separate;
+		border-spacing: 0;
+		table-layout: auto;
+		overflow: hidden;
+	}
+
+	&__th,
+	&__cell {
+		padding: 0 12px;
+		border-bottom: 1px solid $color-border-row;
+		vertical-align: middle;
+		height: var(--row-h);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+	}
+
+	&__th--left,
+	&__cell--left {
+		text-align: left;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+
+	&__cell--left {
+		word-break: break-word;
+		line-height: 1.2;
+		padding-top: 8px;
+		padding-bottom: 8px;
+		height: auto;
+	}
+
+	tbody .manage__row:nth-child(odd) {
+		background: $color-bg-row-alt;
+	}
+	tbody .manage__row:hover {
+		background: $color-bg-row-hover;
+	}
+
+	&__cell {
+		transition: background-color 0.15s ease;
+	}
+	&__row:focus-within &__cell {
+		background: $color-bg-row-hover;
+	}
+	&__row:focus-within &__cell--left {
+		position: relative;
+	}
+	&__row:focus-within &__cell--left::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: -1px;
+		bottom: -1px;
+		width: 4px;
+		background: $color-primary-600;
+		border-radius: 4px 0 0 4px;
+	}
+
+	&__input {
+		width: 88px;
+		height: var(--ctl-h);
+		line-height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		background: $color-bg-surface;
+		box-sizing: border-box;
+		text-align: center;
+		display: inline-block;
+		margin: 0 auto;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__input--quarter {
+		width: 72px;
+	}
+
+	&__input:focus-visible {
+		outline: none;
+		border-color: $color-primary-600;
+		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+	}
+
+	&__input::-webkit-outer-spin-button,
+	&__input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	&__row--archived {
+		opacity: 0.6;
+	}
+}

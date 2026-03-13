@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import UiSelect from './UiSelect.vue';
+import UiSelect from './UiSelect/UiSelect.vue';
 
 const options = [
 	{ value: 1, label: 'Опция 1' },
