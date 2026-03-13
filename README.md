@@ -114,7 +114,11 @@ json-server обслуживает три JSON-файла из `data/` как RE
 
 ## Деплой
 
-Настройка деплоя планируется в фазе P4 рефакторинга.
+Фронтенд деплоится на **GitHub Pages** через GitHub Actions. Деплой срабатывает автоматически при push в `main`.
+
+**URL:** `https://vyacheslavbogdanov.github.io/resource_lake/`
+
+Подробнее: [`docs/12-deployment.md`](docs/12-deployment.md).
 
 ## Документация
 
