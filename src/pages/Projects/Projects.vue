@@ -83,7 +83,7 @@ function onUpdateDescriptionDraft(id: number, value: string) {
 			@save-name="saveName"
 			@cancel-edit="cancelEdit"
 			@on-name-blur="onNameBlur"
-			@toggle-archive="projectsStore.toggleArchive($event, arguments[1])"
+			@toggle-archive="(id, archived) => projectsStore.toggleArchive(id, archived)"
 			@remove-project="removeProject"
 			@save-url="saveUrl"
 			@save-customer="saveCustomer"

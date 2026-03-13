@@ -88,7 +88,7 @@ defineEmits<{
 					@save-name="$emit('saveName', $event)"
 					@cancel-edit="$emit('cancelEdit')"
 					@on-name-blur="$emit('onNameBlur', $event)"
-					@toggle-archive="$emit('toggleArchive', $event, arguments[1])"
+					@toggle-archive="(id, archived) => $emit('toggleArchive', id, archived)"
 					@remove-project="$emit('removeProject', $event)"
 					@save-url="$emit('saveUrl', $event)"
 					@save-customer="$emit('saveCustomer', $event)"

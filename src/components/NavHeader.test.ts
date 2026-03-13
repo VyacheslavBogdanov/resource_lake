@@ -2,15 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
 import NavHeader from './NavHeader.vue';
+import { RouteNames } from '../router/names';
 
 function createTestRouter() {
 	return createRouter({
 		history: createWebHistory(),
 		routes: [
-			{ path: '/plan', component: { template: '<div />' } },
-			{ path: '/projects', component: { template: '<div />' } },
-			{ path: '/groups', component: { template: '<div />' } },
-			{ path: '/manage', component: { template: '<div />' } },
+			{ path: '/plan', name: RouteNames.Plan, component: { template: '<div />' } },
+			{ path: '/projects', name: RouteNames.Projects, component: { template: '<div />' } },
+			{ path: '/groups', name: RouteNames.Groups, component: { template: '<div />' } },
+			{ path: '/manage', name: RouteNames.Manage, component: { template: '<div />' } },
 		],
 	});
 }

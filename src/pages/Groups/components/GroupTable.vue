@@ -70,7 +70,7 @@ defineEmits<{
 				@save-edit="$emit('saveEdit', $event)"
 				@cancel-edit="$emit('cancelEdit')"
 				@remove-group="$emit('removeGroup', $event)"
-				@resource-type-blur="$emit('resourceTypeBlur', $event, arguments[1])"
+				@resource-type-blur="(g, e) => $emit('resourceTypeBlur', g, e)"
 				@update:edit-name="$emit('update:editName', $event)"
 				@update:edit-cap="$emit('update:editCap', $event)"
 				@update:edit-support="$emit('update:editSupport', $event)"
