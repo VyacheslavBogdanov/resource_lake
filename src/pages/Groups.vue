@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import BaseButton from '../components/ui/BaseButton.vue';
-import { useResourceStore } from '../stores/resource/index';
-import { sortByPosition, moveItemById, buildPositionUpdates } from '../stores/resource/utils';
+import { useGroupsStore } from '../stores/groups';
+import { sortByPosition, moveItemById, buildPositionUpdates } from '../stores/utils';
 import { roundInt } from '../utils/format';
 import type { Group } from '../types/domain';
 
-const store = useResourceStore();
+const groupsStore = useGroupsStore();
 
 const newName = ref('');
 const newCap = ref<number | null>(null);
@@ -24,7 +24,7 @@ const dragState = ref<{ draggingId: number | null; overId: number | null }>({
 });
 const reordering = ref(false);
 
-const orderedGroups = computed(() => sortByPosition(store.groups));
+const orderedGroups = computed(() => sortByPosition(groupsStore.items));
 
 async function onResourceTypeBlur(g: Group, e: Event) {
 	const input = e.target as HTMLInputElement;
@@ -39,7 +39,7 @@ async function onResourceTypeBlur(g: Group, e: Event) {
 	g.resourceType = formatted;
 	input.value = formatted;
 
-	await store.updateGroup(g.id, { resourceType: formatted });
+	await groupsStore.updateGroup(g.id, { resourceType: formatted });
 }
 
 function formatResourceType(raw: string): string {
@@ -83,7 +83,7 @@ async function onDrop(id: number) {
 
 	reordering.value = true;
 	try {
-		await store.updateGroupPositions(updates);
+		await groupsStore.updatePositions(updates);
 	} finally {
 		reordering.value = false;
 	}
@@ -93,8 +93,6 @@ function onDragEnd() {
 	dragState.value.draggingId = null;
 	dragState.value.overId = null;
 }
-
-onMounted(() => store.fetchAll());
 
 async function addGroup() {
 	const name = newName.value.trim();
@@ -108,7 +106,7 @@ async function addGroup() {
 	if (sp < 0) sp = 0;
 	if (sp > 100) sp = 100;
 
-	await store.addGroup(name, cap, sp);
+	await groupsStore.addGroup(name, cap, sp);
 	newName.value = '';
 	newCap.value = null;
 	newSupport.value = null;
@@ -149,7 +147,7 @@ async function saveEdit(g: Group) {
 
 	saving.value = true;
 	try {
-		await store.updateGroup(g.id, { name, capacityHours: cap, supportPercent: sp });
+		await groupsStore.updateGroup(g.id, { name, capacityHours: cap, supportPercent: sp });
 		editingId.value = null;
 	} finally {
 		saving.value = false;
@@ -158,7 +156,7 @@ async function saveEdit(g: Group) {
 
 async function removeGroup(g: Group) {
 	if (!confirm(`Удалить группу «${g.name}» и связанные данные?`)) return;
-	await store.deleteGroup(g.id);
+	await groupsStore.deleteGroup(g.id);
 }
 </script>
 
@@ -190,7 +188,7 @@ async function removeGroup(g: Group) {
 			<BaseButton variant="primary" type="submit">Добавить</BaseButton>
 		</form>
 
-		<table class="groups__table" v-if="store.groups.length">
+		<table class="groups__table" v-if="groupsStore.items.length">
 			<colgroup>
 				<col style="width: 30%" />
 				<col style="width: 18%" />

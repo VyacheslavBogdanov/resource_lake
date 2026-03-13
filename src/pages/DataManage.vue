@@ -10,7 +10,7 @@
 					v-model="selectedGroupId"
 					:options="groupOptions"
 					placeholder="Выберите группу"
-					:disabled="!store.groups.length"
+					:disabled="!groupsStore.items.length"
 					name="group"
 				/>
 			</label>
@@ -41,21 +41,21 @@
 			</div>
 
 			<FilterPanel
-				v-if="selectedGroupId && store.projects.length"
+				v-if="selectedGroupId && projectsStore.items.length"
 				:customer-options="customerOptions"
 				:manager-options="managerOptions"
 				:selected-customers="selectedCustomers"
 				:selected-managers="selectedManagers"
 				:has-active-filters="hasActiveFilters"
 				:filtered-count="filteredProjectsCount"
-				:total-count="store.projects.length"
+				:total-count="projectsStore.items.length"
 				@update:selected-customers="selectedCustomers = $event"
 				@update:selected-managers="selectedManagers = $event"
 				@reset="resetFilters"
 			/>
 		</div>
 
-		<table class="manage__table" v-if="selectedGroupId && store.projects.length">
+		<table class="manage__table" v-if="selectedGroupId && projectsStore.items.length">
 			<colgroup>
 				<col style="width: 52%" />
 				<col style="width: 12%" />
@@ -152,12 +152,17 @@
 import UiSelect from '../components/UiSelect.vue';
 import FilterPanel from '../components/shared/FilterPanel.vue';
 import BaseButton from '../components/ui/BaseButton.vue';
-import { onMounted, ref, watch, computed, onBeforeUnmount } from 'vue';
-import { useResourceStore } from '../stores/resource/index';
+import { ref, watch, computed, onBeforeUnmount } from 'vue';
+import { useProjectsStore } from '../stores/projects';
+import { useGroupsStore } from '../stores/groups';
+import { useAllocationsStore } from '../stores/allocations';
+import type { AllocationPayload } from '../types/domain';
 import { useProjectFilters } from '../composables/useProjectFilters';
 import { roundInt } from '../utils/format';
 
-const store = useResourceStore();
+const projectsStore = useProjectsStore();
+const groupsStore = useGroupsStore();
+const allocationsStore = useAllocationsStore();
 const selectedGroupId = ref<number>(0);
 
 const {
@@ -169,7 +174,7 @@ const {
 	filteredProjects,
 	filteredProjectsCount,
 	resetFilters,
-} = useProjectFilters(computed(() => store.projects));
+} = useProjectFilters(computed(() => projectsStore.items));
 
 type RowBuffer = {
 	total: number;
@@ -183,10 +188,6 @@ const buffer = ref<Record<number, RowBuffer>>({});
 
 const showSaved = ref(false);
 let hideTimer: number | null = null;
-
-onMounted(() => {
-	store.fetchAll();
-});
 
 function splitTotalToQuarters(total: number): [number, number, number, number] {
 	total = roundInt(total);
@@ -211,8 +212,8 @@ watch(selectedGroupId, () => {
 
 	const gId = selectedGroupId.value;
 
-	for (const p of store.projects) {
-		const quarters = store.quarterByPair(p.id, gId);
+	for (const p of projectsStore.items) {
+		const quarters = allocationsStore.quarterByPair(p.id, gId);
 		if (quarters) {
 			const q1 = roundInt(quarters.q1);
 			const q2 = roundInt(quarters.q2);
@@ -222,7 +223,7 @@ watch(selectedGroupId, () => {
 
 			buffer.value[p.id] = { total, q1, q2, q3, q4 };
 		} else {
-			const totalRaw = store.valueByPair(p.id, gId);
+			const totalRaw = allocationsStore.valueByPair(p.id, gId);
 			const total = roundInt(totalRaw);
 			const [q1, q2, q3, q4] = splitTotalToQuarters(total);
 
@@ -232,14 +233,14 @@ watch(selectedGroupId, () => {
 });
 
 const groupOptions = computed(() =>
-	store.groups.map((g) => ({
+	groupsStore.items.map((g) => ({
 		value: g.id,
 		label: `${g.name} (емкость ${g.capacityHours})`,
 	})),
 );
 
 function groupName(id: number) {
-	return store.groups.find((g) => g.id === id)?.name ?? '';
+	return groupsStore.items.find((g) => g.id === id)?.name ?? '';
 }
 
 function rowBuffer(projectId: number): RowBuffer {
@@ -289,21 +290,13 @@ onBeforeUnmount(() => {
 	if (hideTimer) window.clearTimeout(hideTimer);
 });
 
-type AllocationPayload = {
-	hours: number;
-	q1?: number;
-	q2?: number;
-	q3?: number;
-	q4?: number;
-};
-
 async function saveAll() {
 	if (!selectedGroupId.value) return;
 	const gId = selectedGroupId.value;
 
 	const payload: Record<number, AllocationPayload> = {};
 
-	for (const p of store.projects) {
+	for (const p of projectsStore.items) {
 		const row = buffer.value[p.id];
 		if (!row) {
 			payload[p.id] = { hours: 0 };
@@ -319,7 +312,7 @@ async function saveAll() {
 		};
 	}
 
-	await store.batchSetAllocationsForGroup(gId, payload);
+	await allocationsStore.batchSetAllocationsForGroup(gId, payload);
 	showSuccess();
 }
 </script>

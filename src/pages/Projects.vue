@@ -12,7 +12,7 @@
 			<BaseButton variant="primary" type="submit">Добавить</BaseButton>
 		</form>
 
-		<div v-if="store.projects.length" class="projects__table-wrap">
+		<div v-if="projectsStore.items.length" class="projects__table-wrap">
 			<table class="projects__table">
 				<colgroup>
 					<col style="width: 28%" />
@@ -109,7 +109,7 @@
 											type="button"
 											class="projects__icon-btn projects__icon-btn--archive"
 											:title="p.archived ? 'Разархивировать' : 'Архивировать'"
-											@click="store.toggleArchiveProject(p.id, !p.archived)"
+											@click="projectsStore.toggleArchive(p.id, !p.archived)"
 										>
 											<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
 												<path
@@ -214,13 +214,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import BaseButton from '../components/ui/BaseButton.vue';
-import { useResourceStore } from '../stores/resource/index';
+import { useProjectsStore } from '../stores/projects';
 import type { Project } from '../types/domain';
 
-const store = useResourceStore();
-onMounted(() => store.fetchAll());
+const projectsStore = useProjectsStore();
 
 const newName = ref('');
 const newUrl = ref('');
@@ -246,7 +245,7 @@ const dragState = ref<{ draggingId: number | null; overId: number | null }>({
 });
 
 const orderedProjects = computed<Project[]>(() => {
-	const list = [...store.projects];
+	const list = [...projectsStore.items];
 	return list.sort((a, b) => {
 		const aOrder = Number.isFinite(a.order) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
 		const bOrder = Number.isFinite(b.order) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
@@ -256,7 +255,7 @@ const orderedProjects = computed<Project[]>(() => {
 });
 
 watch(
-	() => store.projects,
+	() => projectsStore.items,
 	(projects) => {
 		const mapUrl: Record<number, string> = {};
 		const mapCustomer: Record<number, string> = {};
@@ -281,7 +280,7 @@ watch(
 
 async function addProject() {
 	if (!newName.value.trim()) return;
-	await store.addProject(
+	await projectsStore.addProject(
 		newName.value,
 		newUrl.value,
 		newCustomer.value,
@@ -299,32 +298,32 @@ async function addProject() {
 
 async function removeProject(p: Project) {
 	if (!confirm(`Удалить проект «${p.name}» и связанные данные?`)) return;
-	await store.deleteProject(p.id);
+	await projectsStore.deleteProject(p.id);
 }
 
 async function saveUrl(projectId: number) {
 	const url = (urlDrafts.value[projectId] || '').trim();
-	await store.updateProjectUrl(projectId, url);
+	await projectsStore.updateField(projectId, 'url', url);
 }
 
 async function saveCustomer(projectId: number) {
 	const customer = (customerDrafts.value[projectId] || '').trim();
-	await store.updateProjectCustomer(projectId, customer);
+	await projectsStore.updateField(projectId, 'customer', customer);
 }
 
 async function saveProjectType(projectId: number) {
 	const projectType = (typeDrafts.value[projectId] || '').trim();
-	await store.updateProjectType(projectId, projectType);
+	await projectsStore.updateField(projectId, 'projectType', projectType);
 }
 
 async function saveProjectManager(projectId: number) {
 	const projectManager = (managerDrafts.value[projectId] || '').trim();
-	await store.updateProjectManager(projectId, projectManager);
+	await projectsStore.updateField(projectId, 'projectManager', projectManager);
 }
 
 async function saveDescription(projectId: number) {
 	const description = (descriptionDrafts.value[projectId] || '').trim();
-	await store.updateProjectDescription(projectId, description);
+	await projectsStore.updateField(projectId, 'description', description);
 }
 
 async function startEdit(p: Project) {
@@ -346,7 +345,7 @@ function cancelEdit() {
 }
 
 async function saveName(projectId: number) {
-	const project = store.projects.find((x) => x.id === projectId);
+	const project = projectsStore.items.find((x) => x.id === projectId);
 	if (!project) {
 		cancelEdit();
 		return;
@@ -366,7 +365,7 @@ async function saveName(projectId: number) {
 		return;
 	}
 
-	await store.updateProjectName(projectId, name);
+	await projectsStore.updateField(projectId, 'name', name);
 	cancelEdit();
 }
 
@@ -400,7 +399,7 @@ async function onDrop(projectId: number) {
 	const [moved] = current.splice(fromIdx, 1);
 	current.splice(toIdx, 0, moved);
 
-	await store.reorderProjects(current);
+	await projectsStore.reorderProjects(current);
 	onDragEnd();
 }
 

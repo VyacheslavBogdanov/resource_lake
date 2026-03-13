@@ -82,11 +82,17 @@ src/
 │   ├── shared/    # Общие компоненты (FilterPanel)
 │   ├── NavHeader.vue
 │   └── UiSelect.vue
-├── composables/   # Общие composables (useProjectFilters)
+├── composables/   # Общие composables (useProjectFilters, useInitialFetch)
 ├── pages/         # Страницы (ResourcePlan, Projects, Groups, DataManage)
-├── stores/        # Pinia store
-│   └── resource/  # Модульный store (actions, utils, types, constants)
-├── services/      # HTTP-клиент (http.ts)
+├── stores/        # Pinia сторы
+│   ├── projects.ts     # useProjectsStore — проекты
+│   ├── groups.ts       # useGroupsStore — группы ресурсов
+│   ├── allocations.ts  # useAllocationsStore — распределения
+│   ├── ui.ts           # useUiStore — UI-состояние (скрытые группы)
+│   ├── utils.ts        # Утилиты сторов (sortProjectsForView, sortByPosition)
+│   ├── constants.ts    # Константы (ключи localStorage)
+│   └── storage.ts      # Работа с localStorage
+├── services/      # HTTP-клиент (http.ts, errors.ts)
 ├── router/        # Маршрутизация
 ├── types/         # TypeScript типы (domain.ts)
 ├── utils/         # Утилиты (format.ts)

@@ -5,7 +5,7 @@
 		<div class="plan__toolbar">
 			<BaseButton variant="primary" @click="exportCsv">Выгрузить в CSV</BaseButton>
 
-			<div class="plan__actions" v-if="store.projects.length && store.groups.length">
+			<div class="plan__actions" v-if="projectsStore.items.length && groupsStore.items.length">
 				<div class="plan__row-type-switch">
 					<span class="plan__switch-label" :class="{ 'plan__switch-label--active': !displayByResourceType }">
 						По группе ресурса
@@ -60,7 +60,7 @@
 						:selected-managers="selectedManagers"
 						:has-active-filters="hasActiveFilters"
 						:filtered-count="filteredProjectsCount"
-						:total-count="store.projects.length"
+						:total-count="projectsStore.items.length"
 						@update:selected-customers="selectedCustomers = $event"
 						@update:selected-managers="selectedManagers = $event"
 						@reset="resetFilters"
@@ -69,14 +69,14 @@
 			</div>
 		</div>
 
-		<div class="plan__kpis" v-if="store.groups.length || store.projects.length">
+		<div class="plan__kpis" v-if="groupsStore.items.length || projectsStore.items.length">
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Проектов</div>
-				<div class="plan__kpi-value">{{ store.projects.length }}</div>
+				<div class="plan__kpi-value">{{ projectsStore.items.length }}</div>
 			</div>
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Групп</div>
-				<div class="plan__kpi-value">{{ store.groups.length }}</div>
+				<div class="plan__kpi-value">{{ groupsStore.items.length }}</div>
 			</div>
 			<div class="plan__kpi">
 				<div class="plan__kpi-label">Общая емкость, ч</div>
@@ -102,7 +102,7 @@
 			</div>
 		</div>
 
-		<template v-if="store.projects.length && store.groups.length">
+		<template v-if="projectsStore.items.length && groupsStore.items.length">
 			<div class="plan__table-wrapper" ref="tableWrapperRef">
 				<table class="plan__table" aria-label="Таблица ресурсного плана" ref="tableRef">
 					<colgroup>
@@ -427,7 +427,7 @@
 
 		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
 
-		<div v-if="store.groups.length" class="plan__chart">
+		<div v-if="groupsStore.items.length" class="plan__chart">
 			<div class="plan__chart-head">
 				<h2 class="plan__chart-title">
 					<label class="plan__bar-label-inner">
@@ -489,7 +489,10 @@
 import { onBeforeUnmount, onMounted, computed, nextTick, ref, watch } from 'vue';
 import BaseButton from '../components/ui/BaseButton.vue';
 import FilterPanel from '../components/shared/FilterPanel.vue';
-import { useResourceStore } from '../stores/resource/index';
+import { useProjectsStore } from '../stores/projects';
+import { useGroupsStore } from '../stores/groups';
+import { useAllocationsStore } from '../stores/allocations';
+import { useUiStore } from '../stores/ui';
 import { useProjectFilters } from '../composables/useProjectFilters';
 import { roundInt } from '../utils/format';
 import type { Project } from '../types/domain';
@@ -505,10 +508,10 @@ const quarterLabel: Record<number, string> = {
 	4: '4 кв',
 };
 
-const store = useResourceStore();
-onMounted(() => {
-	store.fetchAll();
-});
+const projectsStore = useProjectsStore();
+const groupsStore = useGroupsStore();
+const allocationsStore = useAllocationsStore();
+const uiStore = useUiStore();
 
 const tableWrapperRef = ref<HTMLElement | null>(null);
 const tableRef = ref<HTMLTableElement | null>(null);
@@ -647,7 +650,7 @@ const viewMode = ref<ViewMode>('total');
 const selectedQuarter = ref<Quarter>(1);
 const displayByResourceType = ref(false);
 
-const visibleGroups = computed(() => store.visibleGroups);
+const visibleGroups = computed(() => groupsStore.items.filter((g) => uiStore.isGroupVisible(g.id)));
 
 /** Колонки для таблицы: по группам или по типу ресурса (объединение групп с одним типом). */
 const tableColumns = computed<TableColumn[]>(() => {
@@ -673,7 +676,7 @@ function onProjectRowClick(projectId: number) {
 
 const hasAllocationsByProjectId = computed<Record<number, boolean>>(() => {
 	const map: Record<number, boolean> = {};
-	for (const a of store.allocations) {
+	for (const a of allocationsStore.items) {
 		const hours = Number(a.hours || 0);
 		if (!hours) continue;
 		map[a.projectId] = true;
@@ -695,12 +698,12 @@ const {
 	filteredProjects,
 	filteredProjectsCount,
 	resetFilters,
-} = useProjectFilters(computed(() => store.projects));
+} = useProjectFilters(computed(() => projectsStore.items));
 
 watch(
 	() => [
-		store.projects.length,
-		store.groups.length,
+		projectsStore.items.length,
+		groupsStore.items.length,
 		filteredProjectsCount.value,
 		tableColumns.value.length,
 		viewMode.value,
@@ -716,7 +719,7 @@ watch(
 /** Получить все уникальные типы ресурсов из групп. */
 function getAllResourceTypes(): string[] {
 	const types = new Set<string>();
-	for (const g of store.groups) {
+	for (const g of groupsStore.items) {
 		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
 		types.add(typeName);
 	}
@@ -725,10 +728,10 @@ function getAllResourceTypes(): string[] {
 
 const allGroupsChecked = computed({
 	get(): boolean {
-		if (!store.groups.length) return false;
+		if (!groupsStore.items.length) return false;
 		if (!displayByResourceType.value) {
 			// Режим "по группе": проверяем все группы
-			return store.groups.every((g) => store.isGroupVisible(g.id));
+			return groupsStore.items.every((g) => uiStore.isGroupVisible(g.id));
 		}
 		// Режим "по типу": проверяем все типы (все типы видимы = все группы видимы)
 		const allTypes = getAllResourceTypes();
@@ -737,18 +740,18 @@ const allGroupsChecked = computed({
 	set(value: boolean) {
 		if (!displayByResourceType.value) {
 			// Режим "по группе": устанавливаем видимость всех групп
-			for (const g of store.groups) {
-				store.setGroupVisibility(g.id, value);
+			for (const g of groupsStore.items) {
+				uiStore.setGroupVisibility(g.id, value);
 			}
 		} else {
 			// Режим "по типу": устанавливаем видимость всех типов (через группы)
 			const allTypes = getAllResourceTypes();
 			for (const typeName of allTypes) {
-				const groupsOfType = store.groups.filter(
+				const groupsOfType = groupsStore.items.filter(
 					(g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName,
 				);
 				for (const g of groupsOfType) {
-					store.setGroupVisibility(g.id, value);
+					uiStore.setGroupVisibility(g.id, value);
 				}
 			}
 		}
@@ -756,36 +759,36 @@ const allGroupsChecked = computed({
 });
 
 function isGroupVisible(id: number): boolean {
-	return store.isGroupVisible(id);
+	return uiStore.isGroupVisible(id);
 }
 
 function onGroupToggle(id: number, e: Event) {
 	const input = e.target as HTMLInputElement | null;
 	const checked = input?.checked ?? true;
-	store.setGroupVisibility(id, checked);
+	uiStore.setGroupVisibility(id, checked);
 }
 
 function isResourceTypeVisible(typeName: string): boolean {
-	const groupsOfType = store.groups.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
-	return groupsOfType.length > 0 && groupsOfType.every((g) => store.isGroupVisible(g.id));
+	const groupsOfType = groupsStore.items.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
+	return groupsOfType.length > 0 && groupsOfType.every((g) => uiStore.isGroupVisible(g.id));
 }
 
 function onResourceTypeToggle(typeName: string, e: Event) {
 	const input = e.target as HTMLInputElement | null;
 	const checked = input?.checked ?? true;
-	const groupsOfType = store.groups.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
+	const groupsOfType = groupsStore.items.filter((g) => ((g.resourceType ?? '').trim() || 'Без типа') === typeName);
 	for (const g of groupsOfType) {
-		store.setGroupVisibility(g.id, checked);
+		uiStore.setGroupVisibility(g.id, checked);
 	}
 }
 
-const activeProjects = computed(() => store.projects.filter((p) => !p.archived));
+const activeProjects = computed(() => projectsStore.items.filter((p) => !p.archived));
 
 const activeColTotals = computed<Record<number, number>>(() => {
 	const totals: Record<number, number> = {};
 	const activeIds = new Set(activeProjects.value.map((p) => p.id));
 
-	for (const a of store.allocations) {
+	for (const a of allocationsStore.items) {
 		if (!activeIds.has(a.projectId)) continue;
 		const hours = Number(a.hours || 0);
 		if (!hours) continue;
@@ -797,7 +800,7 @@ const activeColTotals = computed<Record<number, number>>(() => {
 function groupQuarterTotal(groupId: number, quarter: Quarter): number {
 	let sum = 0;
 	for (const p of activeProjects.value) {
-		const q = store.quarterByPair(p.id, groupId);
+		const q = allocationsStore.quarterByPair(p.id, groupId);
 		if (!q) continue;
 		let val = 0;
 		if (quarter === 1) val = q.q1 ?? 0;
@@ -822,7 +825,7 @@ function columnQuarterTotal(col: TableColumn, quarter: Quarter): number {
 }
 
 function effectiveCapacityByColumn(col: TableColumn): number {
-	return col.groupIds.reduce((s, gid) => s + (store.effectiveCapacityById[gid] || 0), 0);
+	return col.groupIds.reduce((s, gid) => s + (groupsStore.effectiveCapacityById[gid] || 0), 0);
 }
 
 function cellValueByColumn(projectId: number, col: TableColumn, archived?: boolean): number {
@@ -877,7 +880,7 @@ const activeGrandTotal = computed(() => {
 
 function getQuarterCell(projectId: number, groupId: number, quarter: Quarter, archived?: boolean): number {
 	if (archived) return 0;
-	const q = store.quarterByPair(projectId, groupId);
+	const q = allocationsStore.quarterByPair(projectId, groupId);
 	if (!q) return 0;
 
 	let val = 0;
@@ -896,13 +899,13 @@ function cellValue(projectId: number, groupId: number, archived?: boolean): numb
 		return getQuarterCell(projectId, groupId, selectedQuarter.value);
 	}
 
-	return store.valueByPair(projectId, groupId);
+	return allocationsStore.valueByPair(projectId, groupId);
 }
 
 function projectQuarterTotal(projectId: number, quarter: Quarter): number {
 	let sum = 0;
-	for (const g of store.groups) {
-		const q = store.quarterByPair(projectId, g.id);
+	for (const g of groupsStore.items) {
+		const q = allocationsStore.quarterByPair(projectId, g.id);
 		if (!q) continue;
 		let val = 0;
 		if (quarter === 1) val = q.q1 ?? 0;
@@ -922,7 +925,7 @@ function projectTotalForLoad(projectId: number, archived?: boolean): number {
 		return projectQuarterTotal(projectId, selectedQuarter.value);
 	}
 
-	return store.rowTotalByProject(projectId);
+	return allocationsStore.rowTotalByProject(projectId);
 }
 
 function projectTotalDisplay(projectId: number, archived?: boolean): string {
@@ -1004,14 +1007,14 @@ function columnHeaderTitle(col: TableColumn): string {
 }
 
 const totalCapacity = computed(() => {
-	const sum = store.groups.reduce((s, g) => s + (store.effectiveCapacityById[g.id] || 0), 0);
+	const sum = groupsStore.items.reduce((s, g) => s + (groupsStore.effectiveCapacityById[g.id] || 0), 0);
 	return roundInt(sum);
 });
 
 const totalSupport = computed(() => {
-	const sum = store.groups.reduce((s, g) => {
+	const sum = groupsStore.items.reduce((s, g) => {
 		const raw = Number(g.capacityHours) || 0;
-		const eff = Number(store.effectiveCapacityById[g.id] || 0);
+		const eff = Number(groupsStore.effectiveCapacityById[g.id] || 0);
 		return s + Math.max(0, raw - eff);
 	}, 0);
 	return roundInt(sum);
@@ -1084,7 +1087,7 @@ function projectHoverTitle(p: Project): string {
 }
 
 function exportCsv() {
-	if (!store.projects.length || !store.groups.length) return;
+	if (!projectsStore.items.length || !groupsStore.items.length) return;
 
 	// Выгрузка идёт по тем же колонкам, что и таблица: по группе или по типу ресурса (tableColumns зависит от displayByResourceType).
 	const delimiter = ';';
@@ -1116,7 +1119,7 @@ function exportCsv() {
 				cells.push(p.archived ? 0 : cellValueByColumn(p.id, col, false));
 			}
 
-			const rowTotal = p.archived ? 0 : store.rowTotalByProject(p.id);
+			const rowTotal = p.archived ? 0 : allocationsStore.rowTotalByProject(p.id);
 			cells.push(rowTotal);
 			cells.push(projectShareValue(p.id, p.archived));
 
@@ -1205,7 +1208,7 @@ function exportCsv() {
 				}
 			}
 
-			const rowTotal = p.archived ? 0 : store.rowTotalByProject(p.id);
+			const rowTotal = p.archived ? 0 : allocationsStore.rowTotalByProject(p.id);
 			cells.push(rowTotal);
 			cells.push(projectShareValue(p.id, p.archived));
 
@@ -1301,8 +1304,8 @@ const chartCapacityMultiplier = computed(() =>
 const chartRows = computed<ChartRow[]>(() => {
 	const mult = chartCapacityMultiplier.value;
 	if (!displayByResourceType.value) {
-		return store.groups.map((g): ChartRowGroup => {
-			const capacityRaw = Number(store.effectiveCapacityById[g.id] || 0);
+		return groupsStore.items.map((g): ChartRowGroup => {
+			const capacityRaw = Number(groupsStore.effectiveCapacityById[g.id] || 0);
 			const capacity = capacityRaw * mult;
 			const allocated =
 				viewMode.value === 'quarterSingle'
@@ -1321,14 +1324,14 @@ const chartRows = computed<ChartRow[]>(() => {
 		});
 	}
 	const byType = new Map<string, number[]>();
-	for (const g of store.groups) {
+	for (const g of groupsStore.items) {
 		const typeName = (g.resourceType ?? '').trim() || 'Без типа';
 		if (!byType.has(typeName)) byType.set(typeName, []);
 		byType.get(typeName)!.push(g.id);
 	}
 	return Array.from(byType.entries())
 		.map(([typeName, groupIds]): ChartRowType => {
-			const capacityRaw = groupIds.reduce((s, gid) => s + Number(store.effectiveCapacityById[gid] || 0), 0);
+			const capacityRaw = groupIds.reduce((s, gid) => s + Number(groupsStore.effectiveCapacityById[gid] || 0), 0);
 			const capacity = capacityRaw * mult;
 			const allocated =
 				viewMode.value === 'quarterSingle'
