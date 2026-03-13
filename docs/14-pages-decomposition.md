@@ -10,15 +10,15 @@
 
 | Файл               | Строк | План                                        | Целевой оркестратор |
 | ------------------ | ----- | ------------------------------------------- | ------------------- |
-| `ResourcePlan.vue` | 1982  | [doc 06](06-resource-plan-decomposition.md) | ~200 строк          |
-| `DataManage.vue`   | 491   | Ниже                                        | ~100 строк          |
-| `Projects.vue`     | 688   | Ниже                                        | ~150 строк          |
-| `Groups.vue`       | 507   | Ниже                                        | ~120 строк          |
-| `UiSelect.vue`     | 338   | Ниже                                        | ~100 строк          |
+| `ResourcePlan.vue` | 1985  | [doc 06](06-resource-plan-decomposition.md) | ~200 строк          |
+| `DataManage.vue`   | 484   | Ниже                                        | ~100 строк          |
+| `Projects.vue`     | 639   | Ниже                                        | ~150 строк          |
+| `Groups.vue`       | 482   | Ниже                                        | ~120 строк          |
+| `UiSelect.vue`     | 329   | Ниже                                        | ~100 строк          |
 
 ---
 
-## DataManage.vue (491 строк → ≤ 300)
+## DataManage.vue (484 строки → ≤ 300)
 
 ### Текущая структура
 
@@ -143,7 +143,7 @@ export function useBatchSave(
 
 ---
 
-## Projects.vue (688 строк → ≤ 300)
+## Projects.vue (639 строк → ≤ 300)
 
 ### Текущая структура
 
@@ -271,7 +271,7 @@ export function useProjectInlineEdit(store: ReturnType<typeof useResourceStore>)
 
 ---
 
-## Groups.vue (507 строк → ≤ 300)
+## Groups.vue (482 строки → ≤ 300)
 
 ### Текущая структура
 
@@ -517,7 +517,7 @@ export function useDropdown(
 3. **Projects.vue** — аналогичная структура, после Groups пойдёт быстро
 4. **DataManage.vue** — самый сложный из четырёх, зависит от общих composables
 
-> Декомпозицию ResourcePlan.vue (2432 строки) выполнять последней — см. [doc 06](06-resource-plan-decomposition.md).
+> Декомпозицию ResourcePlan.vue (1985 строк) выполнять последней — см. [doc 06](06-resource-plan-decomposition.md).
 
 ## Связанные документы
 

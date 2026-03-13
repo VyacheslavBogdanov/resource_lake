@@ -2,6 +2,8 @@
 
 **Приоритет:** P2 | **Сложность:** S
 
+> **Статус: Реализовано (P2, 2026-03-13).** Индекс `byPairIndex` (Map) добавлен в `useAllocationsStore`. `valueByPair` и `quarterByPair` работают за O(1).
+
 ## Проблема
 
 Геттеры `valueByPair()` и `quarterByPair()` в `src/stores/resource/index.ts` (строки 30-90) используют `.find()` по массиву allocations:

@@ -45,7 +45,7 @@
 | Индекс `allocationsByPair` для O(1) доступа      | [09-performance-optimization.md](09-performance-optimization.md)         | S         |
 
 **Зависимости:** Фаза 1 (утилиты и UI-кит нужны для тостов ошибок)
-**Результат:** чистая архитектура стора, надёжная обработка ошибок, быстрый рендер таблицы
+**Результат:** чистая архитектура стора, надёжная обработка ошибок, быстрый рендер таблицы. **Завершено 2026-03-13.**
 
 ---
 
@@ -55,7 +55,7 @@
 
 | Задача                                             | Документ                                                               | Сложность |
 | -------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
-| Декомпозиция ResourcePlan.vue (1982 строки → ~200) | [06-resource-plan-decomposition.md](06-resource-plan-decomposition.md) | XL        |
+| Декомпозиция ResourcePlan.vue (1985 строк → ~200) | [06-resource-plan-decomposition.md](06-resource-plan-decomposition.md) | XL        |
 | Декомпозиция страниц и компонентов                 | [14-pages-decomposition.md](14-pages-decomposition.md)                 | L         |
 | Composable `useDragReorder`                        | [10-drag-and-drop-refactoring.md](10-drag-and-drop-refactoring.md)     | M         |
 | Навигация по `name`, lazy-loading маршрутов        | [11-routing-and-navigation.md](11-routing-and-navigation.md)           | S         |
@@ -116,9 +116,9 @@
 | UI-кит                      | [04](04-ui-kit-and-shared-components.md) | P1   | M         | P0, токены             |
 | roundInt → utils            | [07](07-code-deduplication.md)           | P1   | S         | P0                     |
 | useProjectFilters           | [07](07-code-deduplication.md)           | P1   | S         | P0                     |
-| Декомпозиция стора          | [05](05-store-decomposition.md)          | P2   | L         | P1                     |
-| API + обработка ошибок      | [08](08-api-layer-and-error-handling.md) | P2   | M         | P1 (UI-кит для тостов) |
-| Индекс allocationsByPair    | [09](09-performance-optimization.md)     | P2   | S         | P1                     |
+| ~~Декомпозиция стора~~      | [05](05-store-decomposition.md)          | P2   | L         | ✅                     |
+| ~~API + обработка ошибок~~  | [08](08-api-layer-and-error-handling.md) | P2   | M         | ✅                     |
+| ~~Индекс allocationsByPair~~| [09](09-performance-optimization.md)     | P2   | S         | ✅                     |
 | Декомпозиция ResourcePlan   | [06](06-resource-plan-decomposition.md)  | P3   | XL        | P2                     |
 | Декомпозиция страниц        | [14](14-pages-decomposition.md)          | P3   | L         | P2                     |
 | useDragReorder              | [10](10-drag-and-drop-refactoring.md)    | P3   | M         | P2                     |

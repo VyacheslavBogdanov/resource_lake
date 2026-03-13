@@ -50,7 +50,7 @@ async function onDrop(projectId: number) {
 ```typescript
 // src/composables/useDragReorder.ts
 import { ref, type Ref } from 'vue';
-import { moveItemById, buildPositionUpdates } from '@/stores/resource/utils';
+import { moveItemById, buildPositionUpdates } from '@/stores/utils';
 
 interface DragState {
 	draggingId: number | null;

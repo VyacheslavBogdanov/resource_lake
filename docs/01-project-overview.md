@@ -15,7 +15,7 @@
 
 ## Доменная модель
 
-Определена в `src/types/domain.ts` (31 строка):
+Определена в `src/types/domain.ts` (41 строка):
 
 ```typescript
 interface Project {
@@ -69,44 +69,45 @@ resource-planner/
 │   │   ├── _reset.scss             # Сброс стилей
 │   │   └── index.scss              # Точка входа (@use всех partials)
 │   ├── pages/
-│   │   ├── ResourcePlan.vue        # 1982 строки — основная таблица распределения
-│   │   ├── DataManage.vue          # 491 строка  — импорт/экспорт данных
-│   │   ├── Projects.vue            # 640 строк   — управление проектами
-│   │   └── Groups.vue              # 484 строки  — управление группами
-│   ├── stores/resource/
-│   │   ├── index.ts                # 207 строк — монолитный Pinia-стор
-│   │   ├── projects.actions.ts     # Экшены для проектов
-│   │   ├── groups.actions.ts       # Экшены для групп
-│   │   ├── allocations.actions.ts  # Экшены для аллокаций
-│   │   ├── utils.ts                # Утилиты сортировки (34 строки)
-│   │   ├── storage.ts              # localStorage для скрытых групп
-│   │   ├── types.ts                # ResourceState
-│   │   └── constants.ts            # Константы
+│   │   ├── ResourcePlan.vue        # 1985 строк — основная таблица распределения
+│   │   ├── DataManage.vue          # 484 строки  — импорт/экспорт данных
+│   │   ├── Projects.vue            # 639 строк   — управление проектами
+│   │   └── Groups.vue              # 482 строки  — управление группами
+│   ├── stores/
+│   │   ├── projects.ts             # useProjectsStore — проекты (152 строки)
+│   │   ├── groups.ts               # useGroupsStore — группы ресурсов (144 строки)
+│   │   ├── allocations.ts          # useAllocationsStore — распределения (132 строки)
+│   │   ├── ui.ts                   # useUiStore — UI-состояние (39 строк)
+│   │   ├── utils.ts                # Утилиты сортировки (35 строк)
+│   │   ├── constants.ts            # Константы
+│   │   └── storage.ts              # Работа с localStorage
 │   ├── services/
-│   │   └── http.ts                 # 38 строк — обёртка над fetch
+│   │   ├── http.ts                 # 85 строк — HTTP-клиент с retry и ApiError
+│   │   └── errors.ts               # ApiError класс (22 строки)
 │   ├── components/
 │   │   ├── ui/                     # UI-кит (BaseButton, BaseInput)
 │   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
 │   │   └── UiSelect.vue            # Компонент выбора
 │   ├── composables/
-│   │   └── useProjectFilters.ts    # Общий composable фильтрации проектов
+│   │   ├── useProjectFilters.ts    # Общий composable фильтрации проектов
+│   │   └── useInitialFetch.ts      # Инициализация данных (fetchAllData)
 │   ├── utils/
 │   │   └── format.ts               # Утилиты форматирования (roundInt)
 │   ├── router/
 │   │   └── index.ts                # 16 строк — маршруты без name и lazy-loading
 │   └── types/
-│       └── domain.ts               # 31 строка — Project, Group, Allocation
+│       └── domain.ts               # 41 строк — Project, Group, Allocation, AllocationPayload
 ├── eslint.config.mjs               # Конфиг ESLint
 └── package.json                    # Зависимости и скрипты (lint, format)
 ```
 
 ## Поток данных
 
-1. `App.vue` при монтировании вызывает `store.fetchAll()`
-2. `fetchAll()` параллельно загружает projects, groups, allocations через `api.list<T>()`
-3. `api.list()` делает GET-запрос к json-server и нормализует ответ в массив
-4. Данные сохраняются в едином Pinia-сторе `useResourceStore`
+1. `App.vue` при монтировании вызывает `fetchAllData()` из `useInitialFetch`
+2. `fetchAllData()` параллельно загружает projects, groups, allocations через `api.list<T>()`
+3. `api.list()` делает GET-запрос к json-server (с retry для 5xx/сетевых ошибок через ApiError) и нормализует ответ в массив
+4. Данные сохраняются в 4 Pinia-сторах (`useProjectsStore`, `useGroupsStore`, `useAllocationsStore`, `useUiStore`)
 5. Страница `ResourcePlan` отображает матрицу: проекты (строки) x группы (столбцы)
 6. Геттеры `valueByPair`, `quarterByPair`, `colTotals`, `rowTotalByProject`, `grandTotal` вычисляют итоги
 7. Редактирование ячейки вызывает `setAllocation()` → PATCH/POST к API → обновление стора
@@ -136,8 +137,8 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 ## Сильные стороны
 
 1. **Грамотная доменная модель** — типы в `domain.ts` хорошо описывают предметную область
-2. **Модульные экшены стора** — разделение на `projects.actions.ts`, `groups.actions.ts`, `allocations.actions.ts`
-3. **Тонкий HTTP-слой** — `http.ts` обёртка чистая и минимальная
+2. **Декомпозиция стора на 4 модуля** — projects, groups, allocations, ui (P2)
+3. **HTTP-слой с ApiError** — retry для 5xx/сетевых ошибок, структурированные ошибки
 4. **Утилиты сортировки** — `utils.ts` с generic-функциями `moveItemById` и `buildPositionUpdates`
 
 ## Системные проблемы (сводка)
@@ -148,11 +149,11 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 4. ~~Firebase-артефакты~~ — удалены (P0)
 5. ~~Только 3 CSS-переменных, 193 хардкоженных цвета в HEX~~ — SCSS-архитектура с дизайн-токенами (P1)
 6. ~~Всего 2 общих компонента~~ — добавлены BaseButton, BaseInput, FilterPanel (P1)
-7. Монолитный стор (все сущности в одном defineStore)
-8. `ResourcePlan.vue` — 1982 строки (крупнейший файл)
+7. ~~Монолитный стор (все сущности в одном defineStore)~~ — решено (P2): декомпозиция на 4 модуля
+8. `ResourcePlan.vue` — 1985 строк (крупнейший файл)
 9. ~~`roundInt()` дублируется 3 раза~~ — вынесен в `src/utils/format.ts` (P1)
 10. ~~Фильтрация customer/manager дублируется в ResourcePlan и DataManage~~ — вынесена в `useProjectFilters` (P1)
 11. Drag-n-drop код дублируется в Projects и Groups
-12. `valueByPair()` и `quarterByPair()` используют `.find()` = O(n) на ячейку
+12. ~~`valueByPair()` и `quarterByPair()` используют `.find()` = O(n) на ячейку~~ — решено (P2): `byPairIndex` Map для O(1)
 13. Маршруты без `name`, навигация по строковым path, нет lazy-loading
 14. Несогласованность: Projects используют `order`, Groups используют `position`

@@ -2,6 +2,8 @@
 
 **Приоритет:** P2 | **Сложность:** L
 
+> **Статус: Реализовано (P2, 2026-03-13).** Стор декомпозирован на 4 модуля. Директория `src/stores/resource/` удалена. Актуальная структура: `src/stores/{projects,groups,allocations,ui}.ts`.
+
 ## Текущее состояние
 
 Единый Pinia-стор `useResourceStore` в `src/stores/resource/index.ts` (207 строк):

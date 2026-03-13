@@ -8,7 +8,7 @@
 | ---- | -------------------------- | ----------- | --------------- | --- |
 | P0   | Блокеры и гигиена          | Завершена   | 2026-03-12      | p0-cleanup |
 | P1   | Фундамент                  | Завершена   | 2026-03-12      | p1-foundation |
-| P2   | Архитектура                | Не начата   | —               | —   |
+| P2   | Архитектура                | Завершена   | 2026-03-13      | p2-store |
 | P3   | Декомпозиция компонентов   | Не начата   | —               | —   |
 | P4   | Инфраструктура             | Не начата   | —               | —   |
 | P5   | Кастомные модальные окна   | Не начата   | —               | —   |
@@ -72,7 +72,10 @@
 
 Чеклист: [02-refactoring-priorities.md → Чеклист регрессионного тестирования](02-refactoring-priorities.md#чеклист-регрессионного-тестирования)
 
-— (будет заполнено после мержа)
+- `npm run build` — OK
+- Unit-тесты (vitest): passed
+- E2E-тесты (playwright): passed
+- Нет `any` в src/
 
 ### Заметки / проблемы
 
@@ -82,28 +85,36 @@
 
 ## Фаза 2 (P2) — Архитектура
 
-**Статус:** Не начата
-**Дата завершения:** —
+**Статус:** Завершена
+**Дата завершения:** 2026-03-13
 
 ### Выполненные задачи
 
-- [ ] Декомпозиция стора на 4 модуля
-- [ ] API: ApiError, retry, обработка ошибок в actions
-- [ ] Индекс `allocationsByPair` для O(1) доступа
+- [x] API: `ApiError` класс, retry для 5xx/сетевых ошибок (макс 2 повтора), `try/catch` во всех actions
+- [x] Декомпозиция стора на 4 модуля: `useProjectsStore`, `useGroupsStore`, `useAllocationsStore`, `useUiStore`
+- [x] Индекс `byPairIndex` (`Map<string, Allocation>`) для O(1) доступа в `valueByPair`/`quarterByPair`
+- [x] Общий `fetchAllData()` composable вместо монолитного `fetchAll()`
+- [x] Объединение 6 методов `updateProject*` в один `updateField(id, field, value)`
+- [x] Типы `AllocationPayload`, `AllocationPayloadByProject` перенесены в `domain.ts`
+- [x] Удалён `src/stores/resource/` целиком
 
 ### Ссылки на PR
 
-— (будет заполнено)
+Ветка: `p2-store`
 
 ### Результаты регрессионного тестирования
 
 Чеклист: [02-refactoring-priorities.md → Чеклист регрессионного тестирования](02-refactoring-priorities.md#чеклист-регрессионного-тестирования)
 
-— (будет заполнено)
+- `npm run lint` — OK (0 ошибок)
+- `npm run format` — OK (все unchanged)
+- `npm run build` — OK (165.14 kB gzipped 58.41 kB)
 
 ### Заметки / проблемы
 
-— (будет заполнено)
+- Старые unit-тесты для `useResourceStore` удалены вместе со стором (новые сторы тестируемы, но тесты — вне scope P2)
+- Циклические зависимости между сторами решены через вызов `useXxxStore()` внутри actions/getters (стандартный паттерн Pinia)
+- `visibleGroups` вычисляется в компоненте как `groupsStore.items.filter(g => uiStore.isGroupVisible(g.id))` вместо отдельного геттера
 
 ---
 
@@ -114,7 +125,7 @@
 
 ### Выполненные задачи
 
-- [ ] Декомпозиция ResourcePlan.vue (1982 строки → ~200)
+- [ ] Декомпозиция ResourcePlan.vue (1985 строк → ~200)
 - [ ] Декомпозиция страниц и компонентов
 - [ ] Composable `useDragReorder`
 - [ ] Навигация по `name`, lazy-loading маршрутов
