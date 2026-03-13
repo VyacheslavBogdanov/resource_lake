@@ -69,10 +69,10 @@
 
 | Задача                     | Документ                             | Сложность |
 | -------------------------- | ------------------------------------ | --------- |
-| Настройка деплоя фронтенда | [12-deployment.md](12-deployment.md) | S         |
+| Настройка деплоя фронтенда | [12-deployment.md](12-deployment.md) | S         | ✅     |
 
 **Зависимости:** все предыдущие фазы
-**Результат:** проект готов к production-деплою
+**Результат:** проект готов к production-деплою. **Завершено 2026-03-13.**
 
 ---
 
@@ -123,7 +123,7 @@
 | ~~Декомпозиция страниц~~    | [14](14-pages-decomposition.md)          | P3   | L         | ✅                     |
 | ~~useDragReorder~~           | [10](10-drag-and-drop-refactoring.md)    | P3   | M         | ✅                     |
 | ~~Роутинг (name + lazy)~~   | [11](11-routing-and-navigation.md)       | P3   | S         | ✅                     |
-| Деплой фронтенда            | [12](12-deployment.md)                   | P4   | S         | P0–P3                  |
+| ~~Деплой фронтенда~~        | [12](12-deployment.md)                   | P4   | S         | ✅                     |
 | ConfirmDialog.vue           | —                                        | P5   | S         | P1 (UI-кит)            |
 | useConfirm composable       | —                                        | P5   | S         | P1 (UI-кит)            |
 | Замена confirm()/alert()    | —                                        | P5   | S         | P1 (UI-кит)            |

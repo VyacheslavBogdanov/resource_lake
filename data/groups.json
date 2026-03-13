@@ -3,111 +3,111 @@
     {
       "id": 1,
       "name": "Frontend",
-      "capacityHours": 360,
-      "supportPercent": 20,
+      "capacityHours": 300,
+      "supportPercent": 4,
       "resourceType": "Программист",
       "position": 1
     },
     {
       "id": 2,
       "name": "Backend",
-      "capacityHours": 340,
-      "supportPercent": 15,
+      "capacityHours": 360,
+      "supportPercent": 6,
       "resourceType": "Программист",
       "position": 2
     },
     {
       "id": 3,
       "name": "QA",
-      "capacityHours": 280,
-      "supportPercent": 24,
+      "capacityHours": 60,
+      "supportPercent": 20,
       "resourceType": "Тестировщик",
       "position": 3
     },
     {
       "id": 4,
       "name": "DevOps",
-      "capacityHours": 400,
-      "supportPercent": 0,
+      "capacityHours": 160,
+      "supportPercent": 8,
       "resourceType": "Программист",
       "position": 4
     },
     {
       "id": 5,
       "name": "Mobile",
-      "capacityHours": 260,
-      "supportPercent": 19,
+      "capacityHours": 280,
+      "supportPercent": 21,
       "resourceType": "Программист",
       "position": 5
     },
     {
       "id": 6,
       "name": "UX/UI",
-      "capacityHours": 240,
-      "supportPercent": 9,
+      "capacityHours": 200,
+      "supportPercent": 28,
       "resourceType": "Дизайнер",
       "position": 6
     },
     {
       "id": 7,
       "name": "Data Engineering",
-      "capacityHours": 320,
-      "supportPercent": 20,
+      "capacityHours": 360,
+      "supportPercent": 13,
       "resourceType": "Программист",
       "position": 7
     },
     {
       "id": 8,
       "name": "ML",
-      "capacityHours": 300,
-      "supportPercent": 5,
+      "capacityHours": 200,
+      "supportPercent": 1,
       "resourceType": "Аналитик",
       "position": 8
     },
     {
       "id": 9,
       "name": "Security",
-      "capacityHours": 300,
-      "supportPercent": 25,
+      "capacityHours": 340,
+      "supportPercent": 11,
       "resourceType": "Программист",
       "position": 9
     },
     {
       "id": 10,
       "name": "DBA",
-      "capacityHours": 380,
-      "supportPercent": 8,
+      "capacityHours": 260,
+      "supportPercent": 26,
       "resourceType": "Программист",
       "position": 10
     },
     {
       "id": 11,
       "name": "Infra",
-      "capacityHours": 360,
-      "supportPercent": 10,
+      "capacityHours": 280,
+      "supportPercent": 18,
       "resourceType": "Конструктор",
       "position": 11
     },
     {
       "id": 12,
       "name": "Analytics",
-      "capacityHours": 280,
-      "supportPercent": 19,
+      "capacityHours": 60,
+      "supportPercent": 1,
       "resourceType": "Аналитик",
       "position": 12
     },
     {
       "id": 13,
       "name": "Embedded",
-      "capacityHours": 220,
-      "supportPercent": 19,
+      "capacityHours": 160,
+      "supportPercent": 30,
       "resourceType": "Конструктор",
       "position": 13
     },
     {
       "id": 14,
       "name": "Platform",
-      "capacityHours": 320,
+      "capacityHours": 220,
       "supportPercent": 9,
       "resourceType": "Программист",
       "position": 14
@@ -115,8 +115,8 @@
     {
       "id": 15,
       "name": "SRE",
-      "capacityHours": 140,
-      "supportPercent": 30,
+      "capacityHours": 280,
+      "supportPercent": 11,
       "resourceType": "Программист",
       "position": 15
     }
