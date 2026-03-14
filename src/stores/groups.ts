@@ -110,7 +110,15 @@ export const useGroupsStore = defineStore('groups', {
 
 		async updatePositions(updates: { id: number; position: number }[]) {
 			try {
-				await Promise.all(updates.map((u) => api.update('groups', u.id, { position: u.position })));
+				const existing = new Map(this.items.map((g) => [g.id, g]));
+				const changed = updates.filter((u) => {
+					const g = existing.get(u.id);
+					return g && g.position !== u.position;
+				});
+
+				if (changed.length) {
+					await Promise.all(changed.map((u) => api.update('groups', u.id, { position: u.position })));
+				}
 				this.items = sortByPosition(await api.list<Group>('groups'));
 			} catch (err) {
 				console.error('Ошибка при обновлении позиций групп:', err);
