@@ -2,38 +2,18 @@
   "allocations": [
     {
       "id": 1,
-      "projectId": 1,
-      "groupId": 8,
-      "hours": 10,
-      "q1": 3,
-      "q2": 3,
-      "q3": 2,
-      "q4": 2
+      "projectId": 4,
+      "groupId": 14,
+      "hours": 135,
+      "q1": 34,
+      "q2": 34,
+      "q3": 34,
+      "q4": 33
     },
     {
       "id": 2,
-      "projectId": 1,
-      "groupId": 11,
-      "hours": 10,
-      "q1": 3,
-      "q2": 3,
-      "q3": 2,
-      "q4": 2
-    },
-    {
-      "id": 3,
-      "projectId": 1,
-      "groupId": 2,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
-    },
-    {
-      "id": 4,
-      "projectId": 1,
-      "groupId": 9,
+      "projectId": 4,
+      "groupId": 3,
       "hours": 190,
       "q1": 48,
       "q2": 48,
@@ -41,9 +21,29 @@
       "q4": 47
     },
     {
+      "id": 3,
+      "projectId": 4,
+      "groupId": 13,
+      "hours": 195,
+      "q1": 49,
+      "q2": 49,
+      "q3": 49,
+      "q4": 48
+    },
+    {
+      "id": 4,
+      "projectId": 4,
+      "groupId": 7,
+      "hours": 115,
+      "q1": 29,
+      "q2": 29,
+      "q3": 29,
+      "q4": 28
+    },
+    {
       "id": 5,
-      "projectId": 1,
-      "groupId": 4,
+      "projectId": 5,
+      "groupId": 8,
       "hours": 115,
       "q1": 29,
       "q2": 29,
@@ -52,148 +52,8 @@
     },
     {
       "id": 6,
-      "projectId": 1,
-      "groupId": 1,
-      "hours": 100,
-      "q1": 25,
-      "q2": 25,
-      "q3": 25,
-      "q4": 25
-    },
-    {
-      "id": 7,
-      "projectId": 1,
-      "groupId": 3,
-      "hours": 120,
-      "q1": 30,
-      "q2": 30,
-      "q3": 30,
-      "q4": 30
-    },
-    {
-      "id": 8,
-      "projectId": 1,
-      "groupId": 12,
-      "hours": 30,
-      "q1": 8,
-      "q2": 8,
-      "q3": 7,
-      "q4": 7
-    },
-    {
-      "id": 9,
-      "projectId": 2,
-      "groupId": 15,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 10,
-      "projectId": 2,
-      "groupId": 12,
-      "hours": 185,
-      "q1": 47,
-      "q2": 46,
-      "q3": 46,
-      "q4": 46
-    },
-    {
-      "id": 11,
-      "projectId": 2,
-      "groupId": 13,
-      "hours": 135,
-      "q1": 34,
-      "q2": 34,
-      "q3": 34,
-      "q4": 33
-    },
-    {
-      "id": 12,
-      "projectId": 2,
-      "groupId": 4,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
-    },
-    {
-      "id": 13,
-      "projectId": 2,
-      "groupId": 8,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 14,
-      "projectId": 2,
-      "groupId": 9,
-      "hours": 135,
-      "q1": 34,
-      "q2": 34,
-      "q3": 34,
-      "q4": 33
-    },
-    {
-      "id": 15,
-      "projectId": 2,
-      "groupId": 2,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
-    },
-    {
-      "id": 16,
-      "projectId": 2,
-      "groupId": 10,
-      "hours": 30,
-      "q1": 8,
-      "q2": 8,
-      "q3": 7,
-      "q4": 7
-    },
-    {
-      "id": 17,
-      "projectId": 3,
-      "groupId": 12,
-      "hours": 75,
-      "q1": 19,
-      "q2": 19,
-      "q3": 19,
-      "q4": 18
-    },
-    {
-      "id": 18,
-      "projectId": 3,
-      "groupId": 9,
-      "hours": 105,
-      "q1": 27,
-      "q2": 26,
-      "q3": 26,
-      "q4": 26
-    },
-    {
-      "id": 19,
-      "projectId": 3,
-      "groupId": 7,
-      "hours": 120,
-      "q1": 30,
-      "q2": 30,
-      "q3": 30,
-      "q4": 30
-    },
-    {
-      "id": 20,
-      "projectId": 3,
-      "groupId": 3,
+      "projectId": 5,
+      "groupId": 11,
       "hours": 35,
       "q1": 9,
       "q2": 9,
@@ -201,9 +61,39 @@
       "q4": 8
     },
     {
-      "id": 21,
-      "projectId": 4,
+      "id": 7,
+      "projectId": 5,
       "groupId": 13,
+      "hours": 145,
+      "q1": 37,
+      "q2": 36,
+      "q3": 36,
+      "q4": 36
+    },
+    {
+      "id": 8,
+      "projectId": 5,
+      "groupId": 6,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10
+    },
+    {
+      "id": 9,
+      "projectId": 6,
+      "groupId": 2,
+      "hours": 70,
+      "q1": 18,
+      "q2": 18,
+      "q3": 17,
+      "q4": 17
+    },
+    {
+      "id": 10,
+      "projectId": 6,
+      "groupId": 15,
       "hours": 195,
       "q1": 49,
       "q2": 49,
@@ -211,39 +101,9 @@
       "q4": 48
     },
     {
-      "id": 22,
-      "projectId": 4,
+      "id": 11,
+      "projectId": 6,
       "groupId": 12,
-      "hours": 90,
-      "q1": 23,
-      "q2": 23,
-      "q3": 22,
-      "q4": 22
-    },
-    {
-      "id": 23,
-      "projectId": 4,
-      "groupId": 11,
-      "hours": 105,
-      "q1": 27,
-      "q2": 26,
-      "q3": 26,
-      "q4": 26
-    },
-    {
-      "id": 24,
-      "projectId": 5,
-      "groupId": 6,
-      "hours": 65,
-      "q1": 17,
-      "q2": 16,
-      "q3": 16,
-      "q4": 16
-    },
-    {
-      "id": 25,
-      "projectId": 5,
-      "groupId": 1,
       "hours": 165,
       "q1": 42,
       "q2": 41,
@@ -251,119 +111,29 @@
       "q4": 41
     },
     {
-      "id": 26,
-      "projectId": 5,
-      "groupId": 14,
-      "hours": 175,
-      "q1": 44,
-      "q2": 44,
-      "q3": 44,
-      "q4": 43
+      "id": 12,
+      "projectId": 6,
+      "groupId": 7,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
     },
     {
-      "id": 27,
+      "id": 13,
+      "projectId": 6,
+      "groupId": 5,
+      "hours": 200,
+      "q1": 50,
+      "q2": 50,
+      "q3": 50,
+      "q4": 50
+    },
+    {
+      "id": 14,
       "projectId": 6,
       "groupId": 11,
-      "hours": 30,
-      "q1": 8,
-      "q2": 8,
-      "q3": 7,
-      "q4": 7
-    },
-    {
-      "id": 28,
-      "projectId": 6,
-      "groupId": 15,
-      "hours": 150,
-      "q1": 38,
-      "q2": 38,
-      "q3": 37,
-      "q4": 37
-    },
-    {
-      "id": 29,
-      "projectId": 6,
-      "groupId": 10,
-      "hours": 70,
-      "q1": 18,
-      "q2": 18,
-      "q3": 17,
-      "q4": 17
-    },
-    {
-      "id": 30,
-      "projectId": 6,
-      "groupId": 12,
-      "hours": 10,
-      "q1": 3,
-      "q2": 3,
-      "q3": 2,
-      "q4": 2
-    },
-    {
-      "id": 31,
-      "projectId": 6,
-      "groupId": 3,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
-    },
-    {
-      "id": 32,
-      "projectId": 6,
-      "groupId": 4,
-      "hours": 185,
-      "q1": 47,
-      "q2": 46,
-      "q3": 46,
-      "q4": 46
-    },
-    {
-      "id": 33,
-      "projectId": 6,
-      "groupId": 5,
-      "hours": 195,
-      "q1": 49,
-      "q2": 49,
-      "q3": 49,
-      "q4": 48
-    },
-    {
-      "id": 34,
-      "projectId": 6,
-      "groupId": 2,
-      "hours": 135,
-      "q1": 34,
-      "q2": 34,
-      "q3": 34,
-      "q4": 33
-    },
-    {
-      "id": 35,
-      "projectId": 7,
-      "groupId": 8,
-      "hours": 130,
-      "q1": 33,
-      "q2": 33,
-      "q3": 32,
-      "q4": 32
-    },
-    {
-      "id": 36,
-      "projectId": 7,
-      "groupId": 5,
-      "hours": 70,
-      "q1": 18,
-      "q2": 18,
-      "q3": 17,
-      "q4": 17
-    },
-    {
-      "id": 37,
-      "projectId": 7,
-      "groupId": 2,
       "hours": 190,
       "q1": 48,
       "q2": 48,
@@ -371,19 +141,249 @@
       "q4": 47
     },
     {
-      "id": 38,
+      "id": 15,
+      "projectId": 6,
+      "groupId": 14,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
+    },
+    {
+      "id": 16,
       "projectId": 7,
+      "groupId": 2,
+      "hours": 25,
+      "q1": 7,
+      "q2": 6,
+      "q3": 6,
+      "q4": 6
+    },
+    {
+      "id": 17,
+      "projectId": 7,
+      "groupId": 4,
+      "hours": 130,
+      "q1": 33,
+      "q2": 33,
+      "q3": 32,
+      "q4": 32
+    },
+    {
+      "id": 18,
+      "projectId": 7,
+      "groupId": 8,
+      "hours": 35,
+      "q1": 9,
+      "q2": 9,
+      "q3": 9,
+      "q4": 8
+    },
+    {
+      "id": 19,
+      "projectId": 7,
+      "groupId": 9,
+      "hours": 155,
+      "q1": 39,
+      "q2": 39,
+      "q3": 39,
+      "q4": 38
+    },
+    {
+      "id": 20,
+      "projectId": 7,
+      "groupId": 11,
+      "hours": 185,
+      "q1": 47,
+      "q2": 46,
+      "q3": 46,
+      "q4": 46
+    },
+    {
+      "id": 21,
+      "projectId": 7,
+      "groupId": 15,
+      "hours": 190,
+      "q1": 48,
+      "q2": 48,
+      "q3": 47,
+      "q4": 47
+    },
+    {
+      "id": 22,
+      "projectId": 7,
+      "groupId": 14,
+      "hours": 120,
+      "q1": 30,
+      "q2": 30,
+      "q3": 30,
+      "q4": 30
+    },
+    {
+      "id": 23,
+      "projectId": 8,
+      "groupId": 6,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 24,
+      "projectId": 8,
+      "groupId": 3,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 25,
+      "projectId": 8,
+      "groupId": 4,
+      "hours": 120,
+      "q1": 30,
+      "q2": 30,
+      "q3": 30,
+      "q4": 30
+    },
+    {
+      "id": 26,
+      "projectId": 8,
+      "groupId": 10,
+      "hours": 145,
+      "q1": 37,
+      "q2": 36,
+      "q3": 36,
+      "q4": 36
+    },
+    {
+      "id": 27,
+      "projectId": 9,
+      "groupId": 6,
+      "hours": 135,
+      "q1": 34,
+      "q2": 34,
+      "q3": 34,
+      "q4": 33
+    },
+    {
+      "id": 28,
+      "projectId": 9,
       "groupId": 7,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
+      "hours": 65,
+      "q1": 17,
+      "q2": 16,
+      "q3": 16,
+      "q4": 16
+    },
+    {
+      "id": 29,
+      "projectId": 9,
+      "groupId": 5,
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
+    },
+    {
+      "id": 30,
+      "projectId": 9,
+      "groupId": 3,
+      "hours": 15,
+      "q1": 4,
+      "q2": 4,
+      "q3": 4,
+      "q4": 3
+    },
+    {
+      "id": 31,
+      "projectId": 9,
+      "groupId": 13,
+      "hours": 85,
+      "q1": 22,
+      "q2": 21,
+      "q3": 21,
+      "q4": 21
+    },
+    {
+      "id": 32,
+      "projectId": 9,
+      "groupId": 4,
+      "hours": 100,
+      "q1": 25,
+      "q2": 25,
+      "q3": 25,
+      "q4": 25
+    },
+    {
+      "id": 33,
+      "projectId": 9,
+      "groupId": 9,
+      "hours": 95,
+      "q1": 24,
+      "q2": 24,
+      "q3": 24,
+      "q4": 23
+    },
+    {
+      "id": 34,
+      "projectId": 9,
+      "groupId": 10,
+      "hours": 110,
+      "q1": 28,
+      "q2": 28,
+      "q3": 27,
+      "q4": 27
+    },
+    {
+      "id": 35,
+      "projectId": 12,
+      "groupId": 5,
+      "hours": 15,
+      "q1": 4,
+      "q2": 4,
+      "q3": 4,
+      "q4": 3
+    },
+    {
+      "id": 36,
+      "projectId": 12,
+      "groupId": 1,
+      "hours": 55,
+      "q1": 14,
+      "q2": 14,
+      "q3": 14,
+      "q4": 13
+    },
+    {
+      "id": 37,
+      "projectId": 12,
+      "groupId": 9,
+      "hours": 165,
+      "q1": 42,
+      "q2": 41,
+      "q3": 41,
+      "q4": 41
+    },
+    {
+      "id": 38,
+      "projectId": 12,
+      "groupId": 12,
+      "hours": 140,
+      "q1": 35,
+      "q2": 35,
+      "q3": 35,
+      "q4": 35
     },
     {
       "id": 39,
-      "projectId": 8,
-      "groupId": 13,
+      "projectId": 12,
+      "groupId": 6,
       "hours": 110,
       "q1": 28,
       "q2": 28,
@@ -392,98 +392,8 @@
     },
     {
       "id": 40,
-      "projectId": 8,
-      "groupId": 7,
-      "hours": 60,
-      "q1": 15,
-      "q2": 15,
-      "q3": 15,
-      "q4": 15
-    },
-    {
-      "id": 41,
-      "projectId": 8,
-      "groupId": 1,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 42,
-      "projectId": 8,
-      "groupId": 4,
-      "hours": 175,
-      "q1": 44,
-      "q2": 44,
-      "q3": 44,
-      "q4": 43
-    },
-    {
-      "id": 43,
-      "projectId": 8,
-      "groupId": 5,
-      "hours": 80,
-      "q1": 20,
-      "q2": 20,
-      "q3": 20,
-      "q4": 20
-    },
-    {
-      "id": 44,
-      "projectId": 8,
-      "groupId": 12,
-      "hours": 60,
-      "q1": 15,
-      "q2": 15,
-      "q3": 15,
-      "q4": 15
-    },
-    {
-      "id": 45,
-      "projectId": 8,
-      "groupId": 14,
-      "hours": 105,
-      "q1": 27,
-      "q2": 26,
-      "q3": 26,
-      "q4": 26
-    },
-    {
-      "id": 46,
-      "projectId": 9,
-      "groupId": 14,
-      "hours": 165,
-      "q1": 42,
-      "q2": 41,
-      "q3": 41,
-      "q4": 41
-    },
-    {
-      "id": 47,
-      "projectId": 9,
-      "groupId": 1,
-      "hours": 70,
-      "q1": 18,
-      "q2": 18,
-      "q3": 17,
-      "q4": 17
-    },
-    {
-      "id": 48,
-      "projectId": 9,
-      "groupId": 2,
-      "hours": 55,
-      "q1": 14,
-      "q2": 14,
-      "q3": 14,
-      "q4": 13
-    },
-    {
-      "id": 49,
-      "projectId": 9,
-      "groupId": 11,
+      "projectId": 12,
+      "groupId": 13,
       "hours": 150,
       "q1": 38,
       "q2": 38,
@@ -491,89 +401,59 @@
       "q4": 37
     },
     {
-      "id": 50,
-      "projectId": 10,
-      "groupId": 9,
-      "hours": 55,
-      "q1": 14,
-      "q2": 14,
-      "q3": 14,
-      "q4": 13
-    },
-    {
-      "id": 51,
-      "projectId": 10,
-      "groupId": 3,
-      "hours": 140,
-      "q1": 35,
-      "q2": 35,
-      "q3": 35,
-      "q4": 35
-    },
-    {
-      "id": 52,
-      "projectId": 10,
-      "groupId": 13,
-      "hours": 185,
-      "q1": 47,
-      "q2": 46,
-      "q3": 46,
-      "q4": 46
-    },
-    {
-      "id": 53,
-      "projectId": 10,
-      "groupId": 12,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
-    },
-    {
-      "id": 54,
-      "projectId": 10,
-      "groupId": 6,
-      "hours": 65,
-      "q1": 17,
-      "q2": 16,
-      "q3": 16,
-      "q4": 16
-    },
-    {
-      "id": 55,
-      "projectId": 10,
-      "groupId": 2,
-      "hours": 170,
-      "q1": 43,
-      "q2": 43,
-      "q3": 42,
-      "q4": 42
-    },
-    {
-      "id": 56,
-      "projectId": 10,
-      "groupId": 4,
-      "hours": 90,
-      "q1": 23,
-      "q2": 23,
-      "q3": 22,
-      "q4": 22
-    },
-    {
-      "id": 57,
-      "projectId": 11,
+      "id": 41,
+      "projectId": 12,
       "groupId": 11,
-      "hours": 190,
-      "q1": 48,
-      "q2": 48,
-      "q3": 47,
-      "q4": 47
+      "hours": 200,
+      "q1": 50,
+      "q2": 50,
+      "q3": 50,
+      "q4": 50
     },
     {
-      "id": 58,
-      "projectId": 11,
-      "groupId": 5,
+      "id": 42,
+      "projectId": 13,
+      "groupId": 12,
+      "hours": 25,
+      "q1": 7,
+      "q2": 6,
+      "q3": 6,
+      "q4": 6
+    },
+    {
+      "id": 43,
+      "projectId": 13,
+      "groupId": 2,
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
+    },
+    {
+      "id": 44,
+      "projectId": 13,
+      "groupId": 13,
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
+    },
+    {
+      "id": 45,
+      "projectId": 13,
+      "groupId": 7,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
+    },
+    {
+      "id": 46,
+      "projectId": 14,
+      "groupId": 7,
       "hours": 195,
       "q1": 49,
       "q2": 49,
@@ -581,119 +461,39 @@
       "q4": 48
     },
     {
-      "id": 59,
-      "projectId": 11,
-      "groupId": 7,
-      "hours": 120,
-      "q1": 30,
-      "q2": 30,
-      "q3": 30,
-      "q4": 30
-    },
-    {
-      "id": 60,
-      "projectId": 11,
-      "groupId": 13,
-      "hours": 35,
-      "q1": 9,
-      "q2": 9,
-      "q3": 9,
-      "q4": 8
-    },
-    {
-      "id": 61,
-      "projectId": 11,
+      "id": 47,
+      "projectId": 14,
       "groupId": 15,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
     },
     {
-      "id": 62,
-      "projectId": 12,
-      "groupId": 7,
-      "hours": 110,
-      "q1": 28,
-      "q2": 28,
-      "q3": 27,
-      "q4": 27
-    },
-    {
-      "id": 63,
-      "projectId": 12,
-      "groupId": 2,
-      "hours": 95,
-      "q1": 24,
-      "q2": 24,
-      "q3": 24,
-      "q4": 23
-    },
-    {
-      "id": 64,
-      "projectId": 12,
-      "groupId": 9,
-      "hours": 110,
-      "q1": 28,
-      "q2": 28,
-      "q3": 27,
-      "q4": 27
-    },
-    {
-      "id": 65,
-      "projectId": 12,
+      "id": 48,
+      "projectId": 14,
       "groupId": 10,
-      "hours": 150,
-      "q1": 38,
-      "q2": 38,
-      "q3": 37,
-      "q4": 37
+      "hours": 110,
+      "q1": 28,
+      "q2": 28,
+      "q3": 27,
+      "q4": 27
     },
     {
-      "id": 66,
-      "projectId": 12,
-      "groupId": 11,
-      "hours": 145,
-      "q1": 37,
-      "q2": 36,
-      "q3": 36,
-      "q4": 36
+      "id": 49,
+      "projectId": 14,
+      "groupId": 4,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
     },
     {
-      "id": 67,
-      "projectId": 12,
-      "groupId": 6,
-      "hours": 15,
-      "q1": 4,
-      "q2": 4,
-      "q3": 4,
-      "q4": 3
-    },
-    {
-      "id": 68,
-      "projectId": 12,
+      "id": 50,
+      "projectId": 14,
       "groupId": 8,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 69,
-      "projectId": 12,
-      "groupId": 5,
-      "hours": 95,
-      "q1": 24,
-      "q2": 24,
-      "q3": 24,
-      "q4": 23
-    },
-    {
-      "id": 70,
-      "projectId": 15,
-      "groupId": 7,
       "hours": 165,
       "q1": 42,
       "q2": 41,
@@ -701,178 +501,18 @@
       "q4": 41
     },
     {
-      "id": 71,
-      "projectId": 15,
-      "groupId": 5,
-      "hours": 60,
-      "q1": 15,
-      "q2": 15,
-      "q3": 15,
-      "q4": 15
-    },
-    {
-      "id": 72,
-      "projectId": 15,
-      "groupId": 1,
-      "hours": 105,
-      "q1": 27,
-      "q2": 26,
-      "q3": 26,
-      "q4": 26
-    },
-    {
-      "id": 73,
+      "id": 51,
       "projectId": 15,
       "groupId": 12,
-      "hours": 55,
-      "q1": 14,
-      "q2": 14,
-      "q3": 14,
-      "q4": 13
+      "hours": 110,
+      "q1": 28,
+      "q2": 28,
+      "q3": 27,
+      "q4": 27
     },
     {
-      "id": 74,
+      "id": 52,
       "projectId": 15,
-      "groupId": 10,
-      "hours": 85,
-      "q1": 22,
-      "q2": 21,
-      "q3": 21,
-      "q4": 21
-    },
-    {
-      "id": 75,
-      "projectId": 15,
-      "groupId": 13,
-      "hours": 100,
-      "q1": 25,
-      "q2": 25,
-      "q3": 25,
-      "q4": 25
-    },
-    {
-      "id": 76,
-      "projectId": 16,
-      "groupId": 13,
-      "hours": 120,
-      "q1": 30,
-      "q2": 30,
-      "q3": 30,
-      "q4": 30
-    },
-    {
-      "id": 77,
-      "projectId": 16,
-      "groupId": 8,
-      "hours": 135,
-      "q1": 34,
-      "q2": 34,
-      "q3": 34,
-      "q4": 33
-    },
-    {
-      "id": 78,
-      "projectId": 16,
-      "groupId": 11,
-      "hours": 130,
-      "q1": 33,
-      "q2": 33,
-      "q3": 32,
-      "q4": 32
-    },
-    {
-      "id": 79,
-      "projectId": 16,
-      "groupId": 1,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
-    },
-    {
-      "id": 80,
-      "projectId": 16,
-      "groupId": 2,
-      "hours": 40,
-      "q1": 10,
-      "q2": 10,
-      "q3": 10,
-      "q4": 10
-    },
-    {
-      "id": 81,
-      "projectId": 16,
-      "groupId": 5,
-      "hours": 90,
-      "q1": 23,
-      "q2": 23,
-      "q3": 22,
-      "q4": 22
-    },
-    {
-      "id": 82,
-      "projectId": 17,
-      "groupId": 3,
-      "hours": 60,
-      "q1": 15,
-      "q2": 15,
-      "q3": 15,
-      "q4": 15
-    },
-    {
-      "id": 83,
-      "projectId": 17,
-      "groupId": 7,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 84,
-      "projectId": 17,
-      "groupId": 10,
-      "hours": 40,
-      "q1": 10,
-      "q2": 10,
-      "q3": 10,
-      "q4": 10
-    },
-    {
-      "id": 85,
-      "projectId": 18,
-      "groupId": 9,
-      "hours": 15,
-      "q1": 4,
-      "q2": 4,
-      "q3": 4,
-      "q4": 3
-    },
-    {
-      "id": 86,
-      "projectId": 18,
-      "groupId": 2,
-      "hours": 80,
-      "q1": 20,
-      "q2": 20,
-      "q3": 20,
-      "q4": 20
-    },
-    {
-      "id": 87,
-      "projectId": 18,
-      "groupId": 1,
-      "hours": 40,
-      "q1": 10,
-      "q2": 10,
-      "q3": 10,
-      "q4": 10
-    },
-    {
-      "id": 88,
-      "projectId": 18,
       "groupId": 6,
       "hours": 115,
       "q1": 29,
@@ -881,138 +521,28 @@
       "q4": 28
     },
     {
-      "id": 89,
-      "projectId": 18,
-      "groupId": 4,
-      "hours": 115,
-      "q1": 29,
-      "q2": 29,
-      "q3": 29,
-      "q4": 28
-    },
-    {
-      "id": 90,
-      "projectId": 18,
-      "groupId": 13,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 91,
-      "projectId": 18,
-      "groupId": 3,
-      "hours": 120,
-      "q1": 30,
-      "q2": 30,
-      "q3": 30,
-      "q4": 30
-    },
-    {
-      "id": 92,
-      "projectId": 19,
-      "groupId": 12,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 93,
-      "projectId": 19,
-      "groupId": 8,
-      "hours": 175,
-      "q1": 44,
-      "q2": 44,
-      "q3": 44,
-      "q4": 43
-    },
-    {
-      "id": 94,
-      "projectId": 19,
-      "groupId": 10,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 95,
-      "projectId": 19,
-      "groupId": 7,
-      "hours": 35,
-      "q1": 9,
-      "q2": 9,
-      "q3": 9,
-      "q4": 8
-    },
-    {
-      "id": 96,
-      "projectId": 20,
-      "groupId": 5,
-      "hours": 90,
-      "q1": 23,
-      "q2": 23,
-      "q3": 22,
-      "q4": 22
-    },
-    {
-      "id": 97,
-      "projectId": 20,
-      "groupId": 11,
-      "hours": 145,
-      "q1": 37,
-      "q2": 36,
-      "q3": 36,
-      "q4": 36
-    },
-    {
-      "id": 98,
-      "projectId": 20,
-      "groupId": 9,
-      "hours": 175,
-      "q1": 44,
-      "q2": 44,
-      "q3": 44,
-      "q4": 43
-    },
-    {
-      "id": 99,
-      "projectId": 20,
+      "id": 53,
+      "projectId": 15,
       "groupId": 15,
-      "hours": 180,
-      "q1": 45,
-      "q2": 45,
-      "q3": 45,
-      "q4": 45
+      "hours": 195,
+      "q1": 49,
+      "q2": 49,
+      "q3": 49,
+      "q4": 48
     },
     {
-      "id": 100,
-      "projectId": 20,
-      "groupId": 8,
-      "hours": 155,
-      "q1": 39,
-      "q2": 39,
-      "q3": 39,
-      "q4": 38
-    },
-    {
-      "id": 101,
-      "projectId": 21,
+      "id": 54,
+      "projectId": 16,
       "groupId": 7,
-      "hours": 110,
-      "q1": 28,
-      "q2": 28,
-      "q3": 27,
-      "q4": 27
+      "hours": 25,
+      "q1": 7,
+      "q2": 6,
+      "q3": 6,
+      "q4": 6
     },
     {
-      "id": 102,
-      "projectId": 21,
+      "id": 55,
+      "projectId": 16,
       "groupId": 8,
       "hours": 150,
       "q1": 38,
@@ -1021,79 +551,9 @@
       "q4": 37
     },
     {
-      "id": 103,
-      "projectId": 21,
-      "groupId": 13,
-      "hours": 100,
-      "q1": 25,
-      "q2": 25,
-      "q3": 25,
-      "q4": 25
-    },
-    {
-      "id": 104,
-      "projectId": 23,
-      "groupId": 10,
-      "hours": 105,
-      "q1": 27,
-      "q2": 26,
-      "q3": 26,
-      "q4": 26
-    },
-    {
-      "id": 105,
-      "projectId": 23,
-      "groupId": 2,
-      "hours": 180,
-      "q1": 45,
-      "q2": 45,
-      "q3": 45,
-      "q4": 45
-    },
-    {
-      "id": 106,
-      "projectId": 23,
+      "id": 56,
+      "projectId": 16,
       "groupId": 5,
-      "hours": 125,
-      "q1": 32,
-      "q2": 31,
-      "q3": 31,
-      "q4": 31
-    },
-    {
-      "id": 107,
-      "projectId": 23,
-      "groupId": 6,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 108,
-      "projectId": 23,
-      "groupId": 1,
-      "hours": 130,
-      "q1": 33,
-      "q2": 33,
-      "q3": 32,
-      "q4": 32
-    },
-    {
-      "id": 109,
-      "projectId": 23,
-      "groupId": 13,
-      "hours": 180,
-      "q1": 45,
-      "q2": 45,
-      "q3": 45,
-      "q4": 45
-    },
-    {
-      "id": 110,
-      "projectId": 24,
-      "groupId": 6,
       "hours": 30,
       "q1": 8,
       "q2": 8,
@@ -1101,39 +561,39 @@
       "q4": 7
     },
     {
-      "id": 111,
-      "projectId": 24,
-      "groupId": 3,
-      "hours": 180,
-      "q1": 45,
-      "q2": 45,
-      "q3": 45,
-      "q4": 45
-    },
-    {
-      "id": 112,
-      "projectId": 24,
+      "id": 57,
+      "projectId": 16,
       "groupId": 14,
-      "hours": 35,
-      "q1": 9,
-      "q2": 9,
-      "q3": 9,
-      "q4": 8
+      "hours": 110,
+      "q1": 28,
+      "q2": 28,
+      "q3": 27,
+      "q4": 27
     },
     {
-      "id": 113,
-      "projectId": 24,
-      "groupId": 10,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
+      "id": 58,
+      "projectId": 16,
+      "groupId": 13,
+      "hours": 130,
+      "q1": 33,
+      "q2": 33,
+      "q3": 32,
+      "q4": 32
     },
     {
-      "id": 114,
-      "projectId": 25,
-      "groupId": 1,
+      "id": 59,
+      "projectId": 16,
+      "groupId": 3,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 60,
+      "projectId": 16,
+      "groupId": 15,
       "hours": 20,
       "q1": 5,
       "q2": 5,
@@ -1141,8 +601,108 @@
       "q4": 5
     },
     {
-      "id": 115,
-      "projectId": 25,
+      "id": 61,
+      "projectId": 16,
+      "groupId": 4,
+      "hours": 120,
+      "q1": 30,
+      "q2": 30,
+      "q3": 30,
+      "q4": 30
+    },
+    {
+      "id": 62,
+      "projectId": 19,
+      "groupId": 5,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10
+    },
+    {
+      "id": 63,
+      "projectId": 19,
+      "groupId": 1,
+      "hours": 165,
+      "q1": 42,
+      "q2": 41,
+      "q3": 41,
+      "q4": 41
+    },
+    {
+      "id": 64,
+      "projectId": 19,
+      "groupId": 14,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 65,
+      "projectId": 19,
+      "groupId": 2,
+      "hours": 95,
+      "q1": 24,
+      "q2": 24,
+      "q3": 24,
+      "q4": 23
+    },
+    {
+      "id": 66,
+      "projectId": 19,
+      "groupId": 3,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 67,
+      "projectId": 19,
+      "groupId": 12,
+      "hours": 75,
+      "q1": 19,
+      "q2": 19,
+      "q3": 19,
+      "q4": 18
+    },
+    {
+      "id": 68,
+      "projectId": 20,
+      "groupId": 7,
+      "hours": 200,
+      "q1": 50,
+      "q2": 50,
+      "q3": 50,
+      "q4": 50
+    },
+    {
+      "id": 69,
+      "projectId": 20,
+      "groupId": 6,
+      "hours": 20,
+      "q1": 5,
+      "q2": 5,
+      "q3": 5,
+      "q4": 5
+    },
+    {
+      "id": 70,
+      "projectId": 20,
+      "groupId": 11,
+      "hours": 125,
+      "q1": 32,
+      "q2": 31,
+      "q3": 31,
+      "q4": 31
+    },
+    {
+      "id": 71,
+      "projectId": 20,
       "groupId": 15,
       "hours": 30,
       "q1": 8,
@@ -1151,39 +711,9 @@
       "q4": 7
     },
     {
-      "id": 116,
-      "projectId": 25,
-      "groupId": 4,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 117,
-      "projectId": 25,
-      "groupId": 9,
-      "hours": 165,
-      "q1": 42,
-      "q2": 41,
-      "q3": 41,
-      "q4": 41
-    },
-    {
-      "id": 118,
-      "projectId": 25,
-      "groupId": 10,
-      "hours": 30,
-      "q1": 8,
-      "q2": 8,
-      "q3": 7,
-      "q4": 7
-    },
-    {
-      "id": 119,
-      "projectId": 25,
-      "groupId": 7,
+      "id": 72,
+      "projectId": 20,
+      "groupId": 2,
       "hours": 10,
       "q1": 3,
       "q2": 3,
@@ -1191,39 +721,9 @@
       "q4": 2
     },
     {
-      "id": 120,
-      "projectId": 26,
-      "groupId": 2,
-      "hours": 45,
-      "q1": 12,
-      "q2": 11,
-      "q3": 11,
-      "q4": 11
-    },
-    {
-      "id": 121,
-      "projectId": 26,
-      "groupId": 8,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
-    },
-    {
-      "id": 122,
-      "projectId": 26,
-      "groupId": 10,
-      "hours": 35,
-      "q1": 9,
-      "q2": 9,
-      "q3": 9,
-      "q4": 8
-    },
-    {
-      "id": 123,
-      "projectId": 26,
-      "groupId": 5,
+      "id": 73,
+      "projectId": 20,
+      "groupId": 1,
       "hours": 70,
       "q1": 18,
       "q2": 18,
@@ -1231,39 +731,59 @@
       "q4": 17
     },
     {
-      "id": 124,
-      "projectId": 27,
-      "groupId": 9,
-      "hours": 180,
-      "q1": 45,
-      "q2": 45,
-      "q3": 45,
-      "q4": 45
+      "id": 74,
+      "projectId": 20,
+      "groupId": 12,
+      "hours": 65,
+      "q1": 17,
+      "q2": 16,
+      "q3": 16,
+      "q4": 16
     },
     {
-      "id": 125,
-      "projectId": 27,
-      "groupId": 15,
-      "hours": 130,
-      "q1": 33,
-      "q2": 33,
-      "q3": 32,
-      "q4": 32
+      "id": 75,
+      "projectId": 20,
+      "groupId": 13,
+      "hours": 125,
+      "q1": 32,
+      "q2": 31,
+      "q3": 31,
+      "q4": 31
     },
     {
-      "id": 126,
-      "projectId": 27,
-      "groupId": 2,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 127,
-      "projectId": 27,
+      "id": 76,
+      "projectId": 22,
       "groupId": 1,
+      "hours": 100,
+      "q1": 25,
+      "q2": 25,
+      "q3": 25,
+      "q4": 25
+    },
+    {
+      "id": 77,
+      "projectId": 22,
+      "groupId": 12,
+      "hours": 145,
+      "q1": 37,
+      "q2": 36,
+      "q3": 36,
+      "q4": 36
+    },
+    {
+      "id": 78,
+      "projectId": 22,
+      "groupId": 9,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
+    },
+    {
+      "id": 79,
+      "projectId": 23,
+      "groupId": 11,
       "hours": 150,
       "q1": 38,
       "q2": 38,
@@ -1271,19 +791,19 @@
       "q4": 37
     },
     {
-      "id": 128,
-      "projectId": 27,
-      "groupId": 13,
-      "hours": 40,
-      "q1": 10,
-      "q2": 10,
-      "q3": 10,
-      "q4": 10
+      "id": 80,
+      "projectId": 23,
+      "groupId": 5,
+      "hours": 60,
+      "q1": 15,
+      "q2": 15,
+      "q3": 15,
+      "q4": 15
     },
     {
-      "id": 129,
-      "projectId": 27,
-      "groupId": 12,
+      "id": 81,
+      "projectId": 23,
+      "groupId": 2,
       "hours": 175,
       "q1": 44,
       "q2": 44,
@@ -1291,128 +811,88 @@
       "q4": 43
     },
     {
-      "id": 130,
-      "projectId": 27,
-      "groupId": 4,
-      "hours": 15,
-      "q1": 4,
-      "q2": 4,
-      "q3": 4,
-      "q4": 3
-    },
-    {
-      "id": 131,
-      "projectId": 28,
-      "groupId": 4,
-      "hours": 50,
-      "q1": 13,
-      "q2": 13,
-      "q3": 12,
-      "q4": 12
-    },
-    {
-      "id": 132,
-      "projectId": 28,
-      "groupId": 6,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
-    },
-    {
-      "id": 133,
-      "projectId": 28,
+      "id": 82,
+      "projectId": 23,
       "groupId": 14,
-      "hours": 135,
-      "q1": 34,
-      "q2": 34,
-      "q3": 34,
-      "q4": 33
+      "hours": 200,
+      "q1": 50,
+      "q2": 50,
+      "q3": 50,
+      "q4": 50
     },
     {
-      "id": 134,
-      "projectId": 28,
-      "groupId": 2,
-      "hours": 70,
-      "q1": 18,
-      "q2": 18,
-      "q3": 17,
-      "q4": 17
+      "id": 83,
+      "projectId": 23,
+      "groupId": 3,
+      "hours": 35,
+      "q1": 9,
+      "q2": 9,
+      "q3": 9,
+      "q4": 8
     },
     {
-      "id": 135,
-      "projectId": 28,
-      "groupId": 8,
-      "hours": 95,
-      "q1": 24,
-      "q2": 24,
-      "q3": 24,
-      "q4": 23
-    },
-    {
-      "id": 136,
-      "projectId": 28,
-      "groupId": 15,
-      "hours": 45,
-      "q1": 12,
-      "q2": 11,
-      "q3": 11,
-      "q4": 11
-    },
-    {
-      "id": 137,
-      "projectId": 28,
-      "groupId": 1,
-      "hours": 160,
-      "q1": 40,
-      "q2": 40,
-      "q3": 40,
-      "q4": 40
-    },
-    {
-      "id": 138,
-      "projectId": 29,
-      "groupId": 12,
-      "hours": 40,
-      "q1": 10,
-      "q2": 10,
-      "q3": 10,
-      "q4": 10
-    },
-    {
-      "id": 139,
-      "projectId": 29,
+      "id": 84,
+      "projectId": 23,
       "groupId": 4,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
+      "hours": 170,
+      "q1": 43,
+      "q2": 43,
+      "q3": 42,
+      "q4": 42
     },
     {
-      "id": 140,
-      "projectId": 29,
+      "id": 85,
+      "projectId": 23,
+      "groupId": 12,
+      "hours": 105,
+      "q1": 27,
+      "q2": 26,
+      "q3": 26,
+      "q4": 26
+    },
+    {
+      "id": 86,
+      "projectId": 23,
+      "groupId": 13,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 87,
+      "projectId": 24,
       "groupId": 1,
-      "hours": 20,
-      "q1": 5,
-      "q2": 5,
-      "q3": 5,
-      "q4": 5
+      "hours": 25,
+      "q1": 7,
+      "q2": 6,
+      "q3": 6,
+      "q4": 6
     },
     {
-      "id": 141,
-      "projectId": 29,
-      "groupId": 5,
-      "hours": 130,
-      "q1": 33,
-      "q2": 33,
-      "q3": 32,
-      "q4": 32
+      "id": 88,
+      "projectId": 24,
+      "groupId": 4,
+      "hours": 55,
+      "q1": 14,
+      "q2": 14,
+      "q3": 14,
+      "q4": 13
     },
     {
-      "id": 142,
-      "projectId": 29,
+      "id": 89,
+      "projectId": 24,
+      "groupId": 3,
+      "hours": 145,
+      "q1": 37,
+      "q2": 36,
+      "q3": 36,
+      "q4": 36
+    },
+    {
+      "id": 90,
+      "projectId": 24,
       "groupId": 11,
       "hours": 75,
       "q1": 19,
@@ -1421,9 +901,159 @@
       "q4": 18
     },
     {
-      "id": 143,
-      "projectId": 30,
-      "groupId": 4,
+      "id": 91,
+      "projectId": 24,
+      "groupId": 8,
+      "hours": 60,
+      "q1": 15,
+      "q2": 15,
+      "q3": 15,
+      "q4": 15
+    },
+    {
+      "id": 92,
+      "projectId": 25,
+      "groupId": 12,
+      "hours": 185,
+      "q1": 47,
+      "q2": 46,
+      "q3": 46,
+      "q4": 46
+    },
+    {
+      "id": 93,
+      "projectId": 25,
+      "groupId": 13,
+      "hours": 50,
+      "q1": 13,
+      "q2": 13,
+      "q3": 12,
+      "q4": 12
+    },
+    {
+      "id": 94,
+      "projectId": 25,
+      "groupId": 6,
+      "hours": 50,
+      "q1": 13,
+      "q2": 13,
+      "q3": 12,
+      "q4": 12
+    },
+    {
+      "id": 95,
+      "projectId": 25,
+      "groupId": 9,
+      "hours": 170,
+      "q1": 43,
+      "q2": 43,
+      "q3": 42,
+      "q4": 42
+    },
+    {
+      "id": 96,
+      "projectId": 26,
+      "groupId": 11,
+      "hours": 140,
+      "q1": 35,
+      "q2": 35,
+      "q3": 35,
+      "q4": 35
+    },
+    {
+      "id": 97,
+      "projectId": 26,
+      "groupId": 9,
+      "hours": 15,
+      "q1": 4,
+      "q2": 4,
+      "q3": 4,
+      "q4": 3
+    },
+    {
+      "id": 98,
+      "projectId": 26,
+      "groupId": 12,
+      "hours": 75,
+      "q1": 19,
+      "q2": 19,
+      "q3": 19,
+      "q4": 18
+    },
+    {
+      "id": 99,
+      "projectId": 26,
+      "groupId": 3,
+      "hours": 20,
+      "q1": 5,
+      "q2": 5,
+      "q3": 5,
+      "q4": 5
+    },
+    {
+      "id": 100,
+      "projectId": 27,
+      "groupId": 2,
+      "hours": 50,
+      "q1": 13,
+      "q2": 13,
+      "q3": 12,
+      "q4": 12
+    },
+    {
+      "id": 101,
+      "projectId": 27,
+      "groupId": 13,
+      "hours": 50,
+      "q1": 13,
+      "q2": 13,
+      "q3": 12,
+      "q4": 12
+    },
+    {
+      "id": 102,
+      "projectId": 27,
+      "groupId": 3,
+      "hours": 70,
+      "q1": 18,
+      "q2": 18,
+      "q3": 17,
+      "q4": 17
+    },
+    {
+      "id": 103,
+      "projectId": 27,
+      "groupId": 5,
+      "hours": 105,
+      "q1": 27,
+      "q2": 26,
+      "q3": 26,
+      "q4": 26
+    },
+    {
+      "id": 104,
+      "projectId": 28,
+      "groupId": 14,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10
+    },
+    {
+      "id": 105,
+      "projectId": 28,
+      "groupId": 6,
+      "hours": 60,
+      "q1": 15,
+      "q2": 15,
+      "q3": 15,
+      "q4": 15
+    },
+    {
+      "id": 106,
+      "projectId": 28,
+      "groupId": 8,
       "hours": 35,
       "q1": 9,
       "q2": 9,
@@ -1431,49 +1061,29 @@
       "q4": 8
     },
     {
-      "id": 144,
-      "projectId": 30,
-      "groupId": 11,
-      "hours": 110,
-      "q1": 28,
-      "q2": 28,
-      "q3": 27,
-      "q4": 27
+      "id": 107,
+      "projectId": 28,
+      "groupId": 13,
+      "hours": 55,
+      "q1": 14,
+      "q2": 14,
+      "q3": 14,
+      "q4": 13
     },
     {
-      "id": 145,
-      "projectId": 30,
-      "groupId": 14,
-      "hours": 150,
-      "q1": 38,
-      "q2": 38,
-      "q3": 37,
-      "q4": 37
+      "id": 108,
+      "projectId": 28,
+      "groupId": 10,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10
     },
     {
-      "id": 146,
-      "projectId": 30,
-      "groupId": 1,
-      "hours": 145,
-      "q1": 37,
-      "q2": 36,
-      "q3": 36,
-      "q4": 36
-    },
-    {
-      "id": 147,
-      "projectId": 30,
-      "groupId": 5,
-      "hours": 100,
-      "q1": 25,
-      "q2": 25,
-      "q3": 25,
-      "q4": 25
-    },
-    {
-      "id": 148,
-      "projectId": 30,
-      "groupId": 8,
+      "id": 109,
+      "projectId": 28,
+      "groupId": 15,
       "hours": 90,
       "q1": 23,
       "q2": 23,
@@ -1481,14 +1091,124 @@
       "q4": 22
     },
     {
-      "id": 149,
+      "id": 110,
+      "projectId": 28,
+      "groupId": 4,
+      "hours": 20,
+      "q1": 5,
+      "q2": 5,
+      "q3": 5,
+      "q4": 5
+    },
+    {
+      "id": 111,
+      "projectId": 28,
+      "groupId": 9,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10
+    },
+    {
+      "id": 112,
+      "projectId": 29,
+      "groupId": 1,
+      "hours": 125,
+      "q1": 32,
+      "q2": 31,
+      "q3": 31,
+      "q4": 31
+    },
+    {
+      "id": 113,
+      "projectId": 29,
+      "groupId": 8,
+      "hours": 10,
+      "q1": 3,
+      "q2": 3,
+      "q3": 2,
+      "q4": 2
+    },
+    {
+      "id": 114,
+      "projectId": 29,
+      "groupId": 2,
+      "hours": 45,
+      "q1": 12,
+      "q2": 11,
+      "q3": 11,
+      "q4": 11
+    },
+    {
+      "id": 115,
+      "projectId": 29,
+      "groupId": 9,
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
+    },
+    {
+      "id": 116,
+      "projectId": 29,
+      "groupId": 5,
+      "hours": 160,
+      "q1": 40,
+      "q2": 40,
+      "q3": 40,
+      "q4": 40
+    },
+    {
+      "id": 117,
+      "projectId": 29,
+      "groupId": 10,
+      "hours": 75,
+      "q1": 19,
+      "q2": 19,
+      "q3": 19,
+      "q4": 18
+    },
+    {
+      "id": 118,
+      "projectId": 29,
+      "groupId": 7,
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
+    },
+    {
+      "id": 119,
+      "projectId": 30,
+      "groupId": 12,
+      "hours": 90,
+      "q1": 23,
+      "q2": 23,
+      "q3": 22,
+      "q4": 22
+    },
+    {
+      "id": 120,
+      "projectId": 30,
+      "groupId": 1,
+      "hours": 200,
+      "q1": 50,
+      "q2": 50,
+      "q3": 50,
+      "q4": 50
+    },
+    {
+      "id": 121,
       "projectId": 30,
       "groupId": 6,
-      "hours": 190,
-      "q1": 48,
-      "q2": 48,
-      "q3": 47,
-      "q4": 47
+      "hours": 150,
+      "q1": 38,
+      "q2": 38,
+      "q3": 37,
+      "q4": 37
     }
   ]
 }
