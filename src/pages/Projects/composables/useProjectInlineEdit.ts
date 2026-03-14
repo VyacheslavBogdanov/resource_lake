@@ -1,5 +1,6 @@
 import { ref, watch, nextTick } from 'vue';
 import { useProjectsStore } from '../../../stores/projects';
+import { useConfirm } from '../../../composables/useConfirm';
 import type { Project } from '../../../types/domain';
 
 export function useProjectInlineEdit() {
@@ -112,8 +113,11 @@ export function useProjectInlineEdit() {
 		await saveName(projectId);
 	}
 
+	const { confirm } = useConfirm();
+
 	async function removeProject(p: Project) {
-		if (!confirm(`Удалить проект «${p.name}» и связанные данные?`)) return;
+		const ok = await confirm({ message: `Удалить проект «${p.name}» и связанные данные?` });
+		if (!ok) return;
 		await projectsStore.deleteProject(p.id);
 	}
 

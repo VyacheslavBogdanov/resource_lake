@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { useGroupsStore } from '../../../stores/groups';
+import { useConfirm } from '../../../composables/useConfirm';
 import { roundInt } from '../../../utils/format';
 import type { Group } from '../../../types/domain';
 
@@ -11,6 +12,8 @@ export function useGroupInlineEdit() {
 	const editCap = ref<number | null>(null);
 	const editSupport = ref<number | null>(null);
 	const saving = ref(false);
+
+	const { confirm, alert } = useConfirm();
 
 	function startEdit(g: Group) {
 		editingId.value = g.id;
@@ -27,19 +30,19 @@ export function useGroupInlineEdit() {
 		const sp = roundInt(editSupport.value);
 
 		if (!name) {
-			alert('Название не может быть пустым');
+			await alert('Название не может быть пустым');
 			return;
 		}
 		if (!Number.isFinite(cap) || cap < 0) {
-			alert('Емкость должна быть числом ≥ 0');
+			await alert('Емкость должна быть числом ≥ 0');
 			return;
 		}
 		if (!Number.isFinite(sp)) {
-			alert('Процент поддержки должен быть числом');
+			await alert('Процент поддержки должен быть числом');
 			return;
 		}
 		if (sp < 0 || sp > 100) {
-			alert('Процент поддержки должен быть в диапазоне 0–100');
+			await alert('Процент поддержки должен быть в диапазоне 0–100');
 			return;
 		}
 
@@ -73,7 +76,8 @@ export function useGroupInlineEdit() {
 	}
 
 	async function removeGroup(g: Group) {
-		if (!confirm(`Удалить группу «${g.name}» и связанные данные?`)) return;
+		const ok = await confirm({ message: `Удалить группу «${g.name}» и связанные данные?` });
+		if (!ok) return;
 		await groupsStore.deleteGroup(g.id);
 	}
 

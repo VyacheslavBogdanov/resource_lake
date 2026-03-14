@@ -99,7 +99,7 @@ resource-planner/
 │   │   ├── http.ts                 # 85 строк — HTTP-клиент с retry и ApiError
 │   │   └── errors.ts               # ApiError класс (22 строки)
 │   ├── components/
-│   │   ├── ui/                     # UI-кит (BaseButton, BaseInput)
+│   │   ├── ui/                     # UI-кит (BaseButton, BaseInput, ConfirmDialog)
 │   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
 │   │   └── UiSelect/               # Компонент выбора (169 строк)
@@ -109,6 +109,7 @@ resource-planner/
 │   ├── composables/
 │   │   ├── useProjectFilters.ts    # Общий composable фильтрации проектов
 │   │   ├── useDragReorder.ts       # Общий composable drag-and-drop (Projects, Groups)
+│   │   ├── useConfirm.ts           # Promise-based confirm/alert (замена браузерных диалогов)
 │   │   └── useInitialFetch.ts      # Инициализация данных (fetchAllData)
 │   ├── utils/
 │   │   └── format.ts               # Утилиты форматирования (roundInt)

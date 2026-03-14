@@ -63,9 +63,15 @@ test.describe('Целостность данных', () => {
 		await page.waitForTimeout(500);
 
 		// Delete
-		page.on('dialog', (d) => d.accept());
 		await newRow.locator('.projects__icon-btn--danger').click();
 
-		await expect(page.locator('text=CRUD проект')).toBeHidden({ timeout: 5_000 });
+		// Подтверждаем в кастомном диалоге
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		await dialog.locator('.base-btn--danger').click();
+
+		await expect(page.locator('.projects__row').filter({ hasText: 'CRUD проект' })).toHaveCount(0, {
+			timeout: 5_000,
+		});
 	});
 });

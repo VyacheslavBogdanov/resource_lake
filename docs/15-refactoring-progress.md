@@ -11,7 +11,7 @@
 | P2   | Архитектура                | Завершена   | 2026-03-13      | p2-store |
 | P3   | Декомпозиция компонентов   | Завершена   | 2026-03-13      | p3-decomposition |
 | P4   | Инфраструктура             | Завершена   | 2026-03-13      | p4-deployment |
-| P5   | Кастомные модальные окна   | Не начата   | —               | —   |
+| P5   | Кастомные модальные окна   | Завершена   | 2026-03-14      | p5-confirm-dialog |
 | P6   | Улучшение UI               | Не начата   | —               | —   |
 
 ---
@@ -191,28 +191,37 @@
 
 ## Фаза 5 (P5) — Кастомные модальные окна
 
-**Статус:** Не начата
-**Дата завершения:** —
+**Статус:** Завершена
+**Дата завершения:** 2026-03-14
 
 ### Выполненные задачи
 
-- [ ] Создать компонент `ConfirmDialog.vue`
-- [ ] Создать composable `useConfirm`
-- [ ] Заменить все `confirm()` и `alert()` в Groups.vue, Projects.vue
+- [x] Создать компонент `ConfirmDialog.vue`
+- [x] Создать composable `useConfirm`
+- [x] Заменить все `confirm()` и `alert()` в useGroupInlineEdit.ts, useProjectInlineEdit.ts
+- [x] Обновить E2E-тесты для работы с кастомными модалками
 
 ### Ссылки на PR
 
-— (будет заполнено)
+Ветка: `p5-confirm-dialog`
 
 ### Результаты регрессионного тестирования
 
 Чеклист: [02-refactoring-priorities.md → Чеклист регрессионного тестирования](02-refactoring-priorities.md#чеклист-регрессионного-тестирования)
 
-— (будет заполнено)
+- `npm run build` — OK
+- Unit-тесты (vitest): 49 passed
+- E2E-тесты (playwright): 52 passed
+- API: /projects (3), /groups (2), /allocations (4) — OK
+- Страницы: /plan, /projects, /groups, /manage — HTTP 200
+- Нет `any` в src/
+- Все .vue файлы ≤ 300 строк (максимум: ResourcePlan.vue — 294)
+- Визуальная регрессия — требует ручной проверки
 
 ### Заметки / проблемы
 
-— (будет заполнено)
+- E2E-тесты обновлены: `page.on('dialog')` заменён на взаимодействие с `.confirm-dialog` локатором
+- ConfirmDialog использует `<Teleport to="body">` и глобальный singleton-state в `useConfirm`
 
 ---
 
