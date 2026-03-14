@@ -132,7 +132,7 @@ src/
 
 ## GitHub Project
 
-Проект [`resource_lake_refactoring`](https://github.com/users/VyacheslavBogdanov/projects/2) (номер 2) используется для трекинга фаз рефакторинга P0–P6. **Claude выполняет эти действия автоматически** — пользователю не нужно запускать команды вручную.
+Проект [`resource_lake_refactoring`](https://github.com/users/VyacheslavBogdanov/projects/2) (номер 2) используется для трекинга фаз рефакторинга P0–P5. **Claude выполняет эти действия автоматически** — пользователю не нужно запускать команды вручную.
 
 ### Реквизиты
 
