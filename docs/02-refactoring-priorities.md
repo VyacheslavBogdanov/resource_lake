@@ -87,7 +87,7 @@
 | Заменить все `confirm()` и `alert()` в Groups.vue, Projects.vue | —        | S         |
 
 **Зависимости:** Фаза 1 (UI-кит)
-**Результат:** единообразные модальные окна вместо браузерных диалогов
+**Результат:** единообразные модальные окна вместо браузерных диалогов. **Завершено 2026-03-14.**
 
 ---
 
@@ -124,9 +124,9 @@
 | ~~useDragReorder~~           | [10](10-drag-and-drop-refactoring.md)    | P3   | M         | ✅                     |
 | ~~Роутинг (name + lazy)~~   | [11](11-routing-and-navigation.md)       | P3   | S         | ✅                     |
 | ~~Деплой фронтенда~~        | [12](12-deployment.md)                   | P4   | S         | ✅                     |
-| ConfirmDialog.vue           | —                                        | P5   | S         | P1 (UI-кит)            |
-| useConfirm composable       | —                                        | P5   | S         | P1 (UI-кит)            |
-| Замена confirm()/alert()    | —                                        | P5   | S         | P1 (UI-кит)            |
+| ~~ConfirmDialog.vue~~       | —                                        | P5   | S         | ✅                     |
+| ~~useConfirm composable~~   | —                                        | P5   | S         | ✅                     |
+| ~~Замена confirm()/alert()~~| —                                        | P5   | S         | ✅                     |
 | Улучшение UI                | —                                        | P6   | —         | P5                     |
 
 ## Принципы работы

@@ -80,11 +80,11 @@ json-server обслуживает три JSON-файла из `data/` как RE
 ```
 src/
 ├── components/
-│   ├── ui/        # UI-кит (BaseButton, BaseInput)
+│   ├── ui/        # UI-кит (BaseButton, BaseInput, ConfirmDialog)
 │   ├── shared/    # Общие компоненты (FilterPanel)
 │   ├── NavHeader.vue
 │   └── UiSelect/  # Компонент выбора (composables/, components/)
-├── composables/   # Общие composables (useProjectFilters, useDragReorder, useInitialFetch)
+├── composables/   # Общие composables (useProjectFilters, useDragReorder, useConfirm, useInitialFetch)
 ├── pages/         # Страницы — каждая в папке с composables/ и components/
 │   ├── ResourcePlan/   # Таблица распределения (294 строки)
 │   ├── Projects/       # Управление проектами (119 строк)
