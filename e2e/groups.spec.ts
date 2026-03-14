@@ -62,8 +62,12 @@ test.describe('Страница «Группы»', () => {
 
 		const initialRows = await page.locator('.groups__row').count();
 
-		page.on('dialog', (d) => d.accept());
 		await page.locator('.groups__row').first().locator('button:has-text("Удалить")').click();
+
+		// Подтверждаем в кастомном диалоге
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		await dialog.locator('.base-btn--danger').click();
 
 		await expect(page.locator('.groups__row')).toHaveCount(initialRows - 1, { timeout: 5_000 });
 	});
@@ -95,15 +99,14 @@ test.describe('Страница «Группы»', () => {
 		const nameInput = firstRow.locator('.groups__input--inline').first();
 		await nameInput.fill('');
 
-		// Перехватываем alert
-		let alertMessage = '';
-		page.on('dialog', async (d) => {
-			alertMessage = d.message();
-			await d.accept();
-		});
-
 		await firstRow.locator('button:has-text("Сохранить")').click();
-		expect(alertMessage).toContain('Название');
+
+		// Проверяем кастомный alert-диалог
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		const message = await dialog.locator('.confirm-dialog__message').textContent();
+		expect(message).toContain('Название');
+		await dialog.locator('.base-btn--primary').click();
 	});
 
 	test('валидация: ёмкость < 0', async ({ page }) => {
@@ -117,14 +120,14 @@ test.describe('Страница «Группы»', () => {
 		const capInput = firstRow.locator('input[type="number"]').first();
 		await capInput.fill('-10');
 
-		let alertMessage = '';
-		page.on('dialog', async (d) => {
-			alertMessage = d.message();
-			await d.accept();
-		});
-
 		await firstRow.locator('button:has-text("Сохранить")').click();
-		expect(alertMessage).toContain('Емкость');
+
+		// Проверяем кастомный alert-диалог
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		const message = await dialog.locator('.confirm-dialog__message').textContent();
+		expect(message).toContain('Емкость');
+		await dialog.locator('.base-btn--primary').click();
 	});
 
 	test('валидация: % поддержки вне 0-100 показывает ошибку', async ({ page }) => {
@@ -138,16 +141,14 @@ test.describe('Страница «Группы»', () => {
 		const pctInput = firstRow.locator('input[type="number"][max="100"]');
 		await pctInput.fill('150');
 
-		let alertMessage = '';
-		page.on('dialog', async (d) => {
-			alertMessage = d.message();
-			await d.accept();
-		});
-
 		await firstRow.locator('button:has-text("Сохранить")').click();
 
-		// Groups.vue показывает alert при значении вне 0-100
-		expect(alertMessage).toContain('0–100');
+		// Проверяем кастомный alert-диалог
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		const message = await dialog.locator('.confirm-dialog__message').textContent();
+		expect(message).toContain('0–100');
+		await dialog.locator('.base-btn--primary').click();
 	});
 
 	test('отображение ёмкости и процента', async ({ page }) => {

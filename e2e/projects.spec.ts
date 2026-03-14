@@ -62,9 +62,13 @@ test.describe('Страница «Проекты»', () => {
 
 		const initialRows = await page.locator('.projects__row').count();
 
-		page.on('dialog', (d) => d.accept());
 		const deleteBtn = page.locator('.projects__row').first().locator('.projects__icon-btn--danger');
 		await deleteBtn.click();
+
+		// Подтверждаем в кастомном диалоге
+		const dialog = page.locator('.confirm-dialog');
+		await expect(dialog).toBeVisible({ timeout: 3_000 });
+		await dialog.locator('.base-btn--danger').click();
 
 		await expect(page.locator('.projects__row')).toHaveCount(initialRows - 1, { timeout: 5_000 });
 	});
