@@ -4,33 +4,13 @@ Resource Planner — SPA на Vue 3 для управления распреде
 
 ## Навигация по документам
 
-| #   | Документ                                                          | Тема                                                               | Приоритет | Сложность |
-| --- | ----------------------------------------------------------------- | ------------------------------------------------------------------ | --------- | --------- |
-| 01  | [Обзор проекта](01-project-overview.md)                           | Стек, архитектура, доменная модель                                 | —         | —         |
-| 02  | [Приоритеты рефакторинга](02-refactoring-priorities.md)           | Roadmap: 5 фаз с зависимостями                                     | —         | —         |
-| 03  | [Тулинг и линтинг](03-tooling-and-linting.md)                     | ESLint, Prettier, очистка зависимостей, .gitignore                 | P0        | S         |
-| 04  | [UI-кит и общие компоненты](04-ui-kit-and-shared-components.md)   | BaseButton, BaseInput, FilterPanel и др.                           | P1        | M         |
-| 05  | [Декомпозиция стора](05-store-decomposition.md)                   | Разбиение на projectsStore, groupsStore, allocationsStore, uiStore | P2        | L         |
-| 06  | [Декомпозиция ResourcePlan](06-resource-plan-decomposition.md)    | Composables + подкомпоненты для ResourcePlan.vue                   | P3        | XL        |
-| 07  | [Устранение дублирования](07-code-deduplication.md)               | roundInt, фильтрация, drag-n-drop, стили                           | P1        | M         |
-| 08  | [API-слой и обработка ошибок](08-api-layer-and-error-handling.md) | ApiError, retry, тосты, обработка в actions                        | P2        | M         |
-| 09  | [Оптимизация производительности](09-performance-optimization.md)  | Индекс allocationsByPair для O(1) доступа                          | P2        | S         |
-| 10  | [Рефакторинг drag-and-drop](10-drag-and-drop-refactoring.md)      | Composable useDragReorder, унификация order/position               | P3        | M         |
-| 11  | [Роутинг и навигация](11-routing-and-navigation.md)               | Навигация по name, lazy-loading маршрутов                          | P3        | S         |
-| 12  | [Деплой](12-deployment.md)                                        | Деплой фронтенда, удаление firebase-артефактов                     | P4        | S         |
-| 13  | [SCSS дизайн-токены](13-css-design-tokens.md)                     | SCSS-переменные, миксины, SCSS-архитектура                         | P1        | M         |
-| 14  | [Декомпозиция страниц](14-pages-decomposition.md)                 | DataManage, Projects, Groups, UiSelect → composables + подкомпоненты | P3      | L         |
-| 15  | [Отчёты о выполнении фаз](15-refactoring-progress.md)            | Прогресс рефакторинга, результаты регрессии, ссылки на PR            | —       | —         |
-| 16  | [Соглашения по коду](16-coding-conventions.md)                    | Именование, структура файлов, Vue/TS/SCSS стандарты                  | —       | —         |
-
-## Порядок работы
-
-Каждый этап рефакторинга выполняется в отдельной ветке и оформляется как PR в `main`. Рекомендуемый порядок фаз описан в [02-refactoring-priorities.md](02-refactoring-priorities.md).
-
-**Приоритеты:**
-
-- **P0** — блокеры: проект не линтится, лишние зависимости, грязный .gitignore
-- **P1** — фундамент: дизайн-токены, UI-кит, общие утилиты
-- **P2** — архитектура: стор, API-обработка, производительность
-- **P3** — декомпозиция: разбиение крупных файлов, composables
-- **P4** — инфраструктура: деплой, CI/CD
+| Документ                                        | Тема                                         |
+| ----------------------------------------------- | -------------------------------------------- |
+| [Обзор проекта](project-overview.md)            | Стек, архитектура, доменная модель           |
+| [Тулинг и линтинг](tooling-and-linting.md)      | ESLint, Prettier, .gitignore                 |
+| [UI-кит и компоненты](ui-kit-and-components.md) | BaseButton, BaseInput, ConfirmDialog и др.   |
+| [API-слой](api-layer.md)                        | HTTP-клиент, ApiError, retry                 |
+| [Роутинг](routing.md)                           | Именованные маршруты, lazy-loading           |
+| [Деплой](deployment.md)                         | GitHub Pages, GitHub Actions                 |
+| [SCSS дизайн-токены](css-design-tokens.md)      | SCSS-переменные, миксины, архитектура стилей |
+| [Соглашения по коду](coding-conventions.md)     | Именование, структура файлов, Vue/TS/SCSS    |
