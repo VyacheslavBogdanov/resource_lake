@@ -51,6 +51,15 @@ npm run lint         # ESLint --fix
 npm run format       # Prettier --write src/
 ```
 
+### Тестирование
+
+```bash
+npm run test         # Unit-тесты (vitest)
+npm run test:watch   # Unit-тесты в watch-режиме
+npm run test:e2e     # E2E-тесты (playwright, требует запущенный dev-сервер)
+npm run test:all     # Unit + E2E тесты последовательно
+```
+
 ### Утилиты для данных
 
 ```bash
