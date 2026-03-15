@@ -89,7 +89,7 @@ resource-planner/
 │   │       └── components/         # GroupAddForm, GroupTable, GroupTableRow
 │   ├── stores/
 │   │   ├── projects.ts             # useProjectsStore — проекты (152 строки)
-│   │   ├── groups.ts               # useGroupsStore — группы ресурсов (144 строки)
+│   │   ├── groups.ts               # useGroupsStore — группы ресурсов (152 строки)
 │   │   ├── allocations.ts          # useAllocationsStore — распределения (132 строки)
 │   │   ├── ui.ts                   # useUiStore — UI-состояние (39 строк)
 │   │   ├── utils.ts                # Утилиты сортировки (35 строк)

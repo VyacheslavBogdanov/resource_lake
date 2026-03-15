@@ -69,11 +69,11 @@ resource-planner/
 │   └── data.json             # Данные аллокаций
 ├── src/
 │   ├── components/
-│   │   ├── ui/               # UI-кит (BaseButton, BaseInput)
+│   │   ├── ui/               # UI-кит (BaseButton, BaseInput, ConfirmDialog)
 │   │   ├── shared/           # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue
 │   │   └── UiSelect/         # Компонент выбора (composables/, components/)
-│   ├── composables/          # Composables (useProjectFilters, useDragReorder, useInitialFetch)
+│   ├── composables/          # Composables (useProjectFilters, useDragReorder, useConfirm, useInitialFetch)
 │   ├── pages/                # Страницы — каждая в папке с composables/ и components/
 │   │   ├── ResourcePlan/     # Таблица распределения
 │   │   ├── Projects/         # Управление проектами
