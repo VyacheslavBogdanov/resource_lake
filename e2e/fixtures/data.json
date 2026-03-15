@@ -1,0 +1,44 @@
+{
+  "allocations": [
+    {
+      "projectId": 1,
+      "groupId": 1,
+      "hours": 100,
+      "q1": 25,
+      "q2": 25,
+      "q3": 25,
+      "q4": 25,
+      "id": 1
+    },
+    {
+      "projectId": 1,
+      "groupId": 2,
+      "hours": 60,
+      "q1": 15,
+      "q2": 15,
+      "q3": 15,
+      "q4": 15,
+      "id": 2
+    },
+    {
+      "projectId": 2,
+      "groupId": 1,
+      "hours": 80,
+      "q1": 20,
+      "q2": 20,
+      "q3": 20,
+      "q4": 20,
+      "id": 3
+    },
+    {
+      "projectId": 2,
+      "groupId": 2,
+      "hours": 40,
+      "q1": 10,
+      "q2": 10,
+      "q3": 10,
+      "q4": 10,
+      "id": 4
+    }
+  ]
+}

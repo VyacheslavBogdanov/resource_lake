@@ -4,16 +4,17 @@
 		<main class="app__main">
 			<RouterView />
 		</main>
+		<ConfirmDialog />
 	</div>
 </template>
 
 <script setup lang="ts">
 import NavHeader from './components/NavHeader.vue';
+import ConfirmDialog from './components/ui/ConfirmDialog.vue';
 import { onMounted } from 'vue';
-import { useResourceStore } from './stores/resource/index';
+import { fetchAllData } from './composables/useInitialFetch';
 
-const store = useResourceStore();
-onMounted(() => store.fetchAll());
+onMounted(() => fetchAllData());
 </script>
 
 <style scoped lang="scss">

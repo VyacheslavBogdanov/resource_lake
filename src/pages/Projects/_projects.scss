@@ -1,0 +1,220 @@
+@use '../../styles/variables' as *;
+
+.projects {
+	--row-h: 44px;
+	--ctl-h: 32px;
+
+	&__form {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 14px;
+		flex-wrap: wrap;
+	}
+
+	&__input {
+		flex: 0 1 260px;
+		padding: 0 10px;
+		height: var(--ctl-h);
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font: inherit;
+	}
+
+	&__table-wrap {
+		width: 100%;
+		overflow-x: auto;
+		padding: 0 1px;
+	}
+
+	&__table {
+		width: 100%;
+		min-width: 880px;
+		background: $color-bg-surface;
+		box-shadow: $shadow-sm;
+		border-collapse: separate;
+		border-spacing: 0;
+		table-layout: fixed;
+	}
+
+	&__th,
+	&__cell {
+		padding: 0 12px;
+		border-bottom: 1px solid $color-border-row;
+		text-align: left;
+		vertical-align: middle;
+	}
+
+	&__th--left,
+	&__cell--left {
+		text-align: left;
+	}
+
+	&__cell-inner {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		min-height: var(--row-h);
+		height: var(--row-h);
+		gap: 8px;
+	}
+
+	&__row--archived {
+		opacity: 0.7;
+	}
+
+	&__row--drag-over {
+		outline: 2px dashed $color-border-active;
+		outline-offset: -4px;
+		background: $color-bg-focus-row;
+	}
+
+	&__text {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		line-height: 1;
+	}
+
+	&__name-actions {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		flex: 0 0 auto;
+		margin-left: auto;
+	}
+
+	&__icon-btn {
+		height: 28px;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
+		cursor: pointer;
+		padding: 0;
+
+		&:hover {
+			background: $color-bg-row-hover;
+			border-color: $color-border-hover;
+		}
+	}
+
+	&__icon-btn--archive {
+		border-color: $color-border-cell;
+		color: $color-text-subtle;
+	}
+
+	&__icon-btn--archive:hover {
+		background: $color-bg-header;
+		border-color: $color-border-hover;
+		color: $color-text-primary;
+	}
+
+	&__icon-btn--danger {
+		border-color: $color-danger-border;
+		background: $color-danger-bg;
+		color: $color-danger-text;
+	}
+
+	&__icon-btn--danger:hover {
+		background: $color-danger-bg-hover;
+		border-color: $color-danger-border-alt;
+	}
+
+	&__cell--url {
+		white-space: nowrap;
+	}
+
+	&__url-input,
+	&__name-input,
+	&__meta-input,
+	&__input {
+		&:focus-visible {
+			outline: none;
+			border-color: $color-primary-600;
+			box-shadow: $shadow-focus;
+		}
+	}
+
+	&__url-input {
+		width: 100%;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font-size: 13px;
+	}
+
+	&__name-input {
+		width: 100%;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font-size: 13px;
+	}
+
+	&__drag-handle {
+		width: 24px;
+		height: 24px;
+		border-radius: 999px;
+		border: 1px solid $color-border-cell;
+		background: $color-bg-surface;
+		cursor: grab;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		color: $color-text-subtle;
+		padding: 0;
+
+		&:hover {
+			background: $color-bg-header;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__meta-input {
+		width: 100%;
+		height: var(--ctl-h);
+		padding: 0 10px;
+		border: 1px solid $color-border;
+		border-radius: 8px;
+		box-sizing: border-box;
+		font-size: 13px;
+	}
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 10px;
+	height: 24px;
+	min-width: 92px;
+	border-radius: 999px;
+	font-size: 12px;
+	border: 1px solid transparent;
+
+	&--ok {
+		background: $color-bg-cell-edit;
+		color: $color-text-primary;
+		border-color: $color-border;
+	}
+	&--muted {
+		background: $color-disabled-bg;
+		color: $color-disabled-text;
+		border-color: $color-disabled-border;
+	}
+}

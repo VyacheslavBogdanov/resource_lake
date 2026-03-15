@@ -16,7 +16,7 @@ export interface Group {
 	capacityHours: number;
 	supportPercent?: number;
 	resourceType?: string;
-	position?: number
+	position?: number;
 }
 
 export interface Allocation {
@@ -29,3 +29,13 @@ export interface Allocation {
 	q3?: number;
 	q4?: number;
 }
+
+export type AllocationPayload = {
+	hours: number;
+	q1?: number;
+	q2?: number;
+	q3?: number;
+	q4?: number;
+};
+
+export type AllocationPayloadByProject = Record<number, AllocationPayload>;
