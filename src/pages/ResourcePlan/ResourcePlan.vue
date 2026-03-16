@@ -83,13 +83,17 @@ const { sortState, sortedProjects, onColumnSort, onTotalSort } = useProjectSort(
 
 function columnHeaderTitle(col: TableColumn): string {
 	const base = col.name;
+	const descriptions = col.groupIds
+		.map((id) => groupsStore.items.find((g) => g.id === id)?.description)
+		.filter(Boolean);
+	const descLine = descriptions.length ? `\n${descriptions.join('; ')}` : '';
 	const capacity = effectiveCapacityByColumn(col) * chartCapacityMultiplier.value;
 	if (viewMode.value === 'quarterSingle') {
 		const quarterTotal = columnQuarterTotal(col, selectedQuarter.value);
-		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)`;
+		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)${descLine}`;
 	}
 	const allocated = columnTotal(col);
-	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)`;
+	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)${descLine}`;
 }
 
 const { exportCsv, projectUrl } = useCsvExport({

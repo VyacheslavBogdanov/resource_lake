@@ -70,7 +70,7 @@
 
 - [x] В `useGroupForm.ts` — заменить `newCap` на `newHeadcount`, вызов `addGroup(name, headcount, sp)`
 - [x] В `GroupAddForm.vue` — заменить input ёмкости на input количества людей (type="number", min="1", step="1", placeholder="Кол-во человек")
-- [ ] Ручная проверка: создание группы с headcount, ёмкость рассчитывается автоматически
+- [x] Ручная проверка: создание группы с headcount, ёмкость рассчитывается автоматически
 
 **Файлы:** `src/pages/Groups/composables/useGroupForm.ts`, `src/pages/Groups/components/GroupAddForm.vue`
 

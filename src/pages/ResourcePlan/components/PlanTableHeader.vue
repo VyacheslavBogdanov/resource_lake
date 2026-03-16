@@ -46,7 +46,7 @@ defineEmits<{
 					@click="$emit('columnSort', col.id)"
 				>
 					<div class="plan__th-inner">
-						<span class="plan__th-name" :title="col.name">
+						<span class="plan__th-name" :title="columnHeaderTitle(col)">
 							{{ col.name }}
 							<span
 								v-if="sortState.field === 'group' && sortState.columnId === col.id"
@@ -87,7 +87,7 @@ defineEmits<{
 					@click="$emit('columnSort', col.id)"
 				>
 					<div class="plan__th-inner">
-						<span class="plan__th-name" :title="col.name">
+						<span class="plan__th-name" :title="columnHeaderTitle(col)">
 							{{ col.name }}
 							<span
 								v-if="sortState.field === 'group' && sortState.columnId === col.id"
