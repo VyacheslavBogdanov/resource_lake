@@ -27,7 +27,7 @@
 - [x] В `GroupTableRow.vue` — заменить постоянный input на шаблон span/input по условию `editingId === group.id`
 - [x] В `GroupTable.vue` — прокинуть `editResourceType`, убрать emit `resourceTypeBlur`
 - [x] В `Groups.vue` — передать `editResourceType`, убрать обработчик `resourceTypeBlur`
-- [ ] Ручная проверка: тип ресурса отображается как текст, редактируется только в режиме редактирования
+- [x] Ручная проверка: тип ресурса отображается как текст, редактируется только в режиме редактирования
 
 **Файлы:** `src/pages/Groups/composables/useGroupInlineEdit.ts`, `src/pages/Groups/components/GroupTableRow.vue`, `src/pages/Groups/components/GroupTable.vue`, `src/pages/Groups/Groups.vue`
 
@@ -37,10 +37,10 @@
 
 При прокрутке страницы вниз шапка с группами ресурсов приклеивается к верхней части экрана.
 
-- [ ] Добавить `max-height: calc(100vh - 280px)` к `.plan__table-wrapper` в `_plan.scss`
-- [ ] Добавить `position: sticky; top: 0; z-index: 3` к thead таблицы
-- [ ] Проверить, что фон шапки непрозрачный при скролле
-- [ ] Ручная проверка на странице /plan с большим количеством проектов
+- [x] Добавить `max-height: calc(100vh - 280px)` к `.plan__table-wrapper` в `_plan.scss`
+- [x] Добавить `position: sticky; top: 0; z-index: 3` к thead таблицы
+- [x] Проверить, что фон шапки непрозрачный при скролле
+- [x] Ручная проверка на странице /plan с большим количеством проектов
 
 **Файлы:** `src/pages/ResourcePlan/_plan.scss`
 
