@@ -34,6 +34,8 @@ const groupOptions = computed(() =>
 	})),
 );
 
+const selectedGroup = computed(() => groupsStore.items.find((g) => g.id === selectedGroupId.value));
+
 function groupName(id: number) {
 	return groupsStore.items.find((g) => g.id === id)?.name ?? '';
 }
@@ -66,6 +68,23 @@ function groupName(id: number) {
 				@update:selected-managers="selectedManagers = $event"
 				@reset="resetFilters"
 			/>
+		</div>
+
+		<div v-if="selectedGroup" class="manage__group-info">
+			<p v-if="selectedGroup.description" class="manage__group-info-desc">
+				{{ selectedGroup.description }}
+			</p>
+			<div class="manage__group-info-stats">
+				<span
+					>Людей: <strong>{{ selectedGroup.headcount }}</strong></span
+				>
+				<span
+					>Ёмкость: <strong>{{ selectedGroup.capacityHours }}</strong> ч·ч</span
+				>
+				<span
+					>Поддержка: <strong>{{ selectedGroup.supportPercent ?? 0 }}%</strong></span
+				>
+			</div>
 		</div>
 
 		<ManageTable

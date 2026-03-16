@@ -45,6 +45,28 @@
 		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
 	}
 
+	&__group-info {
+		margin-bottom: 14px;
+		padding: 10px 14px;
+		background: $color-bg-subtle;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+	}
+
+	&__group-info-desc {
+		margin: 0 0 6px;
+		color: $color-text-muted;
+		font-size: $font-size-sm;
+	}
+
+	&__group-info-stats {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		font-size: $font-size-sm;
+		color: $color-text-secondary;
+	}
+
 	&__table {
 		width: 100%;
 		background: $color-bg-surface;

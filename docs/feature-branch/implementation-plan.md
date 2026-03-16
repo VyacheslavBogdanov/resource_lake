@@ -91,10 +91,10 @@
 
 При выборе группы ресурсов над списком проектов появляется: описание, кол-во человеко-часов, кол-во людей, часы в поддержке.
 
-- [ ] В `DataManage.vue` — добавить computed `selectedGroup`, вставить блок `.manage__group-info` между controls и ManageTable
-- [ ] В `_manage.scss` — стили для инфо-панели (flex, wrap, subtle bg, border)
+- [x] В `DataManage.vue` — добавить computed `selectedGroup`, вставить блок `.manage__group-info` между controls и ManageTable
+- [x] В `_manage.scss` — стили для инфо-панели (flex, wrap, subtle bg, border)
 - [x] Обновить `groupOptions` label — показать headcount
-- [ ] Ручная проверка: при выборе группы отображается полная информация
+- [x] Ручная проверка: при выборе группы отображается полная информация
 
 **Файлы:** `src/pages/DataManage/DataManage.vue`, `src/pages/DataManage/_manage.scss`
 
