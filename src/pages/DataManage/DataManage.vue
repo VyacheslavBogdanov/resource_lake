@@ -30,7 +30,7 @@ const { showSaved, saveAll } = useBatchSave(selectedGroupId, buffer);
 const groupOptions = computed(() =>
 	groupsStore.items.map((g) => ({
 		value: g.id,
-		label: `${g.name} (емкость ${g.capacityHours})`,
+		label: `${g.name} (${g.headcount} чел., ${g.capacityHours} ч·ч)`,
 	})),
 );
 

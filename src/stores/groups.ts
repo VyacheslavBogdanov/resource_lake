@@ -4,6 +4,7 @@ import type { Group, Allocation } from '../types/domain';
 import { sortByPosition } from './utils';
 import { useAllocationsStore } from './allocations';
 import { useUiStore } from './ui';
+import { HOURS_PER_PERSON } from './constants';
 
 export const useGroupsStore = defineStore('groups', {
 	state: () => ({
@@ -39,12 +40,20 @@ export const useGroupsStore = defineStore('groups', {
 			}
 		},
 
-		async addGroup(name: string, capacityHours: number, supportPercent = 0) {
+		async addGroup(name: string, headcount: number, supportPercent = 0) {
 			try {
 				const maxPos = this.items.reduce((m, g) => Math.max(m, Number(g.position ?? g.id) || 0), 0);
 				const position = maxPos + 1;
+				const capacityHours = headcount * HOURS_PER_PERSON;
 
-				await api.create<Group>('groups', { name, capacityHours, supportPercent, position });
+				await api.create<Group>('groups', {
+					name,
+					headcount,
+					capacityHours,
+					description: '',
+					supportPercent,
+					position,
+				});
 				this.items = sortByPosition(await api.list<Group>('groups'));
 			} catch (err) {
 				console.error('Ошибка при добавлении группы:', err);
@@ -56,7 +65,8 @@ export const useGroupsStore = defineStore('groups', {
 			id: number,
 			patch: {
 				name?: string;
-				capacityHours?: number;
+				headcount?: number;
+				description?: string;
 				supportPercent?: number;
 				resourceType?: string;
 				position?: number;
@@ -65,7 +75,9 @@ export const useGroupsStore = defineStore('groups', {
 			try {
 				const body: {
 					name?: string;
+					headcount?: number;
 					capacityHours?: number;
+					description?: string;
 					supportPercent?: number;
 					resourceType?: string;
 					position?: number;
@@ -82,11 +94,16 @@ export const useGroupsStore = defineStore('groups', {
 					body.name = name;
 				}
 
-				if (typeof patch.capacityHours === 'number') {
-					if (!Number.isFinite(patch.capacityHours) || patch.capacityHours < 0) {
-						throw new Error('capacityHours должно быть числом ≥ 0');
+				if (typeof patch.headcount === 'number') {
+					if (!Number.isInteger(patch.headcount) || patch.headcount < 0) {
+						throw new Error('Количество людей должно быть целым числом ≥ 0');
 					}
-					body.capacityHours = patch.capacityHours;
+					body.headcount = patch.headcount;
+					body.capacityHours = patch.headcount * HOURS_PER_PERSON;
+				}
+
+				if (typeof patch.description === 'string') {
+					body.description = patch.description.trim();
 				}
 
 				if (typeof patch.supportPercent === 'number') {

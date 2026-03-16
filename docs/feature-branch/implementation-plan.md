@@ -50,15 +50,15 @@
 
 Добавить поля «Описание» (текст) и «Количество людей» (int). Ёмкость = кол-во людей × 144 ч/ч (read-only). Миграция: кол-во людей = round(текущая ёмкость / 144).
 
-- [ ] В `src/stores/constants.ts` — добавить константу `HOURS_PER_PERSON = 144`
-- [ ] В `src/types/domain.ts` — добавить в `Group`: `headcount: number`, `description?: string`
-- [ ] В `src/stores/groups.ts` — изменить `addGroup()` (принимать headcount вместо capacityHours), обновить `updateGroup()` (headcount → capacityHours, поле description)
-- [ ] Миграция `data/groups.json` — для каждой группы: headcount = round(capacityHours / 144), capacityHours = headcount × 144, description = ""
-- [ ] Обновить `scripts/seed.mjs` — генерация через headcount
-- [ ] В `GroupTable.vue` — обновить колонки: Название (20%), Тип (13%), Описание (15%), Кол-во чел (10%), Ёмкость (10%, read-only), % поддержки (12%), Действия (20%)
-- [ ] В `GroupTableRow.vue` — добавить ячейки description и headcount (span/input), ёмкость всегда span
-- [ ] В `useGroupInlineEdit.ts` — добавить `editHeadcount`, `editDescription`, обновить `saveEdit()`
-- [ ] Ручная проверка: ёмкость пересчитывается при изменении кол-ва людей, поле ёмкости нередактируемое
+- [x] В `src/stores/constants.ts` — добавить константу `HOURS_PER_PERSON = 144`
+- [x] В `src/types/domain.ts` — добавить в `Group`: `headcount: number`, `description?: string`
+- [x] В `src/stores/groups.ts` — изменить `addGroup()` (принимать headcount вместо capacityHours), обновить `updateGroup()` (headcount → capacityHours, поле description)
+- [x] Миграция `data/groups.json` — для каждой группы: headcount = round(capacityHours / 144), capacityHours = headcount × 144, description = ""
+- [x] Обновить `scripts/seed.mjs` — генерация через headcount
+- [x] В `GroupTable.vue` — обновить колонки: Название (20%), Тип (13%), Описание (15%), Кол-во чел (10%), Ёмкость (10%, read-only), % поддержки (12%), Действия (20%)
+- [x] В `GroupTableRow.vue` — добавить ячейки description и headcount (span/input), ёмкость всегда span
+- [x] В `useGroupInlineEdit.ts` — добавить `editHeadcount`, `editDescription`, обновить `saveEdit()`
+- [x] Ручная проверка: ёмкость пересчитывается при изменении кол-ва людей, поле ёмкости нередактируемое
 
 **Файлы:** `src/types/domain.ts`, `src/stores/constants.ts`, `src/stores/groups.ts`, `data/groups.json`, `scripts/seed.mjs`, `src/pages/Groups/components/GroupTable.vue`, `src/pages/Groups/components/GroupTableRow.vue`, `src/pages/Groups/composables/useGroupInlineEdit.ts`, `src/pages/Groups/_groups.scss`
 
@@ -68,8 +68,8 @@
 
 При добавлении новой записи заполняется: название, количество людей, процент в поддержке.
 
-- [ ] В `useGroupForm.ts` — заменить `newCap` на `newHeadcount`, вызов `addGroup(name, headcount, sp)`
-- [ ] В `GroupAddForm.vue` — заменить input ёмкости на input количества людей (type="number", min="1", step="1", placeholder="Кол-во человек")
+- [x] В `useGroupForm.ts` — заменить `newCap` на `newHeadcount`, вызов `addGroup(name, headcount, sp)`
+- [x] В `GroupAddForm.vue` — заменить input ёмкости на input количества людей (type="number", min="1", step="1", placeholder="Кол-во человек")
 - [ ] Ручная проверка: создание группы с headcount, ёмкость рассчитывается автоматически
 
 **Файлы:** `src/pages/Groups/composables/useGroupForm.ts`, `src/pages/Groups/components/GroupAddForm.vue`
@@ -93,7 +93,7 @@
 
 - [ ] В `DataManage.vue` — добавить computed `selectedGroup`, вставить блок `.manage__group-info` между controls и ManageTable
 - [ ] В `_manage.scss` — стили для инфо-панели (flex, wrap, subtle bg, border)
-- [ ] Обновить `groupOptions` label — показать headcount
+- [x] Обновить `groupOptions` label — показать headcount
 - [ ] Ручная проверка: при выборе группы отображается полная информация
 
 **Файлы:** `src/pages/DataManage/DataManage.vue`, `src/pages/DataManage/_manage.scss`

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import BaseButton from '../../../components/ui/BaseButton.vue';
+import { HOURS_PER_PERSON } from '../../../stores/constants';
 import type { Group } from '../../../types/domain';
 
 defineProps<{
 	group: Group;
 	editingId: number | null;
 	editName: string;
-	editCap: number | null;
+	editHeadcount: number | null;
+	editDescription: string;
 	editSupport: number | null;
 	editResourceType: string;
 	saving: boolean;
@@ -24,7 +26,8 @@ const emit = defineEmits<{
 	cancelEdit: [];
 	removeGroup: [g: Group];
 	'update:editName': [value: string];
-	'update:editCap': [value: number | null];
+	'update:editHeadcount': [value: number | null];
+	'update:editDescription': [value: string];
 	'update:editSupport': [value: number | null];
 	'update:editResourceType': [value: string];
 }>();
@@ -33,9 +36,13 @@ function onEditNameInput(e: Event) {
 	emit('update:editName', (e.target as HTMLInputElement).value.trim());
 }
 
-function onEditCapInput(e: Event) {
+function onEditHeadcountInput(e: Event) {
 	const val = (e.target as HTMLInputElement).valueAsNumber;
-	emit('update:editCap', Number.isFinite(val) ? val : null);
+	emit('update:editHeadcount', Number.isFinite(val) ? val : null);
+}
+
+function onEditDescriptionInput(e: Event) {
+	emit('update:editDescription', (e.target as HTMLInputElement).value);
 }
 
 function onEditSupportInput(e: Event) {
@@ -109,20 +116,47 @@ function onEditResourceTypeInput(e: Event) {
 			<div class="groups__cell-inner">
 				<template v-if="editingId === group.id">
 					<input
-						class="groups__input groups__input--num groups__input--inline"
-						type="number"
-						min="0"
-						step="1"
-						:value="editCap"
+						class="groups__input groups__input--inline"
+						:value="editDescription"
+						placeholder="Описание группы"
 						:disabled="saving || reordering"
-						@input="onEditCapInput"
+						@input="onEditDescriptionInput"
 						@keydown.enter.prevent="emit('saveEdit', group)"
 						@keydown.esc.prevent="emit('cancelEdit')"
 					/>
 				</template>
 				<template v-else>
-					<span class="groups__text">{{ Math.round(group.capacityHours) }}</span>
+					<span class="groups__text" :title="group.description ?? ''">{{ group.description || '—' }}</span>
 				</template>
+			</div>
+		</td>
+
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
+			<div class="groups__cell-inner">
+				<template v-if="editingId === group.id">
+					<input
+						class="groups__input groups__input--num groups__input--inline"
+						type="number"
+						min="0"
+						step="1"
+						:value="editHeadcount"
+						:disabled="saving || reordering"
+						@input="onEditHeadcountInput"
+						@keydown.enter.prevent="emit('saveEdit', group)"
+						@keydown.esc.prevent="emit('cancelEdit')"
+					/>
+				</template>
+				<template v-else>
+					<span class="groups__text">{{ group.headcount }}</span>
+				</template>
+			</div>
+		</td>
+
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
+			<div class="groups__cell-inner">
+				<span class="groups__text groups__text--computed">{{
+					editingId === group.id ? (editHeadcount ?? 0) * HOURS_PER_PERSON : group.capacityHours
+				}}</span>
 			</div>
 		</td>
 

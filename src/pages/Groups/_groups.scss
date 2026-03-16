@@ -141,4 +141,9 @@
 		white-space: nowrap;
 		line-height: 1;
 	}
+
+	&__text--computed {
+		color: $color-text-soft;
+		font-style: italic;
+	}
 }

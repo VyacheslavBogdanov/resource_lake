@@ -6,7 +6,8 @@ defineProps<{
 	groups: Group[];
 	editingId: number | null;
 	editName: string;
-	editCap: number | null;
+	editHeadcount: number | null;
+	editDescription: string;
 	editSupport: number | null;
 	editResourceType: string;
 	saving: boolean;
@@ -25,7 +26,8 @@ defineEmits<{
 	cancelEdit: [];
 	removeGroup: [g: Group];
 	'update:editName': [value: string];
-	'update:editCap': [value: number | null];
+	'update:editHeadcount': [value: number | null];
+	'update:editDescription': [value: string];
 	'update:editSupport': [value: number | null];
 	'update:editResourceType': [value: string];
 }>();
@@ -34,10 +36,12 @@ defineEmits<{
 <template>
 	<table class="groups__table">
 		<colgroup>
-			<col style="width: 30%" />
-			<col style="width: 18%" />
-			<col style="width: 16%" />
-			<col style="width: 16%" />
+			<col style="width: 20%" />
+			<col style="width: 13%" />
+			<col style="width: 15%" />
+			<col style="width: 10%" />
+			<col style="width: 10%" />
+			<col style="width: 12%" />
 			<col style="width: 20%" />
 		</colgroup>
 
@@ -45,7 +49,9 @@ defineEmits<{
 			<tr>
 				<th class="groups__th"><div class="groups__cell-inner">Название</div></th>
 				<th class="groups__th"><div class="groups__cell-inner">Тип ресурса</div></th>
-				<th class="groups__th"><div class="groups__cell-inner">Емкость (ч·ч)</div></th>
+				<th class="groups__th"><div class="groups__cell-inner">Описание</div></th>
+				<th class="groups__th"><div class="groups__cell-inner">Кол-во чел.</div></th>
+				<th class="groups__th"><div class="groups__cell-inner">Ёмкость (ч·ч)</div></th>
 				<th class="groups__th"><div class="groups__cell-inner">% в поддержке</div></th>
 				<th class="groups__th"><div class="groups__cell-inner">Действия</div></th>
 			</tr>
@@ -58,7 +64,8 @@ defineEmits<{
 				:group="g"
 				:editing-id="editingId"
 				:edit-name="editName"
-				:edit-cap="editCap"
+				:edit-headcount="editHeadcount"
+				:edit-description="editDescription"
 				:edit-support="editSupport"
 				:edit-resource-type="editResourceType"
 				:saving="saving"
@@ -73,7 +80,8 @@ defineEmits<{
 				@cancel-edit="$emit('cancelEdit')"
 				@remove-group="$emit('removeGroup', $event)"
 				@update:edit-name="$emit('update:editName', $event)"
-				@update:edit-cap="$emit('update:editCap', $event)"
+				@update:edit-headcount="$emit('update:editHeadcount', $event)"
+				@update:edit-description="$emit('update:editDescription', $event)"
 				@update:edit-support="$emit('update:editSupport', $event)"
 				@update:edit-resource-type="$emit('update:editResourceType', $event)"
 			/>

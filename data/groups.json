@@ -3,10 +3,12 @@
     {
       "id": 1,
       "name": "Frontend",
-      "capacityHours": 260,
+      "capacityHours": 432,
       "supportPercent": 22,
       "resourceType": "Программист",
-      "position": 1
+      "position": 1,
+      "headcount": 3,
+      "description": "ыфдовтдыфьвдлы"
     },
     {
       "id": 2,

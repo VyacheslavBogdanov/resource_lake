@@ -14,7 +14,8 @@ const orderedGroups = computed(() => sortByPosition(groupsStore.items));
 const {
 	editingId,
 	editName,
-	editCap,
+	editHeadcount,
+	editDescription,
 	editSupport,
 	editResourceType,
 	saving,
@@ -41,7 +42,8 @@ const { dragState, reordering, dragStart, dragOver, onDrop, dragEnd } = useDragR
 			:groups="orderedGroups"
 			:editing-id="editingId"
 			:edit-name="editName"
-			:edit-cap="editCap"
+			:edit-headcount="editHeadcount"
+			:edit-description="editDescription"
 			:edit-support="editSupport"
 			:edit-resource-type="editResourceType"
 			:saving="saving"
@@ -57,7 +59,8 @@ const { dragState, reordering, dragStart, dragOver, onDrop, dragEnd } = useDragR
 			@cancel-edit="cancelEdit"
 			@remove-group="removeGroup"
 			@update:edit-name="editName = $event"
-			@update:edit-cap="editCap = $event"
+			@update:edit-headcount="editHeadcount = $event"
+			@update:edit-description="editDescription = $event"
 			@update:edit-support="editSupport = $event"
 			@update:edit-resource-type="editResourceType = $event"
 		/>

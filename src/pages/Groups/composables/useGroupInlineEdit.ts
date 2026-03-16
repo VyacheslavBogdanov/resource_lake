@@ -9,7 +9,8 @@ export function useGroupInlineEdit() {
 
 	const editingId = ref<number | null>(null);
 	const editName = ref('');
-	const editCap = ref<number | null>(null);
+	const editHeadcount = ref<number | null>(null);
+	const editDescription = ref('');
 	const editSupport = ref<number | null>(null);
 	const editResourceType = ref('');
 	const saving = ref(false);
@@ -19,7 +20,8 @@ export function useGroupInlineEdit() {
 	function startEdit(g: Group) {
 		editingId.value = g.id;
 		editName.value = g.name;
-		editCap.value = roundInt(g.capacityHours);
+		editHeadcount.value = g.headcount;
+		editDescription.value = g.description ?? '';
 		editSupport.value = roundInt(g.supportPercent ?? 0);
 		editResourceType.value = g.resourceType ?? '';
 	}
@@ -28,15 +30,16 @@ export function useGroupInlineEdit() {
 		if (editingId.value !== g.id) return;
 
 		const name = editName.value.trim();
-		const cap = roundInt(editCap.value);
+		const headcount = roundInt(editHeadcount.value);
+		const description = editDescription.value;
 		const sp = roundInt(editSupport.value);
 
 		if (!name) {
 			await alert('Название не может быть пустым');
 			return;
 		}
-		if (!Number.isFinite(cap) || cap < 0) {
-			await alert('Емкость должна быть числом ≥ 0');
+		if (!Number.isInteger(headcount) || headcount < 0) {
+			await alert('Количество людей должно быть целым числом ≥ 0');
 			return;
 		}
 		if (!Number.isFinite(sp)) {
@@ -51,7 +54,7 @@ export function useGroupInlineEdit() {
 		saving.value = true;
 		try {
 			const resourceType = formatResourceType(editResourceType.value);
-			await groupsStore.updateGroup(g.id, { name, capacityHours: cap, supportPercent: sp, resourceType });
+			await groupsStore.updateGroup(g.id, { name, headcount, description, supportPercent: sp, resourceType });
 			editingId.value = null;
 		} finally {
 			saving.value = false;
@@ -71,7 +74,8 @@ export function useGroupInlineEdit() {
 	return {
 		editingId,
 		editName,
-		editCap,
+		editHeadcount,
+		editDescription,
 		editSupport,
 		editResourceType,
 		saving,
