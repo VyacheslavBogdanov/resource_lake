@@ -121,6 +121,7 @@ resource-planner/
 │   └── types/
 │       └── domain.ts               # Project, Group, Allocation, AllocationPayload
 ├── eslint.config.mjs               # Конфиг ESLint
+├── .prettierrc.json                # Конфиг Prettier
 └── package.json                    # Зависимости и скрипты
 ```
 
