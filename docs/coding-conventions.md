@@ -249,23 +249,9 @@ npm run lint && npm run format && npm run build
 
 ## Тестирование
 
-### Unit-тесты
+**Все новые фичи разрабатываются по TDD** (Test-Driven Development): сначала тест, потом код.
 
-Vitest используется для unit-тестирования. Тесты расположены в `src/**/__tests__/`.
-
-```bash
-npm run test        # Запуск unit-тестов
-npm run test:watch  # Watch-режим
-```
-
-### E2E-тесты
-
-Playwright используется для end-to-end тестирования. Тесты в `e2e/`.
-
-```bash
-npm run test:e2e    # Требует запущенный dev-сервер
-npm run test:all    # Unit + E2E последовательно
-```
+Подробное руководство: [`docs/testing.md`](testing.md).
 
 ## Коммиты
 

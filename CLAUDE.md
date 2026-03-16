@@ -21,6 +21,7 @@ SPA-приложение на Vue 3 для управления распреде
 | [`deployment.md`](docs/deployment.md)                       | Деплой              |
 | [`css-design-tokens.md`](docs/css-design-tokens.md)         | SCSS дизайн-токены  |
 | [`coding-conventions.md`](docs/coding-conventions.md)       | Соглашения по коду  |
+| [`testing.md`](docs/testing.md)                             | Тестирование и TDD  |
 
 ## Технологии
 
