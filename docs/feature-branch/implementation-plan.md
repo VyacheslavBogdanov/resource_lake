@@ -104,10 +104,10 @@
 
 В списке проектов добавить иконку перехода по ссылке (как на главной) и tooltip с описанием/заказчиком.
 
-- [ ] В `ManageTable.vue` — добавить обёртку `.manage__project-header` с кнопкой-иконкой (SVG из PlanTableRow) + `<span :title>` с описанием и заказчиком
-- [ ] Добавить функции `projectUrl()`, `projectHoverTitle()`, `openProjectUrl()`
-- [ ] В `_manage.scss` — стили для `.manage__project-header`, `.manage__project-link`
-- [ ] Ручная проверка: иконка кликабельна, tooltip показывает описание и заказчика
+- [x] В `ManageTable.vue` — добавить обёртку `.manage__project-header` с кнопкой-иконкой (SVG из PlanTableRow) + `<span :title>` с описанием и заказчиком
+- [x] Добавить функции `projectUrl()`, `projectHoverTitle()`, `openProjectUrl()`
+- [x] В `_manage.scss` — стили для `.manage__project-header`, `.manage__project-link`
+- [x] Ручная проверка: иконка кликабельна, tooltip показывает описание и заказчика
 
 **Файлы:** `src/pages/DataManage/components/ManageTable.vue`, `src/pages/DataManage/_manage.scss`
 
