@@ -48,12 +48,18 @@ test.describe('Страница «Группы»', () => {
 		await page.goto('/groups');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
-		const typeInput = page.locator('.groups__row').first().locator('.groups__cell--type input');
-		await typeInput.fill('тестировщик');
-		await typeInput.blur();
+		// Тип ресурса редактируется только в режиме редактирования
+		const row = page.locator('.groups__row').first();
+		await row.locator('button:has-text("Редактировать")').click();
 
-		// Должно отформатироваться в «Тестировщик» (капитализация)
-		await expect(typeInput).toHaveValue('Тестировщик', { timeout: 5_000 });
+		const typeInput = row.locator('input[placeholder="Программист, Дизайнер, Электроник, Конструктор"]');
+		await typeInput.fill('тестировщик');
+
+		// Капитализация происходит при сохранении
+		await row.locator('button:has-text("Сохранить")').click();
+
+		// После сохранения значение отображается в span с капитализацией
+		await expect(row.locator('.groups__text', { hasText: 'Тестировщик' })).toBeVisible({ timeout: 5_000 });
 	});
 
 	test('удаление группы с подтверждением', async ({ page }) => {

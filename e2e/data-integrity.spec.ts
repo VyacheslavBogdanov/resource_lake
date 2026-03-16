@@ -29,7 +29,7 @@ test.describe('Целостность данных', () => {
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
 		await page.fill('input[placeholder="Название группы"]', 'Новая группа');
-		await page.fill('input[placeholder="Часы (емкость)"]', '500');
+		await page.fill('input[placeholder="Кол-во человек"]', '3');
 		await page.click('button:has-text("Добавить")');
 		await expect(page.locator('text=Новая группа')).toBeVisible({ timeout: 5_000 });
 
