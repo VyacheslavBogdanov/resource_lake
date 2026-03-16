@@ -23,10 +23,10 @@
 
 На странице «Группы ресурсов» поле «Тип ресурса» отображается как текст, редактируется только при нажатии «Редактировать».
 
-- [ ] В `useGroupInlineEdit.ts` — добавить `editResourceType` ref, инициализировать в `startEdit()`, включить в `saveEdit()`, удалить `onResourceTypeBlur()`
-- [ ] В `GroupTableRow.vue` — заменить постоянный input на шаблон span/input по условию `editingId === group.id`
-- [ ] В `GroupTable.vue` — прокинуть `editResourceType`, убрать emit `resourceTypeBlur`
-- [ ] В `Groups.vue` — передать `editResourceType`, убрать обработчик `resourceTypeBlur`
+- [x] В `useGroupInlineEdit.ts` — добавить `editResourceType` ref, инициализировать в `startEdit()`, включить в `saveEdit()`, удалить `onResourceTypeBlur()`
+- [x] В `GroupTableRow.vue` — заменить постоянный input на шаблон span/input по условию `editingId === group.id`
+- [x] В `GroupTable.vue` — прокинуть `editResourceType`, убрать emit `resourceTypeBlur`
+- [x] В `Groups.vue` — передать `editResourceType`, убрать обработчик `resourceTypeBlur`
 - [ ] Ручная проверка: тип ресурса отображается как текст, редактируется только в режиме редактирования
 
 **Файлы:** `src/pages/Groups/composables/useGroupInlineEdit.ts`, `src/pages/Groups/components/GroupTableRow.vue`, `src/pages/Groups/components/GroupTable.vue`, `src/pages/Groups/Groups.vue`

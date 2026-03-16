@@ -16,11 +16,11 @@ const {
 	editName,
 	editCap,
 	editSupport,
+	editResourceType,
 	saving,
 	startEdit,
 	saveEdit,
 	cancelEdit,
-	onResourceTypeBlur,
 	removeGroup,
 } = useGroupInlineEdit();
 
@@ -43,6 +43,7 @@ const { dragState, reordering, dragStart, dragOver, onDrop, dragEnd } = useDragR
 			:edit-name="editName"
 			:edit-cap="editCap"
 			:edit-support="editSupport"
+			:edit-resource-type="editResourceType"
 			:saving="saving"
 			:reordering="reordering"
 			:drag-over-id="dragState.overId"
@@ -55,10 +56,10 @@ const { dragState, reordering, dragStart, dragOver, onDrop, dragEnd } = useDragR
 			@save-edit="saveEdit"
 			@cancel-edit="cancelEdit"
 			@remove-group="removeGroup"
-			@resource-type-blur="onResourceTypeBlur"
 			@update:edit-name="editName = $event"
 			@update:edit-cap="editCap = $event"
 			@update:edit-support="editSupport = $event"
+			@update:edit-resource-type="editResourceType = $event"
 		/>
 
 		<p v-else class="groups__empty">Пока нет групп ресурсов.</p>

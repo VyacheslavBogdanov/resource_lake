@@ -8,6 +8,7 @@ defineProps<{
 	editName: string;
 	editCap: number | null;
 	editSupport: number | null;
+	editResourceType: string;
 	saving: boolean;
 	reordering: boolean;
 	dragOverId: number | null;
@@ -23,10 +24,10 @@ defineEmits<{
 	saveEdit: [g: Group];
 	cancelEdit: [];
 	removeGroup: [g: Group];
-	resourceTypeBlur: [g: Group, e: Event];
 	'update:editName': [value: string];
 	'update:editCap': [value: number | null];
 	'update:editSupport': [value: number | null];
+	'update:editResourceType': [value: string];
 }>();
 </script>
 
@@ -59,6 +60,7 @@ defineEmits<{
 				:edit-name="editName"
 				:edit-cap="editCap"
 				:edit-support="editSupport"
+				:edit-resource-type="editResourceType"
 				:saving="saving"
 				:reordering="reordering"
 				:is-drag-over="dragOverId === g.id && draggingId !== null"
@@ -70,10 +72,10 @@ defineEmits<{
 				@save-edit="$emit('saveEdit', $event)"
 				@cancel-edit="$emit('cancelEdit')"
 				@remove-group="$emit('removeGroup', $event)"
-				@resource-type-blur="(g, e) => $emit('resourceTypeBlur', g, e)"
 				@update:edit-name="$emit('update:editName', $event)"
 				@update:edit-cap="$emit('update:editCap', $event)"
 				@update:edit-support="$emit('update:editSupport', $event)"
+				@update:edit-resource-type="$emit('update:editResourceType', $event)"
 			/>
 		</tbody>
 	</table>

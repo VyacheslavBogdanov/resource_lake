@@ -8,6 +8,7 @@ defineProps<{
 	editName: string;
 	editCap: number | null;
 	editSupport: number | null;
+	editResourceType: string;
 	saving: boolean;
 	reordering: boolean;
 	isDragOver: boolean;
@@ -22,10 +23,10 @@ const emit = defineEmits<{
 	saveEdit: [g: Group];
 	cancelEdit: [];
 	removeGroup: [g: Group];
-	resourceTypeBlur: [g: Group, e: Event];
 	'update:editName': [value: string];
 	'update:editCap': [value: number | null];
 	'update:editSupport': [value: number | null];
+	'update:editResourceType': [value: string];
 }>();
 
 function onEditNameInput(e: Event) {
@@ -40,6 +41,10 @@ function onEditCapInput(e: Event) {
 function onEditSupportInput(e: Event) {
 	const val = (e.target as HTMLInputElement).valueAsNumber;
 	emit('update:editSupport', Number.isFinite(val) ? val : null);
+}
+
+function onEditResourceTypeInput(e: Event) {
+	emit('update:editResourceType', (e.target as HTMLInputElement).value);
 }
 </script>
 
@@ -81,15 +86,22 @@ function onEditSupportInput(e: Event) {
 			</div>
 		</td>
 
-		<td class="groups__cell groups__cell--type">
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
 			<div class="groups__cell-inner">
-				<input
-					class="groups__input groups__input--cell groups__input--left"
-					:value="group.resourceType ?? ''"
-					placeholder="Программист, Дизайнер, Электроник, Конструктор"
-					:disabled="reordering"
-					@blur="emit('resourceTypeBlur', group, $event)"
-				/>
+				<template v-if="editingId === group.id">
+					<input
+						class="groups__input groups__input--inline"
+						:value="editResourceType"
+						placeholder="Программист, Дизайнер, Электроник, Конструктор"
+						:disabled="saving || reordering"
+						@input="onEditResourceTypeInput"
+						@keydown.enter.prevent="emit('saveEdit', group)"
+						@keydown.esc.prevent="emit('cancelEdit')"
+					/>
+				</template>
+				<template v-else>
+					<span class="groups__text" :title="group.resourceType ?? ''">{{ group.resourceType || '—' }}</span>
+				</template>
 			</div>
 		</td>
 
