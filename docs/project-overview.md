@@ -1,4 +1,4 @@
-# 01. Обзор проекта
+# Обзор проекта
 
 ## Стек технологий
 
@@ -15,7 +15,7 @@
 
 ## Доменная модель
 
-Определена в `src/types/domain.ts` (41 строка):
+Определена в `src/types/domain.ts`:
 
 ```typescript
 interface Project {
@@ -33,7 +33,9 @@ interface Project {
 interface Group {
 	id: number;
 	name: string;
+	headcount: number;
 	capacityHours: number;
+	description?: string;
 	supportPercent?: number;
 	resourceType?: string;
 	position?: number;
@@ -69,57 +71,58 @@ resource-planner/
 │   │   ├── _reset.scss             # Сброс стилей
 │   │   └── index.scss              # Точка входа (@use всех partials)
 │   ├── pages/
-│   │   ├── ResourcePlan/           # 294 строки — основная таблица распределения
+│   │   ├── ResourcePlan/           # Основная таблица распределения
 │   │   │   ├── ResourcePlan.vue
 │   │   │   ├── composables/        # useViewMode, useGroupVisibility, useColumnTotals,
 │   │   │   │                       # useCsvExport, useTableScroll, useProjectSort, useChartData
 │   │   │   └── components/         # PlanToolbar, PlanTableHeader, PlanTableRow,
 │   │   │                           # PlanTableFooter, PlanCapacityChart, PlanKpis
-│   │   ├── DataManage/             # 110 строк — импорт/экспорт данных
+│   │   ├── DataManage/             # Импорт/экспорт данных
 │   │   │   ├── DataManage.vue
 │   │   │   ├── composables/        # useAllocationBuffer, useBatchSave
 │   │   │   └── components/         # ManageToolbar, ManageTable
-│   │   ├── Projects/               # 119 строк — управление проектами
+│   │   ├── Projects/               # Управление проектами
 │   │   │   ├── Projects.vue
 │   │   │   ├── composables/        # useProjectForm, useProjectInlineEdit
 │   │   │   └── components/         # ProjectAddForm, ProjectTable, ProjectTableRow
-│   │   └── Groups/                 # 82 строки — управление группами
+│   │   └── Groups/                 # Управление группами
 │   │       ├── Groups.vue
 │   │       ├── composables/        # useGroupForm, useGroupInlineEdit
 │   │       └── components/         # GroupAddForm, GroupTable, GroupTableRow
 │   ├── stores/
-│   │   ├── projects.ts             # useProjectsStore — проекты (152 строки)
-│   │   ├── groups.ts               # useGroupsStore — группы ресурсов (152 строки)
-│   │   ├── allocations.ts          # useAllocationsStore — распределения (132 строки)
-│   │   ├── ui.ts                   # useUiStore — UI-состояние (39 строк)
-│   │   ├── utils.ts                # Утилиты сортировки (35 строк)
+│   │   ├── projects.ts             # useProjectsStore — проекты
+│   │   ├── groups.ts               # useGroupsStore — группы ресурсов
+│   │   ├── allocations.ts          # useAllocationsStore — распределения
+│   │   ├── ui.ts                   # useUiStore — UI-состояние
+│   │   ├── utils.ts                # Утилиты сортировки
 │   │   ├── constants.ts            # Константы
 │   │   └── storage.ts              # Работа с localStorage
 │   ├── services/
-│   │   ├── http.ts                 # 85 строк — HTTP-клиент с retry и ApiError
-│   │   └── errors.ts               # ApiError класс (22 строки)
+│   │   ├── http.ts                 # HTTP-клиент с retry и ApiError
+│   │   └── errors.ts               # ApiError класс
 │   ├── components/
 │   │   ├── ui/                     # UI-кит (BaseButton, BaseInput, ConfirmDialog)
 │   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
-│   │   └── UiSelect/               # Компонент выбора (169 строк)
+│   │   └── UiSelect/               # Компонент выбора
 │   │       ├── UiSelect.vue
 │   │       ├── composables/        # useDropdown
 │   │       └── components/         # SelectTrigger, SelectDropdown
 │   ├── composables/
 │   │   ├── useProjectFilters.ts    # Общий composable фильтрации проектов
 │   │   ├── useDragReorder.ts       # Общий composable drag-and-drop (Projects, Groups)
-│   │   ├── useConfirm.ts           # Promise-based confirm/alert (замена браузерных диалогов)
+│   │   ├── useConfirm.ts           # Promise-based confirm/alert
 │   │   └── useInitialFetch.ts      # Инициализация данных (fetchAllData)
 │   ├── utils/
 │   │   └── format.ts               # Утилиты форматирования (roundInt)
 │   ├── router/
-│   │   ├── index.ts                # Маршруты с name и lazy-loading (33 строки)
-│   │   └── names.ts                # Enum RouteNames (6 строк)
+│   │   ├── index.ts                # Маршруты с name и lazy-loading
+│   │   └── names.ts                # Enum RouteNames
 │   └── types/
-│       └── domain.ts               # 41 строк — Project, Group, Allocation, AllocationPayload
+│       └── domain.ts               # Project, Group, Allocation, AllocationPayload
 ├── eslint.config.mjs               # Конфиг ESLint
-└── package.json                    # Зависимости и скрипты (lint, format)
+├── .prettierrc.json                # Конфиг Prettier
+└── package.json                    # Зависимости и скрипты
 ```
 
 ## Поток данных
@@ -154,26 +157,26 @@ URL rewriting маппит `/projects` → `/p/projects`, `/groups` → `/g/grou
 
 **Важно:** json-server и `data/*.json` — это сознательное решение архитектуры. Бэкенд не рефакторим.
 
-## Сильные стороны
+## Архитектурные решения
 
-1. **Грамотная доменная модель** — типы в `domain.ts` хорошо описывают предметную область
-2. **Декомпозиция стора на 4 модуля** — projects, groups, allocations, ui (P2)
-3. **HTTP-слой с ApiError** — retry для 5xx/сетевых ошибок, структурированные ошибки
-4. **Утилиты сортировки** — `utils.ts` с generic-функциями `moveItemById` и `buildPositionUpdates`
+### Декомпозиция стора
 
-## Системные проблемы (сводка)
+Состояние разделено на 4 независимых Pinia-стора (`projects`, `groups`, `allocations`, `ui`). Каждый стор управляет своим типом сущности, что упрощает работу и тестирование.
 
-1. ~~ESLint конфиг ссылается на пакеты, не установленные в package.json~~ — решено (P0)
-2. ~~Зависимость `xlsx` не используется в коде~~ — удалено (P0)
-3. ~~`.gitignore` не содержит `.env`, `.firebase/`, `.DS_Store`~~ — расширено (P0)
-4. ~~Firebase-артефакты~~ — удалены (P0)
-5. ~~Только 3 CSS-переменных, 193 хардкоженных цвета в HEX~~ — SCSS-архитектура с дизайн-токенами (P1)
-6. ~~Всего 2 общих компонента~~ — добавлены BaseButton, BaseInput, FilterPanel (P1)
-7. ~~Монолитный стор (все сущности в одном defineStore)~~ — решено (P2): декомпозиция на 4 модуля
-8. ~~`ResourcePlan.vue` — 1985 строк (крупнейший файл)~~ — решено (P3): декомпозиция на 294 строки + 6 composables + 6 компонентов
-9. ~~`roundInt()` дублируется 3 раза~~ — вынесен в `src/utils/format.ts` (P1)
-10. ~~Фильтрация customer/manager дублируется в ResourcePlan и DataManage~~ — вынесена в `useProjectFilters` (P1)
-11. ~~Drag-n-drop код дублируется в Projects и Groups~~ — решено (P3): общий composable `useDragReorder`
-12. ~~`valueByPair()` и `quarterByPair()` используют `.find()` = O(n) на ячейку~~ — решено (P2): `byPairIndex` Map для O(1)
-13. ~~Маршруты без `name`, навигация по строковым path, нет lazy-loading~~ — решено (P3): enum RouteNames + lazy-loading
-14. Несогласованность: Projects используют `order`, Groups используют `position`
+### Индексация аллокаций (byPairIndex)
+
+`useAllocationsStore` использует `Map<string, Allocation>` с ключом `${projectId}-${groupId}` для O(1) доступа к аллокации по паре проект-группа. Это критично для производительности таблицы ResourcePlan, где каждая ячейка обращается к аллокации.
+
+### Composable-паттерн для страниц
+
+Каждая страница декомпозирована на:
+
+- **Корневой компонент** (< 300 строк) — оркестрация
+- **composables/** — бизнес-логика (формы, фильтрация, сортировка, экспорт)
+- **components/** — презентационные подкомпоненты
+
+Общая логика вынесена в `src/composables/` (фильтрация проектов, drag-and-drop, confirm-диалоги).
+
+### HTTP-клиент с retry
+
+`src/services/http.ts` реализует fetch-обёртку с автоматическим retry для 5xx и сетевых ошибок. `ApiError` класс сохраняет status code и body для структурированной обработки.

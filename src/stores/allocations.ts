@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { api } from '../services/http';
 import type { Allocation, AllocationPayloadByProject } from '../types/domain';
 import { useProjectsStore } from './projects';
+import { useUiStore } from './ui';
 
 export const useAllocationsStore = defineStore('allocations', {
 	state: () => ({
@@ -83,6 +84,7 @@ export const useAllocationsStore = defineStore('allocations', {
 					await api.create<Allocation>('allocations', { projectId, groupId, hours });
 				}
 				this.items = await api.list<Allocation>('allocations');
+				useUiStore().touchAllocationsDate();
 			} catch (err) {
 				console.error('Ошибка при установке распределения:', err);
 				throw err;
@@ -123,6 +125,7 @@ export const useAllocationsStore = defineStore('allocations', {
 
 				await Promise.all(ops);
 				this.items = await api.list<Allocation>('allocations');
+				useUiStore().touchAllocationsDate();
 			} catch (err) {
 				console.error('Ошибка при пакетном обновлении распределений:', err);
 				throw err;

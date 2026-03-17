@@ -13,7 +13,9 @@ export interface Project {
 export interface Group {
 	id: number;
 	name: string;
+	headcount: number;
 	capacityHours: number;
+	description?: string;
 	supportPercent?: number;
 	resourceType?: string;
 	position?: number;

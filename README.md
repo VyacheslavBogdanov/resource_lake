@@ -127,27 +127,20 @@ json-server обслуживает три JSON-файла из `data/` как RE
 
 **URL:** `https://vyacheslavbogdanov.github.io/resource_lake/`
 
-Подробнее: [`docs/12-deployment.md`](docs/12-deployment.md).
+Подробнее: [`docs/deployment.md`](docs/deployment.md).
 
 ## Документация
 
 Подробная документация находится в директории [`docs/`](docs/).
 
-| Файл                                                                            | Описание                           |
-| ------------------------------------------------------------------------------- | ---------------------------------- |
-| [`01-project-overview.md`](docs/01-project-overview.md)                         | Обзор проекта                      |
-| [`02-refactoring-priorities.md`](docs/02-refactoring-priorities.md)             | Приоритеты рефакторинга            |
-| [`03-tooling-and-linting.md`](docs/03-tooling-and-linting.md)                   | Тулинг и линтинг                   |
-| [`04-ui-kit-and-shared-components.md`](docs/04-ui-kit-and-shared-components.md) | UI-кит и общие компоненты          |
-| [`05-store-decomposition.md`](docs/05-store-decomposition.md)                   | Декомпозиция стора                 |
-| [`06-resource-plan-decomposition.md`](docs/06-resource-plan-decomposition.md)   | Декомпозиция ResourcePlan.vue      |
-| [`07-code-deduplication.md`](docs/07-code-deduplication.md)                     | Устранение дублирования кода       |
-| [`08-api-layer-and-error-handling.md`](docs/08-api-layer-and-error-handling.md) | API-слой и обработка ошибок        |
-| [`09-performance-optimization.md`](docs/09-performance-optimization.md)         | Оптимизация производительности     |
-| [`10-drag-and-drop-refactoring.md`](docs/10-drag-and-drop-refactoring.md)       | Рефакторинг drag-and-drop          |
-| [`11-routing-and-navigation.md`](docs/11-routing-and-navigation.md)             | Роутинг и навигация                |
-| [`12-deployment.md`](docs/12-deployment.md)                                     | Деплой                             |
-| [`13-css-design-tokens.md`](docs/13-css-design-tokens.md)                       | SCSS дизайн-токены                 |
-| [`14-pages-decomposition.md`](docs/14-pages-decomposition.md)                   | Декомпозиция страниц и компонентов |
-| [`15-refactoring-progress.md`](docs/15-refactoring-progress.md)                 | Прогресс рефакторинга              |
-| [`16-coding-conventions.md`](docs/16-coding-conventions.md)                     | Соглашения по коду                 |
+| Файл                                                        | Описание            |
+| ----------------------------------------------------------- | ------------------- |
+| [`project-overview.md`](docs/project-overview.md)           | Обзор проекта       |
+| [`tooling-and-linting.md`](docs/tooling-and-linting.md)     | Тулинг и линтинг    |
+| [`ui-kit-and-components.md`](docs/ui-kit-and-components.md) | UI-кит и компоненты |
+| [`api-layer.md`](docs/api-layer.md)                         | API-слой            |
+| [`routing.md`](docs/routing.md)                             | Роутинг             |
+| [`deployment.md`](docs/deployment.md)                       | Деплой              |
+| [`css-design-tokens.md`](docs/css-design-tokens.md)         | SCSS дизайн-токены  |
+| [`coding-conventions.md`](docs/coding-conventions.md)       | Соглашения по коду  |
+| [`testing.md`](docs/testing.md)                             | Тестирование и TDD  |

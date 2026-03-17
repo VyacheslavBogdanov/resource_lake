@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia';
-import { loadHiddenGroupIds, saveHiddenGroupIds } from './storage';
+import { loadHiddenGroupIds, saveHiddenGroupIds, loadUpdatedAt, saveUpdatedAt } from './storage';
+import { UPDATED_AT_PROJECTS, UPDATED_AT_GROUPS, UPDATED_AT_ALLOCATIONS } from './constants';
 
 export const useUiStore = defineStore('ui', {
 	state: () => ({
 		hiddenGroupIds: loadHiddenGroupIds(),
+		updatedAtProjects: loadUpdatedAt(UPDATED_AT_PROJECTS),
+		updatedAtGroups: loadUpdatedAt(UPDATED_AT_GROUPS),
+		updatedAtAllocations: loadUpdatedAt(UPDATED_AT_ALLOCATIONS),
 	}),
 
 	getters: {
@@ -34,6 +38,19 @@ export const useUiStore = defineStore('ui', {
 		cleanupInvalidIds(validGroupIds: Set<number>) {
 			this.hiddenGroupIds = this.hiddenGroupIds.filter((id) => validGroupIds.has(id));
 			this.persistHiddenGroupIds();
+		},
+
+		touchProjectsDate() {
+			saveUpdatedAt(UPDATED_AT_PROJECTS);
+			this.updatedAtProjects = loadUpdatedAt(UPDATED_AT_PROJECTS);
+		},
+		touchGroupsDate() {
+			saveUpdatedAt(UPDATED_AT_GROUPS);
+			this.updatedAtGroups = loadUpdatedAt(UPDATED_AT_GROUPS);
+		},
+		touchAllocationsDate() {
+			saveUpdatedAt(UPDATED_AT_ALLOCATIONS);
+			this.updatedAtAllocations = loadUpdatedAt(UPDATED_AT_ALLOCATIONS);
 		},
 	},
 });

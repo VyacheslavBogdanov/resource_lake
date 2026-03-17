@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { RouteNames } from '../router/names';
+import { useUiStore } from '../stores/ui';
 
 const helpUrl = import.meta.env.VITE_HELP_URL || '';
+const route = useRoute();
+const uiStore = useUiStore();
+
+const updatedLabel = computed((): string | null => {
+	const name = route.name;
+	let iso: string | null = null;
+	if (name === RouteNames.Projects) iso = uiStore.updatedAtProjects;
+	else if (name === RouteNames.Groups) iso = uiStore.updatedAtGroups;
+	else if (name === RouteNames.Manage) iso = uiStore.updatedAtAllocations;
+	if (!iso) return null;
+	return new Date(iso).toLocaleString('ru-RU');
+});
 </script>
 
 <template>
@@ -12,6 +27,7 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 			<RouterLink class="header__link" :to="{ name: RouteNames.Groups }">Группы ресурсов</RouterLink>
 			<RouterLink class="header__link" :to="{ name: RouteNames.Manage }">Управление данными</RouterLink>
 		</nav>
+		<span v-if="updatedLabel" class="header__updated">Обновлено: {{ updatedLabel }}</span>
 		<a
 			v-if="helpUrl"
 			:href="helpUrl"
@@ -51,6 +67,14 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 		&.router-link-active {
 			background: $color-primary-700;
 		}
+	}
+	&__updated {
+		padding-right: 20px;
+		margin-left: auto;
+		color: $color-text-inverse;
+		opacity: 0.75;
+		font-size: 13px;
+		white-space: nowrap;
 	}
 	&__help {
 		color: $color-text-inverse;

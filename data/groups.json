@@ -3,15 +3,19 @@
     {
       "id": 1,
       "name": "Frontend",
-      "capacityHours": 260,
-      "supportPercent": 22,
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 5,
       "resourceType": "Программист",
       "position": 1
     },
     {
       "id": 2,
       "name": "Backend",
-      "capacityHours": 280,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
       "supportPercent": 2,
       "resourceType": "Программист",
       "position": 2
@@ -19,71 +23,89 @@
     {
       "id": 3,
       "name": "QA",
-      "capacityHours": 280,
-      "supportPercent": 18,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
+      "supportPercent": 10,
       "resourceType": "Тестировщик",
       "position": 3
     },
     {
       "id": 4,
       "name": "DevOps",
-      "capacityHours": 280,
-      "supportPercent": 12,
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 18,
       "resourceType": "Программист",
       "position": 4
     },
     {
       "id": 5,
       "name": "Mobile",
-      "capacityHours": 240,
-      "supportPercent": 27,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
+      "supportPercent": 26,
       "resourceType": "Программист",
       "position": 5
     },
     {
       "id": 6,
       "name": "UX/UI",
-      "capacityHours": 240,
-      "supportPercent": 27,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
+      "supportPercent": 30,
       "resourceType": "Дизайнер",
       "position": 6
     },
     {
       "id": 7,
       "name": "Data Engineering",
-      "capacityHours": 60,
-      "supportPercent": 11,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
+      "supportPercent": 25,
       "resourceType": "Программист",
       "position": 7
     },
     {
       "id": 8,
       "name": "ML",
-      "capacityHours": 360,
-      "supportPercent": 15,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
+      "supportPercent": 21,
       "resourceType": "Аналитик",
       "position": 8
     },
     {
       "id": 9,
       "name": "Security",
-      "capacityHours": 260,
-      "supportPercent": 14,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
+      "supportPercent": 10,
       "resourceType": "Программист",
       "position": 9
     },
     {
       "id": 10,
       "name": "DBA",
-      "capacityHours": 260,
-      "supportPercent": 9,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
+      "supportPercent": 27,
       "resourceType": "Программист",
       "position": 10
     },
     {
       "id": 11,
       "name": "Infra",
-      "capacityHours": 60,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
       "supportPercent": 25,
       "resourceType": "Конструктор",
       "position": 11
@@ -91,23 +113,29 @@
     {
       "id": 12,
       "name": "Analytics",
-      "capacityHours": 400,
-      "supportPercent": 19,
+      "headcount": 5,
+      "capacityHours": 720,
+      "description": "",
+      "supportPercent": 11,
       "resourceType": "Аналитик",
       "position": 12
     },
     {
       "id": 13,
       "name": "Embedded",
-      "capacityHours": 200,
-      "supportPercent": 29,
+      "headcount": 4,
+      "capacityHours": 576,
+      "description": "",
+      "supportPercent": 4,
       "resourceType": "Конструктор",
       "position": 13
     },
     {
       "id": 14,
       "name": "Platform",
-      "capacityHours": 240,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
       "supportPercent": 20,
       "resourceType": "Программист",
       "position": 14
@@ -115,8 +143,10 @@
     {
       "id": 15,
       "name": "SRE",
-      "capacityHours": 180,
-      "supportPercent": 15,
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 22,
       "resourceType": "Программист",
       "position": 15
     }

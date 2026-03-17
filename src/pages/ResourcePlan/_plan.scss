@@ -40,6 +40,38 @@
 		flex-wrap: wrap;
 	}
 
+	&__filter-group {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-left: auto;
+	}
+
+	&__csv-btn {
+		height: 28px;
+		width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
+		cursor: pointer;
+		flex: 0 0 auto;
+		padding: 0;
+		transition: all 0.15s ease;
+	}
+
+	&__csv-btn:hover {
+		background: $color-bg-row-hover;
+		border-color: $color-border-hover;
+	}
+
+	&__csv-btn-icon {
+		display: block;
+	}
+
 	&__row-type-switch {
 		display: inline-flex;
 		align-items: center;
@@ -219,6 +251,7 @@
 
 	&__table-wrapper {
 		overflow: auto;
+		max-height: calc(100vh - 280px);
 		background: $color-bg-surface;
 		box-shadow: $shadow-sm;
 		border-radius: 12px;
@@ -248,6 +281,12 @@
 		border-collapse: separate;
 		border-spacing: 0;
 		border-radius: 12px;
+
+		thead {
+			position: sticky;
+			top: 0;
+			z-index: 3;
+		}
 	}
 
 	&__table th + th,

@@ -19,7 +19,7 @@ test.describe('Страница «Группы»', () => {
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
 		await page.fill('input[placeholder="Название группы"]', 'DevOps');
-		await page.fill('input[placeholder="Часы (емкость)"]', '150');
+		await page.fill('input[placeholder="Кол-во человек"]', '2');
 		await page.fill('input[placeholder="% в поддержке"]', '5');
 		await page.click('button:has-text("Добавить")');
 
@@ -48,12 +48,18 @@ test.describe('Страница «Группы»', () => {
 		await page.goto('/groups');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
-		const typeInput = page.locator('.groups__row').first().locator('.groups__cell--type input');
-		await typeInput.fill('тестировщик');
-		await typeInput.blur();
+		// Тип ресурса редактируется только в режиме редактирования
+		const row = page.locator('.groups__row').first();
+		await row.locator('button:has-text("Редактировать")').click();
 
-		// Должно отформатироваться в «Тестировщик» (капитализация)
-		await expect(typeInput).toHaveValue('Тестировщик', { timeout: 5_000 });
+		const typeInput = row.locator('input[placeholder="Программист, Дизайнер, Электроник, Конструктор"]');
+		await typeInput.fill('тестировщик');
+
+		// Капитализация происходит при сохранении
+		await row.locator('button:has-text("Сохранить")').click();
+
+		// После сохранения значение отображается в span с капитализацией
+		await expect(row.locator('.groups__text', { hasText: 'Тестировщик' })).toBeVisible({ timeout: 5_000 });
 	});
 
 	test('удаление группы с подтверждением', async ({ page }) => {
@@ -109,16 +115,16 @@ test.describe('Страница «Группы»', () => {
 		await dialog.locator('.base-btn--primary').click();
 	});
 
-	test('валидация: ёмкость < 0', async ({ page }) => {
+	test('валидация: кол-во людей < 0', async ({ page }) => {
 		await page.goto('/groups');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
 		const firstRow = page.locator('.groups__row').first();
 		await firstRow.locator('button:has-text("Редактировать")').click();
 
-		// Находим числовой инпут для ёмкости
-		const capInput = firstRow.locator('input[type="number"]').first();
-		await capInput.fill('-10');
+		// Находим числовой инпут для headcount
+		const headcountInput = firstRow.locator('input[type="number"]').first();
+		await headcountInput.fill('-1');
 
 		await firstRow.locator('button:has-text("Сохранить")').click();
 
@@ -126,7 +132,7 @@ test.describe('Страница «Группы»', () => {
 		const dialog = page.locator('.confirm-dialog');
 		await expect(dialog).toBeVisible({ timeout: 3_000 });
 		const message = await dialog.locator('.confirm-dialog__message').textContent();
-		expect(message).toContain('Емкость');
+		expect(message).toContain('Количество людей');
 		await dialog.locator('.base-btn--primary').click();
 	});
 
@@ -151,12 +157,13 @@ test.describe('Страница «Группы»', () => {
 		await dialog.locator('.base-btn--primary').click();
 	});
 
-	test('отображение ёмкости и процента', async ({ page }) => {
+	test('отображение ёмкости и headcount', async ({ page }) => {
 		await page.goto('/groups');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
 
-		// Frontend: 200 ч·ч, 10%
-		await expect(page.locator('text=200')).toBeVisible();
-		await expect(page.locator('text=10%')).toBeVisible();
+		// Frontend: headcount=1, capacityHours=144, supportPercent=10
+		const firstRow = page.locator('.groups__row').first();
+		await expect(firstRow.locator('text=144')).toBeVisible();
+		await expect(firstRow.locator('text=10%')).toBeVisible();
 	});
 });

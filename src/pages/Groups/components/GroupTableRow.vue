@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import BaseButton from '../../../components/ui/BaseButton.vue';
+import { HOURS_PER_PERSON } from '../../../stores/constants';
 import type { Group } from '../../../types/domain';
 
 defineProps<{
 	group: Group;
 	editingId: number | null;
 	editName: string;
-	editCap: number | null;
+	editHeadcount: number | null;
+	editDescription: string;
 	editSupport: number | null;
+	editResourceType: string;
 	saving: boolean;
 	reordering: boolean;
 	isDragOver: boolean;
@@ -22,24 +25,33 @@ const emit = defineEmits<{
 	saveEdit: [g: Group];
 	cancelEdit: [];
 	removeGroup: [g: Group];
-	resourceTypeBlur: [g: Group, e: Event];
 	'update:editName': [value: string];
-	'update:editCap': [value: number | null];
+	'update:editHeadcount': [value: number | null];
+	'update:editDescription': [value: string];
 	'update:editSupport': [value: number | null];
+	'update:editResourceType': [value: string];
 }>();
 
 function onEditNameInput(e: Event) {
 	emit('update:editName', (e.target as HTMLInputElement).value.trim());
 }
 
-function onEditCapInput(e: Event) {
+function onEditHeadcountInput(e: Event) {
 	const val = (e.target as HTMLInputElement).valueAsNumber;
-	emit('update:editCap', Number.isFinite(val) ? val : null);
+	emit('update:editHeadcount', Number.isFinite(val) ? val : null);
+}
+
+function onEditDescriptionInput(e: Event) {
+	emit('update:editDescription', (e.target as HTMLInputElement).value);
 }
 
 function onEditSupportInput(e: Event) {
 	const val = (e.target as HTMLInputElement).valueAsNumber;
 	emit('update:editSupport', Number.isFinite(val) ? val : null);
+}
+
+function onEditResourceTypeInput(e: Event) {
+	emit('update:editResourceType', (e.target as HTMLInputElement).value);
 }
 </script>
 
@@ -81,15 +93,41 @@ function onEditSupportInput(e: Event) {
 			</div>
 		</td>
 
-		<td class="groups__cell groups__cell--type">
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
 			<div class="groups__cell-inner">
-				<input
-					class="groups__input groups__input--cell groups__input--left"
-					:value="group.resourceType ?? ''"
-					placeholder="Программист, Дизайнер, Электроник, Конструктор"
-					:disabled="reordering"
-					@blur="emit('resourceTypeBlur', group, $event)"
-				/>
+				<template v-if="editingId === group.id">
+					<input
+						class="groups__input groups__input--inline"
+						:value="editResourceType"
+						placeholder="Программист, Дизайнер, Электроник, Конструктор"
+						:disabled="saving || reordering"
+						@input="onEditResourceTypeInput"
+						@keydown.enter.prevent="emit('saveEdit', group)"
+						@keydown.esc.prevent="emit('cancelEdit')"
+					/>
+				</template>
+				<template v-else>
+					<span class="groups__text" :title="group.resourceType ?? ''">{{ group.resourceType || '—' }}</span>
+				</template>
+			</div>
+		</td>
+
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
+			<div class="groups__cell-inner">
+				<template v-if="editingId === group.id">
+					<input
+						class="groups__input groups__input--inline"
+						:value="editDescription"
+						placeholder="Описание группы"
+						:disabled="saving || reordering"
+						@input="onEditDescriptionInput"
+						@keydown.enter.prevent="emit('saveEdit', group)"
+						@keydown.esc.prevent="emit('cancelEdit')"
+					/>
+				</template>
+				<template v-else>
+					<span class="groups__text" :title="group.description ?? ''">{{ group.description || '—' }}</span>
+				</template>
 			</div>
 		</td>
 
@@ -101,16 +139,24 @@ function onEditSupportInput(e: Event) {
 						type="number"
 						min="0"
 						step="1"
-						:value="editCap"
+						:value="editHeadcount"
 						:disabled="saving || reordering"
-						@input="onEditCapInput"
+						@input="onEditHeadcountInput"
 						@keydown.enter.prevent="emit('saveEdit', group)"
 						@keydown.esc.prevent="emit('cancelEdit')"
 					/>
 				</template>
 				<template v-else>
-					<span class="groups__text">{{ Math.round(group.capacityHours) }}</span>
+					<span class="groups__text">{{ group.headcount }}</span>
 				</template>
+			</div>
+		</td>
+
+		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
+			<div class="groups__cell-inner">
+				<span class="groups__text groups__text--computed">{{
+					editingId === group.id ? (editHeadcount ?? 0) * HOURS_PER_PERSON : group.capacityHours
+				}}</span>
 			</div>
 		</td>
 

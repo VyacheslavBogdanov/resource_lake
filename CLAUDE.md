@@ -6,31 +6,22 @@ SPA-приложение на Vue 3 для управления распреде
 
 Прочитай перед началом работы:
 
-- [`docs/01-project-overview.md`](docs/01-project-overview.md) — что делает приложение, архитектура, поток данных
-- [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md) — стандарты кода (обязательно)
-- [`docs/02-refactoring-priorities.md`](docs/02-refactoring-priorities.md) — приоритеты рефакторинга
-- [`docs/15-refactoring-progress.md`](docs/15-refactoring-progress.md) — текущий прогресс
+- [`docs/project-overview.md`](docs/project-overview.md) — что делает приложение, архитектура, поток данных
+- [`docs/coding-conventions.md`](docs/coding-conventions.md) — стандарты кода (обязательно)
 
 ## Документация
 
-| Файл                                                                            | Описание                           |
-| ------------------------------------------------------------------------------- | ---------------------------------- |
-| [`01-project-overview.md`](docs/01-project-overview.md)                         | Обзор проекта                      |
-| [`02-refactoring-priorities.md`](docs/02-refactoring-priorities.md)             | Приоритеты рефакторинга            |
-| [`03-tooling-and-linting.md`](docs/03-tooling-and-linting.md)                   | Тулинг и линтинг                   |
-| [`04-ui-kit-and-shared-components.md`](docs/04-ui-kit-and-shared-components.md) | UI-кит и общие компоненты          |
-| [`05-store-decomposition.md`](docs/05-store-decomposition.md)                   | Декомпозиция стора                 |
-| [`06-resource-plan-decomposition.md`](docs/06-resource-plan-decomposition.md)   | Декомпозиция ResourcePlan.vue      |
-| [`07-code-deduplication.md`](docs/07-code-deduplication.md)                     | Устранение дублирования кода       |
-| [`08-api-layer-and-error-handling.md`](docs/08-api-layer-and-error-handling.md) | API-слой и обработка ошибок        |
-| [`09-performance-optimization.md`](docs/09-performance-optimization.md)         | Оптимизация производительности     |
-| [`10-drag-and-drop-refactoring.md`](docs/10-drag-and-drop-refactoring.md)       | Рефакторинг drag-and-drop          |
-| [`11-routing-and-navigation.md`](docs/11-routing-and-navigation.md)             | Роутинг и навигация                |
-| [`12-deployment.md`](docs/12-deployment.md)                                     | Деплой                             |
-| [`13-css-design-tokens.md`](docs/13-css-design-tokens.md)                       | SCSS дизайн-токены                 |
-| [`14-pages-decomposition.md`](docs/14-pages-decomposition.md)                   | Декомпозиция страниц и компонентов |
-| [`15-refactoring-progress.md`](docs/15-refactoring-progress.md)                 | Прогресс рефакторинга              |
-| [`16-coding-conventions.md`](docs/16-coding-conventions.md)                     | Соглашения по коду                 |
+| Файл                                                        | Описание            |
+| ----------------------------------------------------------- | ------------------- |
+| [`project-overview.md`](docs/project-overview.md)           | Обзор проекта       |
+| [`tooling-and-linting.md`](docs/tooling-and-linting.md)     | Тулинг и линтинг    |
+| [`ui-kit-and-components.md`](docs/ui-kit-and-components.md) | UI-кит и компоненты |
+| [`api-layer.md`](docs/api-layer.md)                         | API-слой            |
+| [`routing.md`](docs/routing.md)                             | Роутинг             |
+| [`deployment.md`](docs/deployment.md)                       | Деплой              |
+| [`css-design-tokens.md`](docs/css-design-tokens.md)         | SCSS дизайн-токены  |
+| [`coding-conventions.md`](docs/coding-conventions.md)       | Соглашения по коду  |
+| [`testing.md`](docs/testing.md)                             | Тестирование и TDD  |
 
 ## Технологии
 
@@ -90,10 +81,10 @@ src/
 │   └── UiSelect/  # Компонент выбора (composables/, components/)
 ├── composables/   # Общие composables (useProjectFilters, useDragReorder, useConfirm, useInitialFetch)
 ├── pages/         # Страницы — каждая в папке с composables/ и components/
-│   ├── ResourcePlan/   # Таблица распределения (294 строки)
-│   ├── Projects/       # Управление проектами (119 строк)
-│   ├── Groups/         # Управление группами (82 строки)
-│   └── DataManage/     # Импорт/экспорт данных (110 строк)
+│   ├── ResourcePlan/   # Таблица распределения
+│   ├── Projects/       # Управление проектами
+│   ├── Groups/         # Управление группами
+│   └── DataManage/     # Импорт/экспорт данных
 ├── stores/        # Pinia сторы
 │   ├── projects.ts     # useProjectsStore — проекты
 │   ├── groups.ts       # useGroupsStore — группы ресурсов
@@ -113,7 +104,7 @@ src/
 
 ## Важно
 
-- **Следуй [`docs/16-coding-conventions.md`](docs/16-coding-conventions.md)** — основной документ по стилю кода
+- **Следуй [`docs/coding-conventions.md`](docs/coding-conventions.md)** — основной документ по стилю кода
 - Компонент не более **300 строк** — декомпозируй при превышении
 - TypeScript **strict mode**, никакого `any`
 - Стили по **БЭМ**, используй SCSS переменные из `src/styles/_variables.scss`
@@ -131,34 +122,35 @@ src/
 
 | Команда      | Описание                                                                                                      |
 | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| `/check`     | Регрессионное тестирование: сборка, unit/E2E тесты, API, страницы, валидация данных, качество кода             |
+| `/check`     | Регрессионное тестирование: сборка, unit/E2E тесты, API, страницы, валидация данных, качество кода            |
 | `/docs-sync` | Сверка документации `docs/*.md` и `CLAUDE.md` с фактическим состоянием кодовой базы (пути, строки, структура) |
+| `/task {N}`  | Выполнение задачи N из `docs/feature-branch/implementation-plan.md` — планирование, реализация, отчёт        |
 
 ## GitHub Project
 
-Проект [`resource_lake_refactoring`](https://github.com/users/VyacheslavBogdanov/projects/2) (номер 2) используется для трекинга фаз рефакторинга P0–P5. **Claude выполняет эти действия автоматически** — пользователю не нужно запускать команды вручную.
+Проект [`resource_lake_refactoring`](https://github.com/users/VyacheslavBogdanov/projects/2) (номер 2) используется для трекинга задач. **Claude выполняет эти действия автоматически** — пользователю не нужно запускать команды вручную.
 
 ### Реквизиты
 
-| Параметр            | Значение                              |
-| ------------------- | ------------------------------------- |
-| Project ID          | `PVT_kwHOBpIZZc4BRW3s`               |
-| Owner               | `VyacheslavBogdanov`                  |
-| Status field ID     | `PVTSSF_lAHOBpIZZc4BRW3szg_NXnk`     |
-| Status: To Do       | `17c49709`                            |
-| Status: In progress | `c849bf8b`                            |
-| Status: Done        | `e848cdcf`                            |
+| Параметр            | Значение                         |
+| ------------------- | -------------------------------- |
+| Project ID          | `PVT_kwHOBpIZZc4BRW3s`           |
+| Owner               | `VyacheslavBogdanov`             |
+| Status field ID     | `PVTSSF_lAHOBpIZZc4BRW3szg_NXnk` |
+| Status: To Do       | `17c49709`                       |
+| Status: In progress | `c849bf8b`                       |
+| Status: Done        | `e848cdcf`                       |
 
 ### Автоматический workflow
 
-#### Начало фазы
+#### Начало работы над задачами
 
-**Когда:** Claude создаёт ветку под фазу (например, `p2-store`).
-**Действие:** автоматически перевести все тикеты фазы в «In progress».
+**Когда:** Claude создаёт ветку под задачу.
+**Действие:** автоматически перевести связанные тикеты в «In progress».
 
 ```bash
-# Подставить нужный лейбл фазы (P2, P3, …)
-for ISSUE in $(gh issue list --label P2 --state open --json number --jq '.[].number'); do
+# Подставить нужный лейбл
+for ISSUE in $(gh issue list --label <LABEL> --state open --json number --jq '.[].number'); do
   ITEM_ID=$(gh project item-list 2 --owner VyacheslavBogdanov --format json \
     | jq -r ".items[] | select(.content.number == $ISSUE) | .id")
   [ -n "$ITEM_ID" ] && gh project item-edit \
@@ -170,15 +162,15 @@ for ISSUE in $(gh issue list --label P2 --state open --json number --jq '.[].num
 done
 ```
 
-#### Завершение фазы
+#### Завершение задач
 
-**Когда:** PR фазы смержен в main.
+**Когда:** PR смержен в main.
 **Действие:** автоматически закрыть тикеты с комментарием и перевести в «Done».
 
 ```bash
-# Подставить нужный лейбл фазы (P2, P3, …)
-for ISSUE in $(gh issue list --label P2 --state open --json number --jq '.[].number'); do
-  gh issue close "$ISSUE" --comment "Завершено в рамках фазы P2"
+# Подставить нужный лейбл
+for ISSUE in $(gh issue list --label <LABEL> --state open --json number --jq '.[].number'); do
+  gh issue close "$ISSUE" --comment "Завершено"
   ITEM_ID=$(gh project item-list 2 --owner VyacheslavBogdanov --format json \
     | jq -r ".items[] | select(.content.number == $ISSUE) | .id")
   [ -n "$ITEM_ID" ] && gh project item-edit \

@@ -2,7 +2,7 @@
 import BaseButton from '../../../components/ui/BaseButton.vue';
 import { useGroupForm } from '../composables/useGroupForm';
 
-const { newName, newCap, newSupport, addGroup } = useGroupForm();
+const { newName, newHeadcount, newSupport, addGroup } = useGroupForm();
 </script>
 
 <template>
@@ -10,11 +10,11 @@ const { newName, newCap, newSupport, addGroup } = useGroupForm();
 		<input class="groups__input" v-model.trim="newName" placeholder="Название группы" required />
 		<input
 			class="groups__input groups__input--num"
-			v-model.number="newCap"
+			v-model.number="newHeadcount"
 			type="number"
-			min="0"
+			min="1"
 			step="1"
-			placeholder="Часы (емкость)"
+			placeholder="Кол-во человек"
 			required
 		/>
 		<input

@@ -130,15 +130,22 @@ function generateProjects() {
 
 // --- Генерация групп ---
 
+const HOURS_PER_PERSON = 144;
+
 function generateGroups() {
-	return groupDefinitions.map((def, i) => ({
-		id: i + 1,
-		name: def.name,
-		capacityHours: roundToMultiple(randomInt(40, 400), 20),
-		supportPercent: randomInt(0, 30),
-		resourceType: def.resourceType,
-		position: i + 1,
-	}));
+	return groupDefinitions.map((def, i) => {
+		const headcount = randomInt(1, 5);
+		return {
+			id: i + 1,
+			name: def.name,
+			headcount,
+			capacityHours: headcount * HOURS_PER_PERSON,
+			description: '',
+			supportPercent: randomInt(0, 30),
+			resourceType: def.resourceType,
+			position: i + 1,
+		};
+	});
 }
 
 // --- Генерация allocations ---

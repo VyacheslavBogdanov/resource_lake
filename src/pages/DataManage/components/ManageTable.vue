@@ -19,6 +19,29 @@ function rowBuffer(buffer: Record<number, RowBuffer>, projectId: number): RowBuf
 	}
 	return buffer[projectId];
 }
+
+function projectUrl(p: Project): string | null {
+	const raw = (p.url ?? '').trim();
+	if (!raw) return null;
+	return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+}
+
+function projectHoverTitle(p: Project): string {
+	const parts: string[] = [];
+	const type = (p.projectType ?? '').trim();
+	const customer = (p.customer ?? '').trim();
+	if (type) parts.push(type);
+	if (customer) parts.push(customer);
+	const base = parts.length ? `${p.name} (${parts.join(', ')})` : p.name;
+	const description = (p.description ?? '').trim();
+	return description ? `${base} — ${description}` : base;
+}
+
+function openProjectUrl(p: Project) {
+	const url = projectUrl(p);
+	if (!url) return;
+	window.open(url, '_blank', 'noopener');
+}
 </script>
 
 <template>
@@ -44,7 +67,32 @@ function rowBuffer(buffer: Record<number, RowBuffer>, projectId: number): RowBuf
 		</thead>
 		<tbody>
 			<tr v-for="p in projects" :key="p.id" class="manage__row" :class="{ 'manage__row--archived': p.archived }">
-				<td class="manage__cell manage__cell--left">{{ p.name }}</td>
+				<td class="manage__cell manage__cell--left">
+					<div class="manage__project-header">
+						<button
+							type="button"
+							class="manage__project-link"
+							:disabled="!projectUrl(p)"
+							:title="projectUrl(p) ? 'Открыть в новом окне' : 'Ссылка не задана'"
+							@click="openProjectUrl(p)"
+							aria-label="Открыть проект в новом окне"
+						>
+							<svg
+								class="manage__project-link-icon"
+								viewBox="0 0 24 24"
+								width="16"
+								height="16"
+								aria-hidden="true"
+							>
+								<path
+									fill="currentColor"
+									d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Zm5 18H5V5h7V3H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7Z"
+								/>
+							</svg>
+						</button>
+						<span :title="projectHoverTitle(p)">{{ p.name }}</span>
+					</div>
+				</td>
 
 				<td class="manage__cell">
 					<input

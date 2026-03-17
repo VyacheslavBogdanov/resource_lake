@@ -1,4 +1,4 @@
-# 16. Соглашения по коду
+# Соглашения по коду
 
 ## Общие принципы
 
@@ -227,23 +227,31 @@ font-size: 18px;
 
 ### ESLint
 
-ESLint настроен с Vue essential rules и TypeScript config. Скрипты `lint` и `lint:fix` будут добавлены в `package.json` в фазе P0 (см. [03-tooling-and-linting.md](03-tooling-and-linting.md)).
+ESLint настроен с Vue essential rules и TypeScript config. Конфиг: `eslint.config.mjs`.
+
+```bash
+npm run lint    # ESLint --fix
+```
 
 ### Prettier
 
-Prettier настроен (`.prettierrc.json`): табы, одинарные кавычки, точки с запятой, ширина 120 символов. Скрипты `format` и `format:check` будут добавлены в `package.json` в фазе P0.
+Prettier настроен (`.prettierrc.json`): табы, одинарные кавычки, точки с запятой, ширина 120 символов.
+
+```bash
+npm run format  # Prettier --write src/
+```
 
 ### Перед коммитом
 
-После настройки скриптов (P0):
-
 ```bash
-npm run type-check && npm run lint && npm run build
+npm run lint && npm run format && npm run build
 ```
 
 ## Тестирование
 
-Тесты пока не настроены. Планируется добавить тестирование в будущем (Vitest для unit-тестов).
+**Все новые фичи разрабатываются по TDD** (Test-Driven Development): сначала тест, потом код.
+
+Подробное руководство: [`docs/testing.md`](testing.md).
 
 ## Коммиты
 

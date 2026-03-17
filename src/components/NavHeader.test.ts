@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
+import { createPinia } from 'pinia';
 import NavHeader from './NavHeader.vue';
 import { RouteNames } from '../router/names';
 
@@ -22,7 +23,7 @@ describe('NavHeader', () => {
 		await router.push('/plan');
 		await router.isReady();
 
-		const wrapper = mount(NavHeader, { global: { plugins: [router] } });
+		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
 		const links = wrapper.findAll('.header__link');
 		expect(links).toHaveLength(4);
 	});
@@ -32,7 +33,7 @@ describe('NavHeader', () => {
 		await router.push('/plan');
 		await router.isReady();
 
-		const wrapper = mount(NavHeader, { global: { plugins: [router] } });
+		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
 		const links = wrapper.findAll('.header__link');
 		const hrefs = links.map((l) => l.attributes('href'));
 		expect(hrefs).toContain('/plan');
@@ -46,7 +47,7 @@ describe('NavHeader', () => {
 		await router.push('/plan');
 		await router.isReady();
 
-		const wrapper = mount(NavHeader, { global: { plugins: [router] } });
+		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
 		// .env has VITE_HELP_URL set, so help icon should be visible
 		const help = wrapper.find('.header__help');
 		expect(help.exists()).toBe(true);
@@ -59,7 +60,7 @@ describe('NavHeader', () => {
 		await router.push('/plan');
 		await router.isReady();
 
-		const wrapper = mount(NavHeader, { global: { plugins: [router] } });
+		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
 		expect(wrapper.find('header.header').exists()).toBe(true);
 		expect(wrapper.find('nav.header__nav').exists()).toBe(true);
 	});

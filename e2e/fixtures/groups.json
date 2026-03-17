@@ -2,7 +2,9 @@
   "groups": [
     {
       "name": "Frontend",
-      "capacityHours": 200,
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
       "supportPercent": 10,
       "position": 1,
       "id": 1,
@@ -10,7 +12,9 @@
     },
     {
       "name": "Backend",
-      "capacityHours": 300,
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
       "supportPercent": 20,
       "position": 2,
       "id": 2,

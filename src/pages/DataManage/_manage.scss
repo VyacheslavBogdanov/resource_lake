@@ -45,6 +45,63 @@
 		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
 	}
 
+	&__group-info {
+		margin-bottom: 14px;
+		padding: 10px 14px;
+		background: $color-bg-subtle;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+	}
+
+	&__group-info-desc {
+		margin: 0 0 6px;
+		color: $color-text-muted;
+		font-size: $font-size-sm;
+	}
+
+	&__group-info-stats {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		font-size: $font-size-sm;
+		color: $color-text-secondary;
+	}
+
+	&__project-header {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__project-link {
+		height: 28px;
+		width: 28px;
+		min-width: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		border: 1px solid $color-border-alt;
+		background: $color-bg-surface;
+		color: $color-highlight;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	&__project-link:hover:not(:disabled) {
+		background: $color-bg-row-hover;
+		border-color: $color-border-hover;
+	}
+
+	&__project-link:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+	}
+
+	&__project-link-icon {
+		display: block;
+	}
+
 	&__table {
 		width: 100%;
 		background: $color-bg-surface;
