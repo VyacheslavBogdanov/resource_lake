@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BaseButton from '../../../components/ui/BaseButton.vue';
 import FilterPanel from '../../../components/shared/FilterPanel.vue';
 import type { ViewMode, Quarter } from '../composables/useViewMode';
 
@@ -30,8 +29,6 @@ defineEmits<{
 
 <template>
 	<div class="plan__toolbar">
-		<BaseButton variant="primary" @click="$emit('exportCsv')">Выгрузить в CSV</BaseButton>
-
 		<div class="plan__actions" v-if="hasData">
 			<div class="plan__row-type-switch">
 				<span class="plan__switch-label" :class="{ 'plan__switch-label--active': !displayByResourceType }">
@@ -107,18 +104,35 @@ defineEmits<{
 					</div>
 				</div>
 
-				<FilterPanel
-					:customer-options="customerOptions"
-					:manager-options="managerOptions"
-					:selected-customers="selectedCustomers"
-					:selected-managers="selectedManagers"
-					:has-active-filters="hasActiveFilters"
-					:filtered-count="filteredProjectsCount"
-					:total-count="totalProjectsCount"
-					@update:selected-customers="$emit('update:selectedCustomers', $event)"
-					@update:selected-managers="$emit('update:selectedManagers', $event)"
-					@reset="$emit('resetFilters')"
-				/>
+				<div class="plan__filter-group">
+					<button
+						type="button"
+						class="plan__csv-btn"
+						title="Выгрузить в CSV"
+						aria-label="Выгрузить в CSV"
+						@click="$emit('exportCsv')"
+					>
+						<svg class="plan__csv-btn-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+							<path
+								fill="currentColor"
+								d="M17 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4Zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3Zm3-10H5V5h10v4Z"
+							/>
+						</svg>
+					</button>
+
+					<FilterPanel
+						:customer-options="customerOptions"
+						:manager-options="managerOptions"
+						:selected-customers="selectedCustomers"
+						:selected-managers="selectedManagers"
+						:has-active-filters="hasActiveFilters"
+						:filtered-count="filteredProjectsCount"
+						:total-count="totalProjectsCount"
+						@update:selected-customers="$emit('update:selectedCustomers', $event)"
+						@update:selected-managers="$emit('update:selectedManagers', $event)"
+						@reset="$emit('resetFilters')"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
