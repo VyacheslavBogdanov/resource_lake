@@ -3,6 +3,7 @@ import { api } from '../services/http';
 import type { Project, Allocation } from '../types/domain';
 import { sortProjectsForView } from './utils';
 import { useAllocationsStore } from './allocations';
+import { useUiStore } from './ui';
 
 type ProjectField = 'url' | 'name' | 'customer' | 'projectType' | 'projectManager' | 'description';
 
@@ -59,6 +60,7 @@ export const useProjectsStore = defineStore('projects', {
 				await api.create<Project>('projects', payload);
 				const projects = await api.list<Project>('projects');
 				this.items = sortProjectsForView(projects);
+				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error('Ошибка при добавлении проекта:', err);
 				throw err;
@@ -70,6 +72,7 @@ export const useProjectsStore = defineStore('projects', {
 				await api.update<Project>('projects', id, { archived });
 				const projects = await api.list<Project>('projects');
 				this.items = sortProjectsForView(projects);
+				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error('Ошибка при архивации проекта:', err);
 				throw err;
@@ -87,6 +90,7 @@ export const useProjectsStore = defineStore('projects', {
 				await api.update<Project>('projects', id, { [field]: trimmed || '' });
 				const projects = await api.list<Project>('projects');
 				this.items = sortProjectsForView(projects);
+				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error(`Ошибка при обновлении поля ${field} проекта:`, err);
 				throw err;
@@ -107,6 +111,7 @@ export const useProjectsStore = defineStore('projects', {
 				]);
 				this.items = sortProjectsForView(projects);
 				allocationsStore.items = allocations;
+				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error('Ошибка при удалении проекта:', err);
 				throw err;
@@ -143,6 +148,7 @@ export const useProjectsStore = defineStore('projects', {
 				}
 
 				this.items = sortProjectsForView(this.items);
+				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error('Ошибка при переупорядочивании проектов:', err);
 				throw err;

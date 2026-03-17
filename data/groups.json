@@ -1,16 +1,6 @@
 {
   "groups": [
     {
-      "id": 1,
-      "name": "Frontend",
-      "headcount": 2,
-      "capacityHours": 288,
-      "description": "Frontendыффвывыфвыффыорвроыфивлыфоиволфыивлофылвыфивлоыфивллфоывилфывифыовифлыовифыв",
-      "supportPercent": 11,
-      "resourceType": "Программист",
-      "position": 1
-    },
-    {
       "id": 2,
       "name": "Backend",
       "headcount": 4,
@@ -149,6 +139,15 @@
       "supportPercent": 20,
       "resourceType": "Программист",
       "position": 15
+    },
+    {
+      "name": "111",
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 0,
+      "position": 16,
+      "id": 16
     }
   ]
 }

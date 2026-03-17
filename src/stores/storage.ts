@@ -1,5 +1,23 @@
 import { HIDDEN_GROUPS_STORAGE_KEY } from './constants';
 
+export function loadUpdatedAt(key: string): string | null {
+	if (typeof window === 'undefined') return null;
+	try {
+		return localStorage.getItem(key);
+	} catch {
+		return null;
+	}
+}
+
+export function saveUpdatedAt(key: string): void {
+	if (typeof window === 'undefined') return;
+	try {
+		localStorage.setItem(key, new Date().toISOString());
+	} catch {
+		// Игнорируем ошибки сохранения
+	}
+}
+
 export function loadHiddenGroupIds(): number[] {
 	if (typeof window === 'undefined') return [];
 

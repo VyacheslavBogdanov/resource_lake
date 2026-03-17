@@ -55,6 +55,7 @@ export const useGroupsStore = defineStore('groups', {
 					position,
 				});
 				this.items = sortByPosition(await api.list<Group>('groups'));
+				useUiStore().touchGroupsDate();
 			} catch (err) {
 				console.error('Ошибка при добавлении группы:', err);
 				throw err;
@@ -119,6 +120,7 @@ export const useGroupsStore = defineStore('groups', {
 
 				await api.update('groups', id, body);
 				this.items = sortByPosition(await api.list<Group>('groups'));
+				useUiStore().touchGroupsDate();
 			} catch (err) {
 				console.error('Ошибка при обновлении группы:', err);
 				throw err;
@@ -137,6 +139,7 @@ export const useGroupsStore = defineStore('groups', {
 					await Promise.all(changed.map((u) => api.update('groups', u.id, { position: u.position })));
 				}
 				this.items = sortByPosition(await api.list<Group>('groups'));
+				useUiStore().touchGroupsDate();
 			} catch (err) {
 				console.error('Ошибка при обновлении позиций групп:', err);
 				throw err;
@@ -160,6 +163,7 @@ export const useGroupsStore = defineStore('groups', {
 				this.items = sortByPosition(groups);
 				allocationsStore.items = allocations;
 				uiStore.removeGroup(id);
+				uiStore.touchGroupsDate();
 			} catch (err) {
 				console.error('Ошибка при удалении группы:', err);
 				throw err;

@@ -117,9 +117,9 @@
 
 Кнопку «Выгрузить в CSV» переместить вправо рядом с кнопкой «Фильтр», сделать в виде иконки.
 
-- [ ] В `PlanToolbar.vue` — удалить текстовую BaseButton (строка 33), добавить кнопку-иконку `.plan__csv-btn` рядом с FilterPanel в `.plan__actions-row`
-- [ ] В `_plan.scss` — стили для `.plan__csv-btn` (32×32, круглая, border, SVG иконка)
-- [ ] Ручная проверка: иконка CSV рядом с фильтром, экспорт работает
+- [x] В `PlanToolbar.vue` — удалить текстовую BaseButton, добавить кнопку-иконку `.plan__csv-btn` внутри `.plan__filter-group` рядом с FilterPanel
+- [x] В `_plan.scss` — стили для `.plan__csv-btn` (28×28, border, SVG иконка) и `.plan__filter-group` (flex, margin-left: auto — прижимает пару вправо)
+- [x] Ручная проверка: иконка CSV рядом с фильтром, экспорт работает
 
 **Файлы:** `src/pages/ResourcePlan/components/PlanToolbar.vue`, `src/pages/ResourcePlan/_plan.scss`
 
@@ -129,15 +129,15 @@
 
 В навбаре справа показать дату актуализации данных. Для /projects — дата проектов, /groups — групп, /manage — allocations. На /plan не показывать.
 
-- [ ] В `src/stores/constants.ts` — ключи localStorage: `UPDATED_AT_PROJECTS`, `UPDATED_AT_GROUPS`, `UPDATED_AT_ALLOCATIONS`
-- [ ] В `src/stores/storage.ts` — функции `loadUpdatedAt()`, `saveUpdatedAt()`
-- [ ] В `src/stores/ui.ts` — state для 3 дат, actions `touchProjectsDate()`, `touchGroupsDate()`, `touchAllocationsDate()`
-- [ ] В `src/stores/projects.ts` — вызвать `touchProjectsDate()` в мутирующих actions
-- [ ] В `src/stores/groups.ts` — вызвать `touchGroupsDate()` в мутирующих actions
-- [ ] В `src/stores/allocations.ts` — вызвать `touchAllocationsDate()` в мутирующих actions
-- [ ] В `NavHeader.vue` — computed по `route.name`: выбрать дату из ui store, отформатировать `toLocaleString('ru-RU')`, показать `<span class="header__updated">`
-- [ ] Ручная проверка: даты обновляются при изменениях, отображаются на нужных страницах
-- [ ] Проверить, что на /plan дата не показывается
+- [x] В `src/stores/constants.ts` — ключи localStorage: `UPDATED_AT_PROJECTS`, `UPDATED_AT_GROUPS`, `UPDATED_AT_ALLOCATIONS`
+- [x] В `src/stores/storage.ts` — функции `loadUpdatedAt()`, `saveUpdatedAt()`
+- [x] В `src/stores/ui.ts` — state для 3 дат, actions `touchProjectsDate()`, `touchGroupsDate()`, `touchAllocationsDate()`
+- [x] В `src/stores/projects.ts` — вызвать `touchProjectsDate()` в мутирующих actions
+- [x] В `src/stores/groups.ts` — вызвать `touchGroupsDate()` в мутирующих actions
+- [x] В `src/stores/allocations.ts` — вызвать `touchAllocationsDate()` в мутирующих actions
+- [x] В `NavHeader.vue` — computed по `route.name`: выбрать дату из ui store, отформатировать `toLocaleString('ru-RU')`, показать `<span class="header__updated">`
+- [x] Ручная проверка: даты обновляются при изменениях, отображаются на нужных страницах
+- [x] Проверить, что на /plan дата не показывается
 
 **Файлы:** `src/stores/constants.ts`, `src/stores/storage.ts`, `src/stores/ui.ts`, `src/stores/projects.ts`, `src/stores/groups.ts`, `src/stores/allocations.ts`, `src/components/NavHeader.vue`
 
