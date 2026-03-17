@@ -115,7 +115,7 @@ test.describe('Страница «План ресурсов»', () => {
 
 		const [download] = await Promise.all([
 			page.waitForEvent('download'),
-			page.click('button:has-text("CSV")'),
+			page.click('.plan__csv-btn'),
 		]);
 
 		expect(download.suggestedFilename()).toMatch(/\.csv$/);

@@ -1,12 +1,22 @@
 {
   "groups": [
     {
+      "id": 1,
+      "name": "Frontend",
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 5,
+      "resourceType": "Программист",
+      "position": 1
+    },
+    {
       "id": 2,
       "name": "Backend",
       "headcount": 4,
       "capacityHours": 576,
       "description": "",
-      "supportPercent": 9,
+      "supportPercent": 2,
       "resourceType": "Программист",
       "position": 2
     },
@@ -16,37 +26,37 @@
       "headcount": 4,
       "capacityHours": 576,
       "description": "",
-      "supportPercent": 26,
+      "supportPercent": 10,
       "resourceType": "Тестировщик",
       "position": 3
     },
     {
       "id": 4,
       "name": "DevOps",
-      "headcount": 1,
-      "capacityHours": 144,
+      "headcount": 2,
+      "capacityHours": 288,
       "description": "",
-      "supportPercent": 2,
+      "supportPercent": 18,
       "resourceType": "Программист",
       "position": 4
     },
     {
       "id": 5,
       "name": "Mobile",
-      "headcount": 5,
-      "capacityHours": 720,
+      "headcount": 4,
+      "capacityHours": 576,
       "description": "",
-      "supportPercent": 29,
+      "supportPercent": 26,
       "resourceType": "Программист",
       "position": 5
     },
     {
       "id": 6,
       "name": "UX/UI",
-      "headcount": 4,
-      "capacityHours": 576,
+      "headcount": 1,
+      "capacityHours": 144,
       "description": "",
-      "supportPercent": 7,
+      "supportPercent": 30,
       "resourceType": "Дизайнер",
       "position": 6
     },
@@ -56,27 +66,27 @@
       "headcount": 4,
       "capacityHours": 576,
       "description": "",
-      "supportPercent": 10,
+      "supportPercent": 25,
       "resourceType": "Программист",
       "position": 7
     },
     {
       "id": 8,
       "name": "ML",
-      "headcount": 2,
-      "capacityHours": 288,
+      "headcount": 1,
+      "capacityHours": 144,
       "description": "",
-      "supportPercent": 6,
+      "supportPercent": 21,
       "resourceType": "Аналитик",
       "position": 8
     },
     {
       "id": 9,
       "name": "Security",
-      "headcount": 3,
-      "capacityHours": 432,
+      "headcount": 1,
+      "capacityHours": 144,
       "description": "",
-      "supportPercent": 28,
+      "supportPercent": 10,
       "resourceType": "Программист",
       "position": 9
     },
@@ -86,7 +96,7 @@
       "headcount": 4,
       "capacityHours": 576,
       "description": "",
-      "supportPercent": 6,
+      "supportPercent": 27,
       "resourceType": "Программист",
       "position": 10
     },
@@ -96,37 +106,37 @@
       "headcount": 1,
       "capacityHours": 144,
       "description": "",
-      "supportPercent": 14,
+      "supportPercent": 25,
       "resourceType": "Конструктор",
       "position": 11
     },
     {
       "id": 12,
       "name": "Analytics",
-      "headcount": 2,
-      "capacityHours": 288,
+      "headcount": 5,
+      "capacityHours": 720,
       "description": "",
-      "supportPercent": 7,
+      "supportPercent": 11,
       "resourceType": "Аналитик",
       "position": 12
     },
     {
       "id": 13,
       "name": "Embedded",
-      "headcount": 5,
-      "capacityHours": 720,
+      "headcount": 4,
+      "capacityHours": 576,
       "description": "",
-      "supportPercent": 27,
+      "supportPercent": 4,
       "resourceType": "Конструктор",
       "position": 13
     },
     {
       "id": 14,
       "name": "Platform",
-      "headcount": 5,
-      "capacityHours": 720,
+      "headcount": 1,
+      "capacityHours": 144,
       "description": "",
-      "supportPercent": 13,
+      "supportPercent": 20,
       "resourceType": "Программист",
       "position": 14
     },
@@ -136,18 +146,9 @@
       "headcount": 2,
       "capacityHours": 288,
       "description": "",
-      "supportPercent": 20,
+      "supportPercent": 22,
       "resourceType": "Программист",
       "position": 15
-    },
-    {
-      "name": "111",
-      "headcount": 2,
-      "capacityHours": 288,
-      "description": "",
-      "supportPercent": 0,
-      "position": 16,
-      "id": 16
     }
   ]
 }
