@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BaseButton from '../../../components/ui/BaseButton.vue';
-import { HOURS_PER_PERSON } from '../../../stores/constants';
+import { HOURS_PER_PERSON, MONTHS_IN_A_QUARTER } from '../../../stores/constants';
 import type { Group } from '../../../types/domain';
 
 defineProps<{
@@ -155,7 +155,9 @@ function onEditResourceTypeInput(e: Event) {
 		<td class="groups__cell" :class="{ 'groups__cell--editing': editingId === group.id }">
 			<div class="groups__cell-inner">
 				<span class="groups__text groups__text--computed">{{
-					editingId === group.id ? (editHeadcount ?? 0) * HOURS_PER_PERSON : group.capacityHours
+					editingId === group.id
+						? (editHeadcount ?? 0) * HOURS_PER_PERSON * MONTHS_IN_A_QUARTER
+						: group.capacityHours
 				}}</span>
 			</div>
 		</td>

@@ -4,7 +4,7 @@ import type { Group, Allocation } from '../types/domain';
 import { sortByPosition } from './utils';
 import { useAllocationsStore } from './allocations';
 import { useUiStore } from './ui';
-import { HOURS_PER_PERSON } from './constants';
+import { HOURS_PER_PERSON, MONTHS_IN_A_QUARTER } from './constants';
 
 export const useGroupsStore = defineStore('groups', {
 	state: () => ({
@@ -44,7 +44,7 @@ export const useGroupsStore = defineStore('groups', {
 			try {
 				const maxPos = this.items.reduce((m, g) => Math.max(m, Number(g.position ?? g.id) || 0), 0);
 				const position = maxPos + 1;
-				const capacityHours = headcount * HOURS_PER_PERSON;
+				const capacityHours = headcount * HOURS_PER_PERSON * MONTHS_IN_A_QUARTER;
 
 				await api.create<Group>('groups', {
 					name,
@@ -100,7 +100,7 @@ export const useGroupsStore = defineStore('groups', {
 						throw new Error('Количество людей должно быть целым числом ≥ 0');
 					}
 					body.headcount = patch.headcount;
-					body.capacityHours = patch.headcount * HOURS_PER_PERSON;
+					body.capacityHours = patch.headcount * HOURS_PER_PERSON * MONTHS_IN_A_QUARTER;
 				}
 
 				if (typeof patch.description === 'string') {
