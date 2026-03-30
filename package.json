@@ -1,5 +1,6 @@
 {
 	"name": "resource-planner",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "concurrently \"npm:dev:client\" \"npm:dev:api\"",

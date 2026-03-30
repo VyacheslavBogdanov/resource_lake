@@ -5,6 +5,7 @@ import { RouteNames } from '../router/names';
 import { useUiStore } from '../stores/ui';
 
 const helpUrl = import.meta.env.VITE_HELP_URL || '';
+const versionLabel = `v${__APP_VERSION__} (${__APP_COMMIT__} · ${__APP_BUILD_DATE__})`;
 const route = useRoute();
 const uiStore = useUiStore();
 
@@ -28,6 +29,7 @@ const updatedLabel = computed((): string | null => {
 			<RouterLink class="header__link" :to="{ name: RouteNames.Manage }">Управление данными</RouterLink>
 		</nav>
 		<span v-if="updatedLabel" class="header__updated">Обновлено: {{ updatedLabel }}</span>
+		<span class="header__version">{{ versionLabel }}</span>
 		<a
 			v-if="helpUrl"
 			:href="helpUrl"
@@ -75,6 +77,14 @@ const updatedLabel = computed((): string | null => {
 		opacity: 0.75;
 		font-size: 13px;
 		white-space: nowrap;
+	}
+	&__version {
+		margin-left: auto;
+		color: $color-text-inverse;
+		opacity: 0.5;
+		font-size: $font-size-xs;
+		white-space: nowrap;
+		padding-right: 12px;
 	}
 	&__help {
 		color: $color-text-inverse;

@@ -55,6 +55,17 @@ describe('NavHeader', () => {
 		expect(help.attributes('target')).toBe('_blank');
 	});
 
+	it('отображает версию приложения', async () => {
+		const router = createTestRouter();
+		await router.push('/plan');
+		await router.isReady();
+
+		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
+		const version = wrapper.find('.header__version');
+		expect(version.exists()).toBe(true);
+		expect(version.text()).toContain('v0.0.0-test');
+	});
+
 	it('renders nav element with correct structure', async () => {
 		const router = createTestRouter();
 		await router.push('/plan');
