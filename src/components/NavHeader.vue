@@ -1,11 +1,35 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { RouteNames } from '../router/names';
+import { useUiStore } from '../stores/ui';
+
+const helpUrl = import.meta.env.VITE_HELP_URL || '';
+const versionLabel = `v${__APP_VERSION__} (${__APP_COMMIT__} · ${__APP_BUILD_DATE__})`;
+const route = useRoute();
+const uiStore = useUiStore();
+
+const updatedLabel = computed((): string | null => {
+	const name = route.name;
+	let iso: string | null = null;
+	if (name === RouteNames.Projects) iso = uiStore.updatedAtProjects;
+	else if (name === RouteNames.Groups) iso = uiStore.updatedAtGroups;
+	else if (name === RouteNames.Manage) iso = uiStore.updatedAtAllocations;
+	if (!iso) return null;
+	return new Date(iso).toLocaleString('ru-RU');
+});
+</script>
+
 <template>
 	<header class="header">
 		<nav class="header__nav">
-			<RouterLink class="header__link" to="/plan">Ресурсный план</RouterLink>
-			<RouterLink class="header__link" to="/projects">Проекты</RouterLink>
-			<RouterLink class="header__link" to="/groups">Группы ресурсов</RouterLink>
-			<RouterLink class="header__link" to="/manage">Управление данными</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Plan }">Ресурсный план</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Projects }">Проекты</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Groups }">Группы ресурсов</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.Manage }">Управление данными</RouterLink>
 		</nav>
+		<span v-if="updatedLabel" class="header__updated">Обновлено: {{ updatedLabel }}</span>
+		<span class="header__version">{{ versionLabel }}</span>
 		<a
 			v-if="helpUrl"
 			:href="helpUrl"
@@ -24,13 +48,9 @@
 	</header>
 </template>
 
-<script setup lang="ts">
-const helpUrl = import.meta.env.VITE_HELP_URL || '';
-</script>
-
 <style lang="scss" scoped>
 .header {
-	background: var(--blue-600);
+	background: $color-primary-600;
 	padding: 12px 16px;
 	display: flex;
 	align-items: center;
@@ -41,17 +61,33 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 		flex-wrap: wrap;
 	}
 	&__link {
-		color: #fff;
+		color: $color-text-inverse;
 		text-decoration: none;
 		font-weight: 600;
 		padding: 6px 10px;
 		border-radius: 8px;
 		&.router-link-active {
-			background: var(--blue-700);
+			background: $color-primary-700;
 		}
 	}
+	&__updated {
+		padding-right: 20px;
+		margin-left: auto;
+		color: $color-text-inverse;
+		opacity: 0.75;
+		font-size: 13px;
+		white-space: nowrap;
+	}
+	&__version {
+		margin-left: auto;
+		color: $color-text-inverse;
+		opacity: 0.5;
+		font-size: $font-size-xs;
+		white-space: nowrap;
+		padding-right: 12px;
+	}
 	&__help {
-		color: #fff;
+		color: $color-text-inverse;
 		opacity: 0.85;
 		transition: opacity 0.15s;
 		display: flex;
@@ -60,7 +96,7 @@ const helpUrl = import.meta.env.VITE_HELP_URL || '';
 		border-radius: 8px;
 		&:hover {
 			opacity: 1;
-			background: var(--blue-700);
+			background: $color-primary-700;
 		}
 	}
 }

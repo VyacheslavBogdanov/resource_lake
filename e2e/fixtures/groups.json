@@ -1,0 +1,24 @@
+{
+  "groups": [
+    {
+      "name": "Frontend",
+      "headcount": 1,
+      "capacityHours": 144,
+      "description": "",
+      "supportPercent": 10,
+      "position": 1,
+      "id": 1,
+      "resourceType": "Программист"
+    },
+    {
+      "name": "Backend",
+      "headcount": 2,
+      "capacityHours": 288,
+      "description": "",
+      "supportPercent": 20,
+      "position": 2,
+      "id": 2,
+      "resourceType": "Программист"
+    }
+  ]
+}

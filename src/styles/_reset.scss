@@ -1,0 +1,41 @@
+@use 'variables' as *;
+
+:root {
+	--blue-600: #{$color-primary-600};
+	--blue-700: #{$color-primary-700};
+}
+
+* {
+	box-sizing: border-box;
+}
+html,
+body,
+#app {
+	height: 100%;
+	background: $color-bg-page;
+	color: $color-text-primary;
+	font-family:
+		system-ui,
+		-apple-system,
+		Segoe UI,
+		Roboto,
+		Ubuntu,
+		Cantarell,
+		'Helvetica Neue',
+		Arial,
+		'Noto Sans';
+}
+h1 {
+	font-size: $font-size-xl;
+	margin: 0 0 4px;
+}
+table {
+	width: 100%;
+}
+th,
+td {
+	font-size: $font-size-base;
+}
+small {
+	font-size: $font-size-xs;
+}

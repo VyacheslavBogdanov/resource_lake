@@ -1,0 +1,37 @@
+{
+  "projects": [
+    {
+      "name": "Проект Альфа",
+      "archived": false,
+      "order": 0,
+      "url": "https://alpha.test",
+      "customer": "Заказчик А",
+      "projectType": "Разработка",
+      "projectManager": "Иванов",
+      "description": "Первый проект",
+      "id": 1
+    },
+    {
+      "name": "Проект Бета",
+      "archived": false,
+      "order": 1,
+      "url": "",
+      "customer": "Заказчик Б",
+      "projectType": "Поддержка",
+      "projectManager": "Петров",
+      "description": "Второй проект",
+      "id": 2
+    },
+    {
+      "name": "Проект Архив",
+      "archived": true,
+      "order": 2,
+      "url": "",
+      "customer": "Заказчик А",
+      "projectType": "Разработка",
+      "projectManager": "Иванов",
+      "description": "Архивный проект",
+      "id": 3
+    }
+  ]
+}

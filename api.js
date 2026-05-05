@@ -22,6 +22,21 @@ server.use(
 	}),
 );
 
+server.post('/__seed', (req, res) => {
+	const { projects, groups, allocations } = req.body;
+	routerProjects.db.setState({ projects }).write();
+	routerGroups.db.setState({ groups }).write();
+	routerAllocations.db.setState({ allocations }).write();
+	res.json({ ok: true, projects: projects.length, groups: groups.length, allocations: allocations.length });
+});
+
+server.post('/__reset', (_req, res) => {
+	routerProjects.db.setState({ projects: [] }).write();
+	routerGroups.db.setState({ groups: [] }).write();
+	routerAllocations.db.setState({ allocations: [] }).write();
+	res.json({ ok: true });
+});
+
 server.use('/p', routerProjects);
 server.use('/g', routerGroups);
 server.use('/a', routerAllocations);

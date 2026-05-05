@@ -1,0 +1,11 @@
+@mixin truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin focus-ring {
+	outline: none;
+	border-color: $color-primary-600;
+	box-shadow: $shadow-focus;
+}
