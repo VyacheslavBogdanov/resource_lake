@@ -4,7 +4,6 @@ import { useProjectsStore } from '../../stores/projects';
 import { useGroupsStore } from '../../stores/groups';
 import { useProjectFilters } from '../../composables/useProjectFilters';
 import { roundInt } from '../../utils/format';
-import type { Project } from '../../types/domain';
 
 import { useViewMode, quarterNumbers } from './composables/useViewMode';
 import { useGroupVisibility, type TableColumn } from './composables/useGroupVisibility';
@@ -115,17 +114,6 @@ function openProjectUrl(p: { url?: string }) {
 	const url = projectUrl(p);
 	if (!url) return;
 	window.open(url, '_blank', 'noopener');
-}
-
-function projectHoverTitle(p: Project): string {
-	const parts: string[] = [];
-	const type = (p.projectType ?? '').trim();
-	const customer = (p.customer ?? '').trim();
-	if (type) parts.push(type);
-	if (customer) parts.push(customer);
-	const base = parts.length ? `${p.name} (${parts.join(', ')})` : p.name;
-	const description = (p.description ?? '').trim();
-	return description ? `${base} — ${description}` : base;
 }
 
 function projectTotalDisplay(projectId: number, archived?: boolean): string {
@@ -247,7 +235,6 @@ const { chartRows } = useChartData({
 							:is-selected="selectedProjectId === p.id"
 							:is-without-resources="isProjectWithoutResources(p.id, p.archived)"
 							:project-url="projectUrl(p)"
-							:project-hover-title="projectHoverTitle(p)"
 							:project-total-display="projectTotalDisplay(p.id, p.archived)"
 							:project-share-display="projectShareDisplay(p.id, p.archived)"
 							:is-column-over-capacity="isColumnOverCapacity"

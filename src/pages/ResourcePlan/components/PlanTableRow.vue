@@ -1,19 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { Project } from '../../../types/domain';
 import type { ViewMode, Quarter } from '../composables/useViewMode';
 import { quarterLabel } from '../composables/useViewMode';
 import type { TableColumn } from '../composables/useGroupVisibility';
+import { buildProjectTooltipLines } from '../composables/useProjectTooltip';
+import BaseTooltip from '../../../components/ui/BaseTooltip.vue';
 
 const quarterNumbers = [1, 2, 3, 4] as const;
 
-defineProps<{
+const props = defineProps<{
 	project: Project;
 	viewMode: ViewMode;
 	tableColumns: TableColumn[];
 	isSelected: boolean;
 	isWithoutResources: boolean;
 	projectUrl: string | null;
-	projectHoverTitle: string;
 	projectTotalDisplay: string;
 	projectShareDisplay: string;
 	isColumnOverCapacity: (col: TableColumn) => boolean;
@@ -21,6 +23,8 @@ defineProps<{
 	cellValueByColumn: (projectId: number, col: TableColumn, archived?: boolean) => number;
 	getQuarterCellByColumn: (projectId: number, col: TableColumn, q: Quarter, archived?: boolean) => number;
 }>();
+
+const tooltipLines = computed(() => buildProjectTooltipLines(props.project));
 
 defineEmits<{
 	click: [id: number];
@@ -62,9 +66,9 @@ defineEmits<{
 						</svg>
 					</button>
 
-					<span class="plan__project-name" :title="projectHoverTitle">
+					<BaseTooltip class="plan__project-name" :lines="tooltipLines">
 						{{ project.name }}
-					</span>
+					</BaseTooltip>
 
 					<span
 						v-if="isWithoutResources"

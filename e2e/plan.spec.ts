@@ -89,6 +89,20 @@ test.describe('Страница «План ресурсов»', () => {
 		await expect(page.locator('.plan__project-name:has-text("Проект Альфа")')).toBeHidden();
 	});
 
+	test('тултип проекта показывает заказчика и руководителя проекта', async ({ page }) => {
+		await page.goto('/plan');
+		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
+
+		await page.locator('.plan__project-name:has-text("Проект Альфа")').hover();
+
+		const tooltip = page.locator('.base-tooltip__bubble');
+		await expect(tooltip).toBeVisible({ timeout: 5_000 });
+		await expect(tooltip).toContainText('Проект: Проект Альфа');
+		await expect(tooltip).toContainText('Тип: Разработка');
+		await expect(tooltip).toContainText('Заказчик: Заказчик А');
+		await expect(tooltip).toContainText('РП: Иванов');
+	});
+
 	test('показ/скрытие группы через диаграмму', async ({ page }) => {
 		await page.goto('/plan');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });

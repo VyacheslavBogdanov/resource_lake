@@ -75,7 +75,7 @@ json-server обслуживает три JSON-файла из `data/` как RE
 ```
 src/
 ├── components/
-│   ├── ui/        # UI-кит (BaseButton, BaseInput, ConfirmDialog)
+│   ├── ui/        # UI-кит (BaseButton, BaseInput, BaseTooltip, ConfirmDialog)
 │   ├── shared/    # Общие компоненты (FilterPanel)
 │   ├── NavHeader.vue
 │   └── UiSelect/  # Компонент выбора (composables/, components/)

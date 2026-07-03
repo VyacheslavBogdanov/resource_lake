@@ -73,8 +73,8 @@ resource-planner/
 │   ├── pages/
 │   │   ├── ResourcePlan/           # Основная таблица распределения
 │   │   │   ├── ResourcePlan.vue
-│   │   │   ├── composables/        # useViewMode, useGroupVisibility, useColumnTotals,
-│   │   │   │                       # useCsvExport, useTableScroll, useProjectSort, useChartData
+│   │   │   ├── composables/        # useViewMode, useGroupVisibility, useColumnTotals, useCsvExport,
+│   │   │   │                       # useTableScroll, useProjectSort, useChartData, useProjectTooltip
 │   │   │   └── components/         # PlanToolbar, PlanTableHeader, PlanTableRow,
 │   │   │                           # PlanTableFooter, PlanCapacityChart, PlanKpis
 │   │   ├── DataManage/             # Импорт/экспорт данных
@@ -101,7 +101,7 @@ resource-planner/
 │   │   ├── http.ts                 # HTTP-клиент с retry и ApiError
 │   │   └── errors.ts               # ApiError класс
 │   ├── components/
-│   │   ├── ui/                     # UI-кит (BaseButton, BaseInput, ConfirmDialog)
+│   │   ├── ui/                     # UI-кит (BaseButton, BaseInput, BaseTooltip, ConfirmDialog)
 │   │   ├── shared/                 # Общие компоненты (FilterPanel)
 │   │   ├── NavHeader.vue           # Навигационный хедер
 │   │   └── UiSelect/               # Компонент выбора

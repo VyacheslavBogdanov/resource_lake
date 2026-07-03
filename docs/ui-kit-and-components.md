@@ -7,6 +7,7 @@ src/components/
 ├── ui/
 │   ├── BaseButton.vue         # Кнопка (primary, secondary, danger, ghost)
 │   ├── BaseInput.vue          # Инпут (text, number)
+│   ├── BaseTooltip.vue        # Тултип (тёмно-серый фон, белый текст)
 │   └── ConfirmDialog.vue      # Модальное окно подтверждения
 ├── shared/
 │   └── FilterPanel.vue        # Панель фильтрации (customer, manager)
@@ -63,6 +64,19 @@ interface Emits {
 	cancel: [];
 }
 ```
+
+### BaseTooltip
+
+Переиспользуемый кастомный тултип: тёмно-серый фон, белый текст. Триггер передаётся дефолтным слотом, содержимое — построчно через проп `lines`. Пузырёк рендерится через `Teleport` в `body` с `position: fixed`, чтобы не обрезаться контейнерами с `overflow` (например, обёрткой таблицы «Ресурсного плана»). Показывается по наведению и по фокусу с клавиатуры; имеет `role="tooltip"` и связывается с триггером через `aria-describedby`.
+
+```typescript
+interface Props {
+	lines: string[]; // строки содержимого; пустой массив — тултип не показывается
+	gap?: number; // отступ от триггера в px (default: 8)
+}
+```
+
+Пример: на «Ресурсном плане» оборачивает название проекта; строки формирует `buildProjectTooltipLines` из `pages/ResourcePlan/composables/useProjectTooltip.ts` («Проект / Тип / Заказчик / РП»).
 
 ### FilterPanel
 
