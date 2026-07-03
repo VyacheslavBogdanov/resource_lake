@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ViewMode, Quarter } from '../composables/useViewMode';
+import type { ViewMode, Quarter, CapacityDisplay } from '../composables/useViewMode';
 import { quarterLabel } from '../composables/useViewMode';
 import type { TableColumn } from '../composables/useGroupVisibility';
 import { roundInt } from '../../../utils/format';
@@ -11,12 +11,13 @@ defineProps<{
 	tableColumns: TableColumn[];
 	sortState: { field: 'group' | 'total' | null; columnId: string | null; direction: 'asc' | 'desc' };
 	headerBarsByColumn: Record<string, { fillPct: number; fillColor: string }>;
-	chartCapacityMultiplier: number;
 	effectiveCapacityByColumn: (col: TableColumn) => number;
 	isColumnOverCapacity: (col: TableColumn) => boolean;
 	isAnyQuarterOverCapacityByColumn: (col: TableColumn) => boolean;
 	isQuarterOverCapacityByColumn: (col: TableColumn, q: Quarter) => boolean;
-	columnHeaderTitle: (col: TableColumn) => string;
+	capacityDisplay: CapacityDisplay;
+	availableByColumn: (col: TableColumn) => number;
+	columnTotal: (col: TableColumn) => number;
 }>();
 
 defineEmits<{
@@ -42,11 +43,10 @@ defineEmits<{
 						'plan__th--over-bg': isColumnOverCapacity(col),
 						'plan__th--sorted': sortState.field === 'group' && sortState.columnId === col.id,
 					}"
-					:title="columnHeaderTitle(col)"
 					@click="$emit('columnSort', col.id)"
 				>
 					<div class="plan__th-inner">
-						<span class="plan__th-name" :title="columnHeaderTitle(col)">
+						<span class="plan__th-name">
 							{{ col.name }}
 							<span
 								v-if="sortState.field === 'group' && sortState.columnId === col.id"
@@ -55,10 +55,14 @@ defineEmits<{
 								{{ sortState.direction === 'asc' ? '↑' : '↓' }}
 							</span>
 						</span>
-						<small class="plan__capacity">
-							доступно:
-							{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
+						<small
+							v-if="capacityDisplay === 'available'"
+							class="plan__capacity"
+							:class="{ 'plan__capacity--over': availableByColumn(col) < 0 }"
+						>
+							доступно: {{ roundInt(availableByColumn(col)) }} ч
 						</small>
+						<small v-else class="plan__capacity"> запланировано: {{ columnTotal(col) }} ч </small>
 						<div class="plan__th-progress" aria-hidden="true">
 							<div
 								class="plan__th-progress-bar"
@@ -83,11 +87,10 @@ defineEmits<{
 						'plan__th--sorted': sortState.field === 'group' && sortState.columnId === col.id,
 					}"
 					:colspan="4"
-					:title="columnHeaderTitle(col)"
 					@click="$emit('columnSort', col.id)"
 				>
 					<div class="plan__th-inner">
-						<span class="plan__th-name" :title="columnHeaderTitle(col)">
+						<span class="plan__th-name">
 							{{ col.name }}
 							<span
 								v-if="sortState.field === 'group' && sortState.columnId === col.id"
@@ -96,10 +99,14 @@ defineEmits<{
 								{{ sortState.direction === 'asc' ? '↑' : '↓' }}
 							</span>
 						</span>
-						<small class="plan__capacity">
-							доступно:
-							{{ roundInt(effectiveCapacityByColumn(col) * chartCapacityMultiplier) }} ч
+						<small
+							v-if="capacityDisplay === 'available'"
+							class="plan__capacity"
+							:class="{ 'plan__capacity--over': availableByColumn(col) < 0 }"
+						>
+							доступно: {{ roundInt(availableByColumn(col)) }} ч
 						</small>
+						<small v-else class="plan__capacity"> запланировано: {{ columnTotal(col) }} ч </small>
 						<div class="plan__th-progress" aria-hidden="true">
 							<div
 								class="plan__th-progress-bar"

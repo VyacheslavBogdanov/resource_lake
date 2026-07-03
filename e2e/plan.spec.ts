@@ -144,6 +144,26 @@ test.describe('Страница «План ресурсов»', () => {
 		await expect(tableWrap.first()).toBeVisible();
 	});
 
+	test('свитч «Доступно / Запланировано» переключает подпись шапки', async ({ page }) => {
+		await page.goto('/plan');
+		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
+
+		// По умолчанию — «доступно»
+		const capacityLabel = page.locator('.plan__capacity').first();
+		await expect(capacityLabel).toContainText('доступно:');
+
+		// Клик по свитчу ёмкости
+		const capacitySwitch = page.locator('[aria-label="Переключить отображение ёмкости: доступно или запланировано"]');
+		await capacitySwitch.click();
+
+		// После переключения — «запланировано»
+		await expect(page.locator('.plan__capacity').first()).toContainText('запланировано:');
+
+		// Обратное переключение
+		await capacitySwitch.click();
+		await expect(page.locator('.plan__capacity').first()).toContainText('доступно:');
+	});
+
 	test('диаграммы загрузки отображаются', async ({ page }) => {
 		await page.goto('/plan');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });

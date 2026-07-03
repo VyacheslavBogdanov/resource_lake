@@ -6,7 +6,7 @@ import { useProjectFilters } from '../../composables/useProjectFilters';
 import { roundInt } from '../../utils/format';
 
 import { useViewMode, quarterNumbers } from './composables/useViewMode';
-import { useGroupVisibility, type TableColumn } from './composables/useGroupVisibility';
+import { useGroupVisibility } from './composables/useGroupVisibility';
 import { useColumnTotals } from './composables/useColumnTotals';
 import { useCsvExport } from './composables/useCsvExport';
 import { useTableScroll } from './composables/useTableScroll';
@@ -23,7 +23,7 @@ import PlanCapacityChart from './components/PlanCapacityChart.vue';
 const projectsStore = useProjectsStore();
 const groupsStore = useGroupsStore();
 
-const { viewMode, selectedQuarter, displayByResourceType } = useViewMode();
+const { viewMode, selectedQuarter, displayByResourceType, capacityDisplay } = useViewMode();
 
 const { tableColumns, allGroupsChecked, isGroupVisible, onGroupToggle, isResourceTypeVisible, onResourceTypeToggle } =
 	useGroupVisibility(displayByResourceType);
@@ -61,6 +61,7 @@ const {
 	isQuarterOverCapacityByColumn,
 	isAnyQuarterOverCapacityByColumn,
 	isColumnOverCapacity,
+	availableByColumn,
 } = useColumnTotals(viewMode, selectedQuarter, tableColumns);
 
 const selectedProjectId = ref<number | null>(null);
@@ -79,21 +80,6 @@ const { sortState, sortedProjects, onColumnSort, onTotalSort } = useProjectSort(
 	cellValueByColumn,
 	projectTotalForLoad,
 });
-
-function columnHeaderTitle(col: TableColumn): string {
-	const base = col.name;
-	const descriptions = col.groupIds
-		.map((id) => groupsStore.items.find((g) => g.id === id)?.description)
-		.filter(Boolean);
-	const descLine = descriptions.length ? `\n${descriptions.join('; ')}` : '';
-	const capacity = effectiveCapacityByColumn(col) * chartCapacityMultiplier.value;
-	if (viewMode.value === 'quarterSingle') {
-		const quarterTotal = columnQuarterTotal(col, selectedQuarter.value);
-		return `${base}: квартал ${selectedQuarter.value} — заложено ${quarterTotal} ч (годовая доступная емкость ${capacity} ч)${descLine}`;
-	}
-	const allocated = columnTotal(col);
-	return `${base}: заложено ${allocated} ч из ${capacity} ч (доступно)${descLine}`;
-}
 
 const { exportCsv, projectUrl } = useCsvExport({
 	viewMode,
@@ -165,6 +151,7 @@ const { chartRows } = useChartData({
 			:view-mode="viewMode"
 			:selected-quarter="selectedQuarter"
 			:display-by-resource-type="displayByResourceType"
+			:capacity-display="capacityDisplay"
 			:has-data="!!(projectsStore.items.length && groupsStore.items.length)"
 			:customer-options="customerOptions"
 			:manager-options="managerOptions"
@@ -177,6 +164,7 @@ const { chartRows } = useChartData({
 			@update:view-mode="viewMode = $event"
 			@update:selected-quarter="selectedQuarter = $event"
 			@update:display-by-resource-type="displayByResourceType = $event"
+			@update:capacity-display="capacityDisplay = $event"
 			@update:selected-customers="selectedCustomers = $event"
 			@update:selected-managers="selectedManagers = $event"
 			@reset-filters="resetFilters"
@@ -215,12 +203,13 @@ const { chartRows } = useChartData({
 						:table-columns="tableColumns"
 						:sort-state="sortState"
 						:header-bars-by-column="headerBarsByColumn"
-						:chart-capacity-multiplier="chartCapacityMultiplier"
 						:effective-capacity-by-column="effectiveCapacityByColumn"
 						:is-column-over-capacity="isColumnOverCapacity"
 						:is-any-quarter-over-capacity-by-column="isAnyQuarterOverCapacityByColumn"
 						:is-quarter-over-capacity-by-column="isQuarterOverCapacityByColumn"
-						:column-header-title="columnHeaderTitle"
+						:capacity-display="capacityDisplay"
+						:available-by-column="availableByColumn"
+						:column-total="columnTotal"
 						@column-sort="onColumnSort"
 						@total-sort="onTotalSort"
 					/>

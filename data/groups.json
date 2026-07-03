@@ -158,6 +158,15 @@
       "supportPercent": 0,
       "position": 17,
       "id": 17
+    },
+    {
+      "name": "Тестовая группа",
+      "headcount": 10,
+      "capacityHours": 4320,
+      "description": "",
+      "supportPercent": 0,
+      "position": 18,
+      "id": 18
     }
   ]
 }
