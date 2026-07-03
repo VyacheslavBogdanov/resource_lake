@@ -11,6 +11,4 @@ playwright-report/
 .DS_Store
 .firebase/
 
-CLAUDE.md
-docs/
-.claude/
+
