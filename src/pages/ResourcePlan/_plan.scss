@@ -86,6 +86,21 @@
 		padding: 4px 0;
 	}
 
+	&__move-zero-rows-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 0;
+		font-size: 13px;
+		color: $color-text-secondary;
+		cursor: pointer;
+	}
+
+	&__move-zero-rows-input {
+		cursor: pointer;
+		accent-color: $color-primary-600;
+	}
+
 	&__switch-label {
 		font-size: 13px;
 		color: $color-text-secondary;

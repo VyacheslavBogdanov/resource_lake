@@ -12,6 +12,7 @@ import { useCsvExport } from './composables/useCsvExport';
 import { useTableScroll } from './composables/useTableScroll';
 import { useProjectSort } from './composables/useProjectSort';
 import { useChartData } from './composables/useChartData';
+import { useZeroRowsOrder } from './composables/useZeroRowsOrder';
 
 import PlanToolbar from './components/PlanToolbar.vue';
 import PlanTableHeader from './components/PlanTableHeader.vue';
@@ -81,12 +82,27 @@ const { sortState, sortedProjects, onColumnSort, onTotalSort } = useProjectSort(
 	projectTotalForLoad,
 });
 
+const allGroupColumns = computed(() =>
+	groupsStore.items.map((group) => ({ id: `g${group.id}`, name: group.name, groupIds: [group.id] })),
+);
+
+const moveZeroRowsDown = ref(false);
+const { orderedProjects } = useZeroRowsOrder({
+	projects: sortedProjects,
+	moveZeroRowsDown,
+	viewMode,
+	selectedQuarter,
+	groupColumns: allGroupColumns,
+	cellValueByColumn,
+	getQuarterCellByColumn,
+});
+
 const { exportCsv, projectUrl } = useCsvExport({
 	viewMode,
 	selectedQuarter,
 	displayByResourceType,
 	tableColumns,
-	sortedProjects,
+	sortedProjects: orderedProjects,
 	totalCapacity,
 	activeGrandTotal,
 	columnTotal,
@@ -152,6 +168,7 @@ const { chartRows } = useChartData({
 			:selected-quarter="selectedQuarter"
 			:display-by-resource-type="displayByResourceType"
 			:capacity-display="capacityDisplay"
+			:move-zero-rows-down="moveZeroRowsDown"
 			:has-data="!!(projectsStore.items.length && groupsStore.items.length)"
 			:customer-options="customerOptions"
 			:manager-options="managerOptions"
@@ -165,6 +182,7 @@ const { chartRows } = useChartData({
 			@update:selected-quarter="selectedQuarter = $event"
 			@update:display-by-resource-type="displayByResourceType = $event"
 			@update:capacity-display="capacityDisplay = $event"
+			@update:move-zero-rows-down="moveZeroRowsDown = $event"
 			@update:selected-customers="selectedCustomers = $event"
 			@update:selected-managers="selectedManagers = $event"
 			@reset-filters="resetFilters"
@@ -217,7 +235,7 @@ const { chartRows } = useChartData({
 
 					<tbody>
 						<PlanTableRow
-							v-for="p in sortedProjects"
+							v-for="p in orderedProjects"
 							:key="p.id"
 							:project="p"
 							:view-mode="viewMode"
