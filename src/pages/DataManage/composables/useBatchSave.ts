@@ -1,6 +1,7 @@
 import { ref, onBeforeUnmount } from 'vue';
 import { useProjectsStore } from '../../../stores/projects';
 import { useAllocationsStore } from '../../../stores/allocations';
+import { useGroupsStore } from '../../../stores/groups';
 import { roundInt } from '../../../utils/format';
 import type { AllocationPayload } from '../../../types/domain';
 import type { RowBuffer } from './useAllocationBuffer';
@@ -8,6 +9,7 @@ import type { RowBuffer } from './useAllocationBuffer';
 export function useBatchSave(selectedGroupId: { value: number }, buffer: { value: Record<number, RowBuffer> }) {
 	const projectsStore = useProjectsStore();
 	const allocationsStore = useAllocationsStore();
+	const groupsStore = useGroupsStore();
 
 	const showSaved = ref(false);
 	let hideTimer: number | null = null;
@@ -25,6 +27,11 @@ export function useBatchSave(selectedGroupId: { value: number }, buffer: { value
 	async function saveAll() {
 		if (!selectedGroupId.value) return;
 		const gId = selectedGroupId.value;
+		showSaved.value = false;
+		if (hideTimer) {
+			window.clearTimeout(hideTimer);
+			hideTimer = null;
+		}
 
 		const payload: Record<number, AllocationPayload> = {};
 
@@ -44,7 +51,10 @@ export function useBatchSave(selectedGroupId: { value: number }, buffer: { value
 			};
 		}
 
-		await allocationsStore.batchSetAllocationsForGroup(gId, payload);
+		const changed = await allocationsStore.batchSetAllocationsForGroup(gId, payload);
+		if (changed) {
+			await groupsStore.setAllocationsUpdatedAt(gId, new Date().toISOString());
+		}
 		showSuccess();
 	}
 

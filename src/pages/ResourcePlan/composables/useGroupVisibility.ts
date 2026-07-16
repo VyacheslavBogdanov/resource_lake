@@ -2,7 +2,7 @@ import { computed, type Ref } from 'vue';
 import { useGroupsStore } from '../../../stores/groups';
 import { useUiStore } from '../../../stores/ui';
 
-export type TableColumn = { id: string; name: string; groupIds: number[] };
+export type TableColumn = { id: string; name: string; groupIds: number[]; allocationsUpdatedAt?: string };
 
 export function useGroupVisibility(displayByResourceType: Ref<boolean>) {
 	const groupsStore = useGroupsStore();
@@ -13,7 +13,12 @@ export function useGroupVisibility(displayByResourceType: Ref<boolean>) {
 	const tableColumns = computed<TableColumn[]>(() => {
 		const groups = visibleGroups.value;
 		if (!displayByResourceType.value) {
-			return groups.map((g) => ({ id: `g${g.id}`, name: g.name, groupIds: [g.id] }));
+			return groups.map((g) => ({
+				id: `g${g.id}`,
+				name: g.name,
+				groupIds: [g.id],
+				allocationsUpdatedAt: g.allocationsUpdatedAt,
+			}));
 		}
 		const byType = new Map<string, number[]>();
 		for (const g of groups) {

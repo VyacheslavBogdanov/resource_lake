@@ -2,13 +2,15 @@
 import type { ViewMode, Quarter, CapacityDisplay } from '../composables/useViewMode';
 import { quarterLabel } from '../composables/useViewMode';
 import type { TableColumn } from '../composables/useGroupVisibility';
-import { roundInt } from '../../../utils/format';
+import { formatAllocationsUpdatedAt, roundInt } from '../../../utils/format';
+import BaseTooltip from '../../../components/ui/BaseTooltip.vue';
 
 const quarterNumbers = [1, 2, 3, 4] as const;
 
 defineProps<{
 	viewMode: ViewMode;
 	tableColumns: TableColumn[];
+	displayByResourceType: boolean;
 	sortState: { field: 'group' | 'total' | null; columnId: string | null; direction: 'asc' | 'desc' };
 	headerBarsByColumn: Record<string, { fillPct: number; fillColor: string }>;
 	effectiveCapacityByColumn: (col: TableColumn) => number;
@@ -39,12 +41,20 @@ defineEmits<{
 					:key="col.id"
 					class="plan__th plan__th--sortable"
 					:class="{
+						'plan__th--tooltip-host': !displayByResourceType,
 						'plan__th--over': isColumnOverCapacity(col),
 						'plan__th--over-bg': isColumnOverCapacity(col),
 						'plan__th--sorted': sortState.field === 'group' && sortState.columnId === col.id,
 					}"
 					@click="$emit('columnSort', col.id)"
 				>
+					<BaseTooltip
+						v-if="!displayByResourceType"
+						class="plan__th-tooltip"
+						:lines="[formatAllocationsUpdatedAt(col.allocationsUpdatedAt)]"
+					>
+						<span class="plan__th-tooltip-hitbox" aria-hidden="true"></span>
+					</BaseTooltip>
 					<div class="plan__th-inner">
 						<span class="plan__th-name">
 							{{ col.name }}
@@ -82,6 +92,7 @@ defineEmits<{
 					:key="'g-span-' + col.id"
 					class="plan__th plan__th--group-span plan__th--sortable"
 					:class="{
+						'plan__th--tooltip-host': !displayByResourceType,
 						'plan__th--over': isAnyQuarterOverCapacityByColumn(col),
 						'plan__th--over-bg': isAnyQuarterOverCapacityByColumn(col),
 						'plan__th--sorted': sortState.field === 'group' && sortState.columnId === col.id,
@@ -89,6 +100,13 @@ defineEmits<{
 					:colspan="4"
 					@click="$emit('columnSort', col.id)"
 				>
+					<BaseTooltip
+						v-if="!displayByResourceType"
+						class="plan__th-tooltip"
+						:lines="[formatAllocationsUpdatedAt(col.allocationsUpdatedAt)]"
+					>
+						<span class="plan__th-tooltip-hitbox" aria-hidden="true"></span>
+					</BaseTooltip>
 					<div class="plan__th-inner">
 						<span class="plan__th-name">
 							{{ col.name }}

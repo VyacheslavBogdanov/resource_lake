@@ -146,6 +146,17 @@ export const useGroupsStore = defineStore('groups', {
 			}
 		},
 
+		async setAllocationsUpdatedAt(id: number, allocationsUpdatedAt: string) {
+			try {
+				await api.update<Group>('groups', id, { allocationsUpdatedAt });
+				const group = this.items.find((item) => item.id === id);
+				if (group) group.allocationsUpdatedAt = allocationsUpdatedAt;
+			} catch (err) {
+				console.error('Ошибка при обновлении даты распределений группы:', err);
+				throw err;
+			}
+		},
+
 		async deleteGroup(id: number) {
 			try {
 				const allocationsStore = useAllocationsStore();

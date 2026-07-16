@@ -201,6 +201,7 @@ const { chartRows } = useChartData({
 					<PlanTableHeader
 						:view-mode="viewMode"
 						:table-columns="tableColumns"
+						:display-by-resource-type="displayByResourceType"
 						:sort-state="sortState"
 						:header-bars-by-column="headerBarsByColumn"
 						:effective-capacity-by-column="effectiveCapacityByColumn"

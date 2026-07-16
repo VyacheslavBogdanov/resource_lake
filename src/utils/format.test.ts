@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { roundInt } from './format';
+import { formatAllocationsUpdatedAt, roundInt } from './format';
 
 describe('roundInt', () => {
 	it('округляет целое число', () => {
@@ -42,5 +42,17 @@ describe('roundInt', () => {
 
 	it('возвращает 0 для пустой строки', () => {
 		expect(roundInt('')).toBe(0);
+	});
+});
+
+describe('formatAllocationsUpdatedAt', () => {
+	it('форматирует ISO-дату на русском языке в часовом поясе браузера', () => {
+		expect(formatAllocationsUpdatedAt('2025-02-03T04:05:00')).toBe(
+			'Последнее обновление: 03.02.2025, 04:05',
+		);
+	});
+
+	it.each([undefined, null, '', 'not-a-date'])('возвращает fallback для %s', (value) => {
+		expect(formatAllocationsUpdatedAt(value)).toBe('Данные не обновлялись');
 	});
 });

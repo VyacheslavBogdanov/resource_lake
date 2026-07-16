@@ -507,6 +507,23 @@
 		text-overflow: ellipsis;
 	}
 
+	&__th-tooltip {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		display: block;
+	}
+
+	&__th--tooltip-host {
+		position: relative;
+	}
+
+	&__th-tooltip-hitbox {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
 	&__capacity {
 		color: $color-text-soft;
 		opacity: 0.75;
