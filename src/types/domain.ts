@@ -8,6 +8,7 @@ export interface Project {
 	projectManager?: string;
 	description?: string;
 	order?: number;
+	allocationsUpdatedAt?: string;
 }
 
 export interface Group {

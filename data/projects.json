@@ -4,7 +4,7 @@
       "id": 1,
       "name": "Цифровой пульс",
       "archived": false,
-      "order": 0,
+      "order": 2,
       "customer": "РосТех",
       "projectType": "Интеграция",
       "projectManager": "Смирнова ОВ",
@@ -26,12 +26,13 @@
       "id": 3,
       "name": "Быстрый каскад",
       "archived": false,
-      "order": 2,
+      "order": 0,
       "customer": "Стилсофт",
       "projectType": "Поддержка",
       "projectManager": "Козлов МИ",
       "description": "Проект «Быстрый каскад» — поддержка",
-      "url": ""
+      "url": "",
+      "allocationsUpdatedAt": "2026-07-16T20:35:06.675Z"
     },
     {
       "id": 4,
@@ -69,7 +70,7 @@
     {
       "id": 7,
       "name": "Стальной импульс",
-      "archived": false,
+      "archived": true,
       "order": 6,
       "customer": "РосТех",
       "projectType": "Консалтинг",

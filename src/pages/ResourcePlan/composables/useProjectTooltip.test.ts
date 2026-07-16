@@ -15,15 +15,22 @@ describe('buildProjectTooltipLines', () => {
 				projectType: 'Разработка',
 				customer: 'Заказчик А',
 				projectManager: 'Иванов',
+				allocationsUpdatedAt: '2025-02-03T04:05:00',
 			}),
 		);
 
-		expect(lines).toEqual(['Проект: Проект Альфа', 'Тип: Разработка', 'Заказчик: Заказчик А', 'РП: Иванов']);
+		expect(lines).toEqual([
+			'Проект: Проект Альфа',
+			'Тип: Разработка',
+			'Заказчик: Заказчик А',
+			'РП: Иванов',
+			'Последнее обновление: 03.02.2025, 04:05',
+		]);
 	});
 
-	it('всегда показывает название и пропускает незаполненные поля', () => {
+	it('всегда показывает название и fallback для отсутствующей даты', () => {
 		const lines = buildProjectTooltipLines(makeProject({ id: 2, name: 'Только имя' }));
-		expect(lines).toEqual(['Проект: Только имя']);
+		expect(lines).toEqual(['Проект: Только имя', 'Данные не обновлялись']);
 	});
 
 	it('пропускает пустые и пробельные значения', () => {
@@ -36,6 +43,14 @@ describe('buildProjectTooltipLines', () => {
 				projectManager: 'Петров',
 			}),
 		);
-		expect(lines).toEqual(['Проект: Бета', 'РП: Петров']);
+		expect(lines).toEqual(['Проект: Бета', 'РП: Петров', 'Данные не обновлялись']);
+	});
+
+	it('показывает fallback для некорректной даты', () => {
+		const lines = buildProjectTooltipLines(
+			makeProject({ id: 4, name: 'Гамма', allocationsUpdatedAt: 'not-a-date' }),
+		);
+
+		expect(lines.at(-1)).toBe('Данные не обновлялись');
 	});
 });

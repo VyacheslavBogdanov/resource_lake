@@ -28,35 +28,29 @@ describe('allocations store — batchSetAllocationsForGroup', () => {
 		];
 	});
 
-	it('возвращает false и не обращается к API, если нормализованные значения не изменились', async () => {
+	it('возвращает пустой список и не обращается к API, если значения не изменились', async () => {
 		const store = useAllocationsStore();
-		store.items = [
-			{ id: 11, projectId: 1, groupId: 7, hours: 10, q1: 0, q3: 0 },
-		];
+		store.items = [{ id: 11, projectId: 1, groupId: 7, hours: 10, q1: 0, q3: 0 }];
 
 		const changed = await store.batchSetAllocationsForGroup(7, {
 			1: { hours: 10, q1: 0, q2: 0, q3: 0, q4: 0 },
 			2: { hours: 0, q1: 0, q2: 0, q3: 0, q4: 0 },
 		});
 
-		expect(changed).toBe(false);
+		expect(changed).toEqual([]);
 		expect(mockedApi.update).not.toHaveBeenCalled();
 		expect(mockedApi.create).not.toHaveBeenCalled();
 		expect(mockedApi.list).not.toHaveBeenCalled();
 	});
 
-	it('обновляет только изменившуюся allocation выбранной группы и возвращает true', async () => {
+	it('обновляет только изменившуюся allocation и возвращает id её проекта', async () => {
 		const store = useAllocationsStore();
 		store.items = [
 			{ id: 11, projectId: 1, groupId: 7, hours: 10, q1: 1, q2: 2, q3: 3, q4: 4 },
 			{ id: 12, projectId: 2, groupId: 7, hours: 20, q1: 5, q2: 5, q3: 5, q4: 5 },
 			{ id: 13, projectId: 2, groupId: 8, hours: 99, q1: 99, q2: 0, q3: 0, q4: 0 },
 		];
-		const refreshed = [
-			store.items[0],
-			{ ...store.items[1], q4: 6 },
-			store.items[2],
-		];
+		const refreshed = [store.items[0], { ...store.items[1], q4: 6 }, store.items[2]];
 		mockedApi.update.mockResolvedValue({} as never);
 		mockedApi.list.mockResolvedValue(refreshed);
 
@@ -65,7 +59,7 @@ describe('allocations store — batchSetAllocationsForGroup', () => {
 			2: { hours: 20, q1: 5, q2: 5, q3: 5, q4: 6 },
 		});
 
-		expect(changed).toBe(true);
+		expect(changed).toEqual([2]);
 		expect(mockedApi.update).toHaveBeenCalledTimes(1);
 		expect(mockedApi.update).toHaveBeenCalledWith('allocations', 12, {
 			hours: 20,
@@ -90,7 +84,7 @@ describe('allocations store — batchSetAllocationsForGroup', () => {
 			2: { hours: 0, q1: 0, q2: 3, q3: 0, q4: 0 },
 		});
 
-		expect(changed).toBe(true);
+		expect(changed).toEqual([2]);
 		expect(mockedApi.update).not.toHaveBeenCalled();
 		expect(mockedApi.create).toHaveBeenCalledOnce();
 		expect(mockedApi.create).toHaveBeenCalledWith('allocations', {

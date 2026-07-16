@@ -51,9 +51,13 @@ export function useBatchSave(selectedGroupId: { value: number }, buffer: { value
 			};
 		}
 
-		const changed = await allocationsStore.batchSetAllocationsForGroup(gId, payload);
-		if (changed) {
-			await groupsStore.setAllocationsUpdatedAt(gId, new Date().toISOString());
+		const changedProjectIds = await allocationsStore.batchSetAllocationsForGroup(gId, payload);
+		if (changedProjectIds.length) {
+			const timestamp = new Date().toISOString();
+			await Promise.all([
+				groupsStore.setAllocationsUpdatedAt(gId, timestamp),
+				projectsStore.setAllocationsUpdatedAt(changedProjectIds, timestamp),
+			]);
 		}
 		showSuccess();
 	}

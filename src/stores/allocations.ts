@@ -128,11 +128,12 @@ export const useAllocationsStore = defineStore('allocations', {
 		async batchSetAllocationsForGroup(
 			groupId: number,
 			payloadByProject: AllocationPayloadByProject,
-		): Promise<boolean> {
+		): Promise<number[]> {
 			try {
 				const projectsStore = useProjectsStore();
 
 				const ops: Promise<unknown>[] = [];
+				const changedProjectIds: number[] = [];
 
 				for (const p of projectsStore.items) {
 					const patch = normalizeAllocation(payloadByProject[p.id]);
@@ -141,6 +142,7 @@ export const useAllocationsStore = defineStore('allocations', {
 
 					if (existing && !allocationsEqual(existing, patch)) {
 						ops.push(api.update<Allocation>('allocations', existing.id, patch));
+						changedProjectIds.push(p.id);
 					} else if (!existing && Object.values(patch).some((value) => value !== 0)) {
 						ops.push(
 							api.create<Allocation>('allocations', {
@@ -149,15 +151,16 @@ export const useAllocationsStore = defineStore('allocations', {
 								...patch,
 							}),
 						);
+						changedProjectIds.push(p.id);
 					}
 				}
 
-				if (!ops.length) return false;
+				if (!ops.length) return [];
 
 				await Promise.all(ops);
 				this.items = await api.list<Allocation>('allocations');
 				useUiStore().touchAllocationsDate();
-				return true;
+				return changedProjectIds;
 			} catch (err) {
 				console.error('Ошибка при пакетном обновлении распределений:', err);
 				throw err;
