@@ -89,6 +89,20 @@ test.describe('Страница «План ресурсов»', () => {
 		await expect(page.locator('.plan__project-name:has-text("Проект Альфа")')).toBeHidden();
 	});
 
+	test('тултип проекта показывает заказчика и руководителя проекта', async ({ page }) => {
+		await page.goto('/plan');
+		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
+
+		await page.locator('.plan__project-name:has-text("Проект Альфа")').hover();
+
+		const tooltip = page.locator('.base-tooltip__bubble');
+		await expect(tooltip).toBeVisible({ timeout: 5_000 });
+		await expect(tooltip).toContainText('Проект: Проект Альфа');
+		await expect(tooltip).toContainText('Тип: Разработка');
+		await expect(tooltip).toContainText('Заказчик: Заказчик А');
+		await expect(tooltip).toContainText('РП: Иванов');
+	});
+
 	test('показ/скрытие группы через диаграмму', async ({ page }) => {
 		await page.goto('/plan');
 		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
@@ -128,6 +142,26 @@ test.describe('Страница «План ресурсов»', () => {
 		// Проверяем, что таблица внутри скроллируемого контейнера
 		const tableWrap = page.locator('.plan__table-wrap').or(page.locator('.plan'));
 		await expect(tableWrap.first()).toBeVisible();
+	});
+
+	test('свитч «Доступно / Запланировано» переключает подпись шапки', async ({ page }) => {
+		await page.goto('/plan');
+		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
+
+		// По умолчанию — «доступно»
+		const capacityLabel = page.locator('.plan__capacity').first();
+		await expect(capacityLabel).toContainText('доступно:');
+
+		// Клик по свитчу ёмкости
+		const capacitySwitch = page.locator('[aria-label="Переключить отображение ёмкости: доступно или запланировано"]');
+		await capacitySwitch.click();
+
+		// После переключения — «запланировано»
+		await expect(page.locator('.plan__capacity').first()).toContainText('запланировано:');
+
+		// Обратное переключение
+		await capacitySwitch.click();
+		await expect(page.locator('.plan__capacity').first()).toContainText('доступно:');
 	});
 
 	test('диаграммы загрузки отображаются', async ({ page }) => {

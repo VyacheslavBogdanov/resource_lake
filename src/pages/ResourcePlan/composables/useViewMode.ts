@@ -11,10 +11,13 @@ export const quarterLabel: Record<number, string> = {
 	4: '4 кв',
 };
 
+export type CapacityDisplay = 'available' | 'planned';
+
 export function useViewMode() {
 	const viewMode = ref<ViewMode>('total');
 	const selectedQuarter = ref<Quarter>(1);
 	const displayByResourceType = ref(false);
+	const capacityDisplay = ref<CapacityDisplay>('available');
 
-	return { viewMode, selectedQuarter, displayByResourceType };
+	return { viewMode, selectedQuarter, displayByResourceType, capacityDisplay };
 }

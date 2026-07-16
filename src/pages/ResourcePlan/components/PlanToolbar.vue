@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import FilterPanel from '../../../components/shared/FilterPanel.vue';
-import type { ViewMode, Quarter } from '../composables/useViewMode';
+import type { ViewMode, Quarter, CapacityDisplay } from '../composables/useViewMode';
 
 defineProps<{
 	viewMode: ViewMode;
 	selectedQuarter: Quarter;
 	displayByResourceType: boolean;
+	capacityDisplay: CapacityDisplay;
 	hasData: boolean;
 	customerOptions: string[];
 	managerOptions: string[];
@@ -21,6 +22,7 @@ defineEmits<{
 	'update:viewMode': [value: ViewMode];
 	'update:selectedQuarter': [value: Quarter];
 	'update:displayByResourceType': [value: boolean];
+	'update:capacityDisplay': [value: CapacityDisplay];
 	'update:selectedCustomers': [value: string[]];
 	'update:selectedManagers': [value: string[]];
 	resetFilters: [];
@@ -30,23 +32,52 @@ defineEmits<{
 <template>
 	<div class="plan__toolbar">
 		<div class="plan__actions" v-if="hasData">
-			<div class="plan__row-type-switch">
-				<span class="plan__switch-label" :class="{ 'plan__switch-label--active': !displayByResourceType }">
-					По группе ресурса
-				</span>
-				<button
-					type="button"
-					class="plan__switch"
-					:class="{ 'plan__switch--on': displayByResourceType }"
-					:aria-pressed="displayByResourceType"
-					aria-label="Переключить отображение: по группе или по типу ресурса"
-					@click="$emit('update:displayByResourceType', !displayByResourceType)"
-				>
-					<span class="plan__switch-thumb"></span>
-				</button>
-				<span class="plan__switch-label" :class="{ 'plan__switch-label--active': displayByResourceType }">
-					По типу ресурса
-				</span>
+			<div class="plan__actions-switches">
+				<div class="plan__row-type-switch">
+					<span class="plan__switch-label" :class="{ 'plan__switch-label--active': !displayByResourceType }">
+						По группе ресурса
+					</span>
+					<button
+						type="button"
+						class="plan__switch"
+						:class="{ 'plan__switch--on': displayByResourceType }"
+						:aria-pressed="displayByResourceType"
+						aria-label="Переключить отображение: по группе или по типу ресурса"
+						@click="$emit('update:displayByResourceType', !displayByResourceType)"
+					>
+						<span class="plan__switch-thumb"></span>
+					</button>
+					<span class="plan__switch-label" :class="{ 'plan__switch-label--active': displayByResourceType }">
+						По типу ресурса
+					</span>
+				</div>
+
+				<div class="plan__row-type-switch">
+					<span
+						class="plan__switch-label"
+						:class="{ 'plan__switch-label--active': capacityDisplay === 'available' }"
+					>
+						Доступно
+					</span>
+					<button
+						type="button"
+						class="plan__switch"
+						:class="{ 'plan__switch--on': capacityDisplay === 'planned' }"
+						:aria-pressed="capacityDisplay === 'planned'"
+						aria-label="Переключить отображение ёмкости: доступно или запланировано"
+						@click="
+							$emit('update:capacityDisplay', capacityDisplay === 'available' ? 'planned' : 'available')
+						"
+					>
+						<span class="plan__switch-thumb"></span>
+					</button>
+					<span
+						class="plan__switch-label"
+						:class="{ 'plan__switch-label--active': capacityDisplay === 'planned' }"
+					>
+						Запланировано
+					</span>
+				</div>
 			</div>
 
 			<div class="plan__actions-row">

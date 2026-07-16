@@ -72,6 +72,13 @@
 		display: block;
 	}
 
+	&__actions-switches {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		align-items: center;
+	}
+
 	&__row-type-switch {
 		display: inline-flex;
 		align-items: center;
@@ -503,6 +510,12 @@
 	&__capacity {
 		color: $color-text-soft;
 		opacity: 0.75;
+
+		&--over {
+			color: $color-danger-text-dark;
+			opacity: 1;
+			font-weight: $font-weight-semibold;
+		}
 	}
 
 	&__th--sortable {

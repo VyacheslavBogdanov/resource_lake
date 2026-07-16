@@ -60,6 +60,10 @@ export function useColumnTotals(
 		return col.groupIds.reduce((s, gid) => s + (groupsStore.effectiveCapacityById[gid] || 0), 0);
 	}
 
+	function availableByColumn(col: TableColumn): number {
+		return effectiveCapacityByColumn(col) * chartCapacityMultiplier.value - columnTotal(col);
+	}
+
 	function cellValue(projectId: number, groupId: number, archived?: boolean): number {
 		if (archived) return 0;
 		if (viewMode.value === 'quarterSingle') {
@@ -212,6 +216,7 @@ export function useColumnTotals(
 		groupQuarterTotal,
 		columnTotal,
 		columnQuarterTotal,
+		availableByColumn,
 		effectiveCapacityByColumn,
 		cellValueByColumn,
 		getQuarterCellByColumn,
