@@ -8,6 +8,7 @@ export interface Project {
 	projectManager?: string;
 	description?: string;
 	order?: number;
+	allocationsUpdatedAt?: string;
 }
 
 export interface Group {
@@ -15,6 +16,7 @@ export interface Group {
 	name: string;
 	headcount: number;
 	capacityHours: number;
+	allocationsUpdatedAt?: string;
 	description?: string;
 	supportPercent?: number;
 	resourceType?: string;

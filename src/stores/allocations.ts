@@ -4,6 +4,40 @@ import type { Allocation, AllocationPayloadByProject } from '../types/domain';
 import { useProjectsStore } from './projects';
 import { useUiStore } from './ui';
 
+type NormalizedAllocation = {
+	hours: number;
+	q1: number;
+	q2: number;
+	q3: number;
+	q4: number;
+};
+
+function normalizeNumber(value: unknown): number {
+	const number = Number(value ?? 0);
+	return Number.isFinite(number) ? number : 0;
+}
+
+function normalizeAllocation(payload?: Partial<NormalizedAllocation>): NormalizedAllocation {
+	return {
+		hours: normalizeNumber(payload?.hours),
+		q1: normalizeNumber(payload?.q1),
+		q2: normalizeNumber(payload?.q2),
+		q3: normalizeNumber(payload?.q3),
+		q4: normalizeNumber(payload?.q4),
+	};
+}
+
+function allocationsEqual(allocation: Allocation, normalized: NormalizedAllocation): boolean {
+	const current = normalizeAllocation(allocation);
+	return (
+		current.hours === normalized.hours &&
+		current.q1 === normalized.q1 &&
+		current.q2 === normalized.q2 &&
+		current.q3 === normalized.q3 &&
+		current.q4 === normalized.q4
+	);
+}
+
 export const useAllocationsStore = defineStore('allocations', {
 	state: () => ({
 		items: [] as Allocation[],
@@ -91,28 +125,25 @@ export const useAllocationsStore = defineStore('allocations', {
 			}
 		},
 
-		async batchSetAllocationsForGroup(groupId: number, payloadByProject: AllocationPayloadByProject) {
+		async batchSetAllocationsForGroup(
+			groupId: number,
+			payloadByProject: AllocationPayloadByProject,
+		): Promise<number[]> {
 			try {
 				const projectsStore = useProjectsStore();
 
 				const ops: Promise<unknown>[] = [];
+				const changedProjectIds: number[] = [];
 
 				for (const p of projectsStore.items) {
-					const payload = payloadByProject[p.id];
-
-					const hours = payload ? Number(payload.hours || 0) : 0;
-					const q1 = payload?.q1 ?? 0;
-					const q2 = payload?.q2 ?? 0;
-					const q3 = payload?.q3 ?? 0;
-					const q4 = payload?.q4 ?? 0;
-
-					const patch: Partial<Allocation> = { hours, q1, q2, q3, q4 };
+					const patch = normalizeAllocation(payloadByProject[p.id]);
 
 					const existing = this.byPairIndex.get(`${p.id}:${groupId}`);
 
-					if (existing) {
+					if (existing && !allocationsEqual(existing, patch)) {
 						ops.push(api.update<Allocation>('allocations', existing.id, patch));
-					} else if (hours > 0 || q1 || q2 || q3 || q4) {
+						changedProjectIds.push(p.id);
+					} else if (!existing && Object.values(patch).some((value) => value !== 0)) {
 						ops.push(
 							api.create<Allocation>('allocations', {
 								projectId: p.id,
@@ -120,12 +151,16 @@ export const useAllocationsStore = defineStore('allocations', {
 								...patch,
 							}),
 						);
+						changedProjectIds.push(p.id);
 					}
 				}
+
+				if (!ops.length) return [];
 
 				await Promise.all(ops);
 				this.items = await api.list<Allocation>('allocations');
 				useUiStore().touchAllocationsDate();
+				return changedProjectIds;
 			} catch (err) {
 				console.error('Ошибка при пакетном обновлении распределений:', err);
 				throw err;

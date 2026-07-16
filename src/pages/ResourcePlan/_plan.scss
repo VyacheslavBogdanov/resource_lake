@@ -86,6 +86,21 @@
 		padding: 4px 0;
 	}
 
+	&__move-zero-rows-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 0;
+		font-size: 13px;
+		color: $color-text-secondary;
+		cursor: pointer;
+	}
+
+	&__move-zero-rows-input {
+		cursor: pointer;
+		accent-color: $color-primary-600;
+	}
+
 	&__switch-label {
 		font-size: 13px;
 		color: $color-text-secondary;
@@ -505,6 +520,23 @@
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	&__th-tooltip {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		display: block;
+	}
+
+	&__th--tooltip-host {
+		position: relative;
+	}
+
+	&__th-tooltip-hitbox {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 
 	&__capacity {

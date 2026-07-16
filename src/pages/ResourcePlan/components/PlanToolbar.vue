@@ -7,6 +7,7 @@ defineProps<{
 	selectedQuarter: Quarter;
 	displayByResourceType: boolean;
 	capacityDisplay: CapacityDisplay;
+	moveZeroRowsDown: boolean;
 	hasData: boolean;
 	customerOptions: string[];
 	managerOptions: string[];
@@ -23,6 +24,7 @@ defineEmits<{
 	'update:selectedQuarter': [value: Quarter];
 	'update:displayByResourceType': [value: boolean];
 	'update:capacityDisplay': [value: CapacityDisplay];
+	'update:moveZeroRowsDown': [value: boolean];
 	'update:selectedCustomers': [value: string[]];
 	'update:selectedManagers': [value: string[]];
 	resetFilters: [];
@@ -78,6 +80,17 @@ defineEmits<{
 						Запланировано
 					</span>
 				</div>
+
+				<label class="plan__move-zero-rows-toggle">
+					<input
+						type="checkbox"
+						class="plan__move-zero-rows-input"
+						aria-label="Переместить нулевые строки вниз"
+						:checked="moveZeroRowsDown"
+						@change="$emit('update:moveZeroRowsDown', ($event.target as HTMLInputElement).checked)"
+					/>
+					<span>Переместить нулевые строки вниз</span>
+				</label>
 			</div>
 
 			<div class="plan__actions-row">

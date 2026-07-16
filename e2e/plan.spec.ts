@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { resetData } from './helpers/reset-data';
 
+const API_BASE = 'http://localhost:3001';
+
 test.beforeEach(async () => {
 	await resetData();
 });
@@ -87,6 +89,113 @@ test.describe('Страница «План ресурсов»', () => {
 		await expect(page.locator('.plan__project-name:has-text("Проект Бета")')).toBeVisible();
 		// Проект Альфа (Иванов) скрыт
 		await expect(page.locator('.plan__project-name:has-text("Проект Альфа")')).toBeHidden();
+	});
+
+	test('перемещает нулевые строки вниз только при включённом чекбоксе', async ({ page, request }) => {
+		const emptyProjectResponse = await request.post(`${API_BASE}/projects`, {
+			data: {
+				id: 4,
+				name: 'Проект Без ресурсов',
+				archived: false,
+				order: -1,
+			},
+		});
+		expect(emptyProjectResponse.ok()).toBe(true);
+
+		const secondQuarterProjectResponse = await request.post(`${API_BASE}/projects`, {
+			data: {
+				id: 5,
+				name: 'Проект Только Q2',
+				archived: false,
+				order: -2,
+			},
+		});
+		expect(secondQuarterProjectResponse.ok()).toBe(true);
+
+		const secondQuarterAllocationResponse = await request.post(`${API_BASE}/allocations`, {
+			data: { id: 5, projectId: 5, groupId: 1, hours: 20, q1: 0, q2: 20, q3: 0, q4: 0 },
+		});
+		expect(secondQuarterAllocationResponse.ok()).toBe(true);
+
+		await page.goto('/plan');
+		await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
+
+		const projectNames = page.locator('tbody .plan__project-name');
+		const moveZeroRowsDown = page.getByRole('checkbox', { name: 'Переместить нулевые строки вниз' });
+		await expect(projectNames).toHaveCount(4);
+		await expect(moveZeroRowsDown).not.toBeChecked();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Без ресурсов',
+			'Проект Альфа',
+			'Проект Бета',
+		]);
+
+		await moveZeroRowsDown.check();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Альфа',
+			'Проект Бета',
+			'Проект Без ресурсов',
+		]);
+
+		await moveZeroRowsDown.uncheck();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Без ресурсов',
+			'Проект Альфа',
+			'Проект Бета',
+		]);
+
+		await page.locator('.plan__th--total.plan__th--sortable').click();
+		await expect(projectNames).toHaveText([
+			'Проект Без ресурсов',
+			'Проект Только Q2',
+			'Проект Бета',
+			'Проект Альфа',
+		]);
+
+		await moveZeroRowsDown.check();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Бета',
+			'Проект Альфа',
+			'Проект Без ресурсов',
+		]);
+
+		await page.locator('input[value="quarterSingle"]').check();
+		await page.locator('.plan__quarter-select').selectOption('1');
+		await expect(projectNames).toHaveText([
+			'Проект Бета',
+			'Проект Альфа',
+			'Проект Только Q2',
+			'Проект Без ресурсов',
+		]);
+
+		await moveZeroRowsDown.uncheck();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Без ресурсов',
+			'Проект Бета',
+			'Проект Альфа',
+		]);
+
+		await page.locator('.plan__quarter-select').selectOption('2');
+		await moveZeroRowsDown.check();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Бета',
+			'Проект Альфа',
+			'Проект Без ресурсов',
+		]);
+
+		await page.locator('input[value="quarterSplit"]').check();
+		await expect(projectNames).toHaveText([
+			'Проект Только Q2',
+			'Проект Бета',
+			'Проект Альфа',
+			'Проект Без ресурсов',
+		]);
 	});
 
 	test('тултип проекта показывает заказчика и руководителя проекта', async ({ page }) => {

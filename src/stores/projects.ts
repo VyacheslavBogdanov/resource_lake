@@ -97,6 +97,29 @@ export const useProjectsStore = defineStore('projects', {
 			}
 		},
 
+		async setAllocationsUpdatedAt(projectIds: number[], allocationsUpdatedAt: string) {
+			try {
+				const uniqueProjectIds = [...new Set(projectIds)];
+				if (!uniqueProjectIds.length) return;
+
+				await Promise.all(
+					uniqueProjectIds.map((id) =>
+						api.update<Project>('projects', id, {
+							allocationsUpdatedAt,
+						}),
+					),
+				);
+
+				const changedIds = new Set(uniqueProjectIds);
+				for (const project of this.items) {
+					if (changedIds.has(project.id)) project.allocationsUpdatedAt = allocationsUpdatedAt;
+				}
+			} catch (err) {
+				console.error('Ошибка при обновлении даты распределений проектов:', err);
+				throw err;
+			}
+		},
+
 		async deleteProject(id: number) {
 			try {
 				const allocationsStore = useAllocationsStore();
