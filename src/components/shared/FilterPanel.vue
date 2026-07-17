@@ -11,7 +11,13 @@
 				<path fill="currentColor" d="M4 5h16v2l-6 6v5l-4 2v-7L4 7V5Z" />
 			</svg>
 			<span class="filter-panel__label">Фильтр</span>
-			<span v-if="hasActiveFilters" class="filter-panel__badge"> {{ filteredCount }} / {{ totalCount }} </span>
+			<span
+				class="filter-panel__badge"
+				:class="{ 'filter-panel__badge--reserved': !hasActiveFilters }"
+				:aria-hidden="!hasActiveFilters"
+			>
+				{{ filteredCount }} / {{ totalCount }}
+			</span>
 		</button>
 
 		<div v-if="isOpen" class="filter-panel">
@@ -138,6 +144,12 @@ function toggleManager(value: string) {
 	border-radius: $radius-full;
 	background: $color-bg-badge;
 	color: $color-badge-text;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.filter-panel__badge--reserved {
+	visibility: hidden;
 }
 
 .filter-panel {

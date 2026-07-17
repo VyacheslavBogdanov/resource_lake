@@ -41,9 +41,18 @@ export function useProjectSort(deps: ProjectSortDeps) {
 		return projects;
 	});
 
+	function resetSort() {
+		sortState.value = { field: null, columnId: null, direction: 'asc' };
+	}
+
 	function onColumnSort(columnId: string) {
-		if (sortState.value.field === 'group' && sortState.value.columnId === columnId) {
-			sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
+		const isActive = sortState.value.field === 'group' && sortState.value.columnId === columnId;
+		if (isActive) {
+			if (sortState.value.direction === 'asc') {
+				sortState.value.direction = 'desc';
+			} else {
+				resetSort();
+			}
 		} else {
 			sortState.value = { field: 'group', columnId, direction: 'asc' };
 		}
@@ -51,7 +60,11 @@ export function useProjectSort(deps: ProjectSortDeps) {
 
 	function onTotalSort() {
 		if (sortState.value.field === 'total') {
-			sortState.value.direction = sortState.value.direction === 'asc' ? 'desc' : 'asc';
+			if (sortState.value.direction === 'asc') {
+				sortState.value.direction = 'desc';
+			} else {
+				resetSort();
+			}
 		} else {
 			sortState.value = { field: 'total', columnId: null, direction: 'asc' };
 		}

@@ -37,9 +37,11 @@ describe('FilterPanel', () => {
 		expect(wrapper.find('.filter-panel__badge').text()).toBe('3 / 5');
 	});
 
-	it('не отображает бейдж без активных фильтров', () => {
+	it('резервирует место под бейдж без активных фильтров', () => {
 		const wrapper = mount(FilterPanel, { props: baseProps });
-		expect(wrapper.find('.filter-panel__badge').exists()).toBe(false);
+		const badge = wrapper.find('.filter-panel__badge');
+		expect(badge.exists()).toBe(true);
+		expect(badge.classes()).toContain('filter-panel__badge--reserved');
 	});
 
 	it('рендерит опции заказчиков', async () => {

@@ -5,7 +5,7 @@ import { useProjectsStore } from '../../stores/projects';
 import { useGroupsStore } from '../../stores/groups';
 import { useProjectFilters } from '../../composables/useProjectFilters';
 import { useAllocationBuffer } from './composables/useAllocationBuffer';
-import { useBatchSave } from './composables/useBatchSave';
+import { useAllocationAutoSave } from './composables/useAllocationAutoSave';
 import ManageToolbar from './components/ManageToolbar.vue';
 import ManageTable from './components/ManageTable.vue';
 
@@ -16,16 +16,20 @@ const selectedGroupId = ref<number>(0);
 const {
 	selectedCustomers,
 	selectedManagers,
+	hideArchived,
 	customerOptions,
 	managerOptions,
 	hasActiveFilters,
 	filteredProjects,
 	filteredProjectsCount,
 	resetFilters,
-} = useProjectFilters(computed(() => projectsStore.items));
+} = useProjectFilters(
+	computed(() => projectsStore.items),
+	{ hideArchivedByDefault: true },
+);
 
 const { buffer, onTotalInput, onQuarterInput } = useAllocationBuffer(selectedGroupId);
-const { showSaved, saveAll } = useBatchSave(selectedGroupId, buffer);
+const { saveStatus, scheduleSave, saveNow, retrySave } = useAllocationAutoSave(selectedGroupId, buffer);
 
 const groupOptions = computed(() =>
 	groupsStore.items.map((g) => ({
@@ -39,6 +43,16 @@ const selectedGroup = computed(() => groupsStore.items.find((g) => g.id === sele
 function groupName(id: number) {
 	return groupsStore.items.find((g) => g.id === id)?.name ?? '';
 }
+
+function handleTotalInput(projectId: number) {
+	onTotalInput(projectId);
+	scheduleSave(projectId);
+}
+
+function handleQuarterInput(projectId: number) {
+	onQuarterInput(projectId);
+	scheduleSave(projectId);
+}
 </script>
 
 <template>
@@ -50,24 +64,35 @@ function groupName(id: number) {
 				:selected-group-id="selectedGroupId"
 				:group-options="groupOptions"
 				:has-groups="!!groupsStore.items.length"
-				:show-saved="showSaved"
+				:save-status="saveStatus"
 				@update:selected-group-id="selectedGroupId = $event"
-				@save="saveAll"
+				@save="saveNow"
+				@retry-save="retrySave"
 			/>
 
-			<FilterPanel
-				v-if="selectedGroupId && projectsStore.items.length"
-				:customer-options="customerOptions"
-				:manager-options="managerOptions"
-				:selected-customers="selectedCustomers"
-				:selected-managers="selectedManagers"
-				:has-active-filters="hasActiveFilters"
-				:filtered-count="filteredProjectsCount"
-				:total-count="projectsStore.items.length"
-				@update:selected-customers="selectedCustomers = $event"
-				@update:selected-managers="selectedManagers = $event"
-				@reset="resetFilters"
-			/>
+			<div v-if="selectedGroupId && projectsStore.items.length" class="manage__filters">
+				<label class="manage__archived-toggle">
+					<input
+						type="checkbox"
+						:checked="hideArchived"
+						@change="hideArchived = ($event.target as HTMLInputElement).checked"
+					/>
+					<span>Скрыть неактивные проекты</span>
+				</label>
+
+				<FilterPanel
+					:customer-options="customerOptions"
+					:manager-options="managerOptions"
+					:selected-customers="selectedCustomers"
+					:selected-managers="selectedManagers"
+					:has-active-filters="hasActiveFilters"
+					:filtered-count="filteredProjectsCount"
+					:total-count="projectsStore.items.length"
+					@update:selected-customers="selectedCustomers = $event"
+					@update:selected-managers="selectedManagers = $event"
+					@reset="resetFilters"
+				/>
+			</div>
 		</div>
 
 		<div v-if="selectedGroup" class="manage__group-info">
@@ -92,8 +117,8 @@ function groupName(id: number) {
 			:projects="filteredProjects"
 			:group-name="groupName(selectedGroupId)"
 			:buffer="buffer"
-			@total-input="onTotalInput"
-			@quarter-input="onQuarterInput"
+			@total-input="handleTotalInput"
+			@quarter-input="handleQuarterInput"
 		/>
 
 		<p v-else class="manage__empty">Выберите группу, чтобы редактировать распределение.</p>
