@@ -9,7 +9,9 @@
       "projectType": "Интеграция",
       "projectManager": "Смирнова ОВ",
       "description": "Проект «Цифровой пульс» — интеграция",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:38:56.059Z",
+      "actualizedStale": false
     },
     {
       "id": 2,
@@ -31,7 +33,9 @@
       "projectType": "Поддержка",
       "projectManager": "Козлов МИ",
       "description": "Проект «Быстрый каскад» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:56:58.420Z",
+      "actualizedStale": false
     },
     {
       "id": 4,
@@ -53,7 +57,9 @@
       "projectType": "Поддержка",
       "projectManager": "Константинов АП",
       "description": "Проект «Цифровой поток» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-20T10:29:27.451Z",
+      "actualizedStale": true
     },
     {
       "id": 6,
@@ -64,7 +70,9 @@
       "projectType": "Разработка",
       "projectManager": "Петров ДА",
       "description": "Проект «Цифровой модуль» — разработка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:41:00.732Z",
+      "actualizedStale": false
     },
     {
       "id": 7,
@@ -75,7 +83,9 @@
       "projectType": "Консалтинг",
       "projectManager": "Богданов ВЕ",
       "description": "Проект «Стальной импульс» — интеграция",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-20T10:29:23.282Z",
+      "actualizedStale": false
     },
     {
       "id": 8,
@@ -86,7 +96,9 @@
       "projectType": "Разработка",
       "projectManager": "Богданов ВЕ",
       "description": "Проект «Открытый кластер» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:38:59.531Z",
+      "actualizedStale": false
     },
     {
       "id": 9,
@@ -97,7 +109,9 @@
       "projectType": "Поддержка",
       "projectManager": "Богданов ВЕ",
       "description": "Проект «Точный вектор» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:43:42.627Z",
+      "actualizedStale": false
     },
     {
       "id": 10,
@@ -108,7 +122,9 @@
       "projectType": "Поддержка",
       "projectManager": "Петров ДА",
       "description": "Проект «Северный щит» — разработка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:43:43.183Z",
+      "actualizedStale": false
     },
     {
       "id": 11,
@@ -119,7 +135,9 @@
       "projectType": "Консалтинг",
       "projectManager": "Константинов АП",
       "description": "Проект «Новый щит» — разработка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:40:22.183Z",
+      "actualizedStale": true
     },
     {
       "id": 12,
@@ -141,7 +159,9 @@
       "projectType": "Консалтинг",
       "projectManager": "Козлов МИ",
       "description": "Проект «Умный модуль» — консалтинг",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-17T10:07:11.812Z",
+      "actualizedStale": true
     },
     {
       "id": 14,
@@ -163,7 +183,9 @@
       "projectType": "Разработка",
       "projectManager": "Смирнова ОВ",
       "description": "Проект «Новый мост» — разработка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-17T10:03:27.231Z",
+      "actualizedStale": false
     },
     {
       "id": 16,
@@ -196,7 +218,9 @@
       "projectType": "Интеграция",
       "projectManager": "Козлов МИ",
       "description": "Проект «Умный горизонт» — консалтинг",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:41:40.901Z",
+      "actualizedStale": false
     },
     {
       "id": 19,
@@ -229,7 +253,9 @@
       "projectType": "Интеграция",
       "projectManager": "Богданов ВЕ",
       "description": "Проект «Мобильный горизонт» — интеграция",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:57:03.097Z",
+      "actualizedStale": false
     },
     {
       "id": 22,
@@ -240,7 +266,9 @@
       "projectType": "Консалтинг",
       "projectManager": "Константинов АП",
       "description": "Проект «Новый импульс» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:37:58.904Z",
+      "actualizedStale": false
     },
     {
       "id": 23,
@@ -262,7 +290,9 @@
       "projectType": "Разработка",
       "projectManager": "Смирнова ОВ",
       "description": "Проект «Цифровой резерв» — поддержка",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:40:30.427Z",
+      "actualizedStale": true
     },
     {
       "id": 25,
@@ -284,7 +314,9 @@
       "projectType": "Поддержка",
       "projectManager": "Петров ДА",
       "description": "Проект «Северный вектор» — консалтинг",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:43:46.313Z",
+      "actualizedStale": false
     },
     {
       "id": 27,
@@ -306,7 +338,9 @@
       "projectType": "Разработка",
       "projectManager": "Иванова ЕС",
       "description": "Проект «Глобальный мост» — консалтинг",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:43:45.711Z",
+      "actualizedStale": false
     },
     {
       "id": 29,
@@ -317,7 +351,9 @@
       "projectType": "Консалтинг",
       "projectManager": "Козлов МИ",
       "description": "Проект «Единый мост» — консалтинг",
-      "url": ""
+      "url": "",
+      "actualizedAt": "2026-07-23T08:43:46.757Z",
+      "actualizedStale": true
     },
     {
       "id": 30,

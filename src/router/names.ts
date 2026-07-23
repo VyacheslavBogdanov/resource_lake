@@ -3,4 +3,5 @@ export enum RouteNames {
 	Projects = 'Projects',
 	Groups = 'Groups',
 	Manage = 'Manage',
+	ProjectManage = 'ProjectManage',
 }

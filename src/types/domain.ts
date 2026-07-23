@@ -8,6 +8,8 @@ export interface Project {
 	projectManager?: string;
 	description?: string;
 	order?: number;
+	actualizedAt?: string;
+	actualizedStale?: boolean;
 }
 
 export interface Group {

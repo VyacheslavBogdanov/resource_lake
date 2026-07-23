@@ -14,7 +14,7 @@ const updatedLabel = computed((): string | null => {
 	let iso: string | null = null;
 	if (name === RouteNames.Projects) iso = uiStore.updatedAtProjects;
 	else if (name === RouteNames.Groups) iso = uiStore.updatedAtGroups;
-	else if (name === RouteNames.Manage) iso = uiStore.updatedAtAllocations;
+	else if (name === RouteNames.Manage || name === RouteNames.ProjectManage) iso = uiStore.updatedAtAllocations;
 	if (!iso) return null;
 	return new Date(iso).toLocaleString('ru-RU');
 });
@@ -27,6 +27,7 @@ const updatedLabel = computed((): string | null => {
 			<RouterLink class="header__link" :to="{ name: RouteNames.Projects }">Проекты</RouterLink>
 			<RouterLink class="header__link" :to="{ name: RouteNames.Groups }">Группы ресурсов</RouterLink>
 			<RouterLink class="header__link" :to="{ name: RouteNames.Manage }">Управление данными</RouterLink>
+			<RouterLink class="header__link" :to="{ name: RouteNames.ProjectManage }">Управление проектами</RouterLink>
 		</nav>
 		<span v-if="updatedLabel" class="header__updated">Обновлено: {{ updatedLabel }}</span>
 		<span class="header__version">{{ versionLabel }}</span>

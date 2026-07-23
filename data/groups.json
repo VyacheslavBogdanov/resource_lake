@@ -18,7 +18,7 @@
       "description": "",
       "supportPercent": 10,
       "resourceType": "Тестировщик",
-      "position": 3
+      "position": 1
     },
     {
       "id": 4,
@@ -28,17 +28,17 @@
       "description": "",
       "supportPercent": 18,
       "resourceType": "Программист",
-      "position": 4
+      "position": 3
     },
     {
       "id": 5,
       "name": "Mobile",
       "headcount": 4,
-      "capacityHours": 576,
+      "capacityHours": 1728,
       "description": "",
       "supportPercent": 26,
       "resourceType": "Программист",
-      "position": 5
+      "position": 4
     },
     {
       "id": 6,
@@ -48,7 +48,7 @@
       "description": "",
       "supportPercent": 30,
       "resourceType": "Дизайнер",
-      "position": 6
+      "position": 5
     },
     {
       "id": 7,
@@ -58,7 +58,7 @@
       "description": "",
       "supportPercent": 25,
       "resourceType": "Программист",
-      "position": 7
+      "position": 6
     },
     {
       "id": 8,
@@ -68,7 +68,7 @@
       "description": "",
       "supportPercent": 21,
       "resourceType": "Аналитик",
-      "position": 8
+      "position": 7
     },
     {
       "id": 9,
@@ -78,7 +78,7 @@
       "description": "",
       "supportPercent": 10,
       "resourceType": "Программист",
-      "position": 9
+      "position": 8
     },
     {
       "id": 10,
@@ -88,7 +88,7 @@
       "description": "",
       "supportPercent": 27,
       "resourceType": "Программист",
-      "position": 10
+      "position": 9
     },
     {
       "id": 11,
@@ -98,7 +98,7 @@
       "description": "",
       "supportPercent": 25,
       "resourceType": "Конструктор",
-      "position": 11
+      "position": 10
     },
     {
       "id": 12,
@@ -108,7 +108,7 @@
       "description": "",
       "supportPercent": 11,
       "resourceType": "Аналитик",
-      "position": 12
+      "position": 11
     },
     {
       "id": 13,
@@ -118,7 +118,7 @@
       "description": "",
       "supportPercent": 4,
       "resourceType": "Конструктор",
-      "position": 13
+      "position": 12
     },
     {
       "id": 14,
@@ -128,7 +128,7 @@
       "description": "",
       "supportPercent": 20,
       "resourceType": "Программист",
-      "position": 14
+      "position": 13
     },
     {
       "id": 15,
@@ -138,7 +138,7 @@
       "description": "",
       "supportPercent": 22,
       "resourceType": "Программист",
-      "position": 15
+      "position": 14
     },
     {
       "name": "123",
@@ -146,7 +146,7 @@
       "capacityHours": 288,
       "description": "",
       "supportPercent": 0,
-      "position": 16,
+      "position": 15,
       "id": 16,
       "resourceType": ""
     },
@@ -156,8 +156,152 @@
       "capacityHours": 864,
       "description": "",
       "supportPercent": 0,
-      "position": 17,
+      "position": 16,
       "id": 17
+    },
+    {
+      "name": "11213",
+      "headcount": 2,
+      "capacityHours": 864,
+      "description": "",
+      "supportPercent": 0,
+      "position": 17,
+      "id": 18
+    },
+    {
+      "name": "21312",
+      "headcount": 3,
+      "capacityHours": 1296,
+      "description": "",
+      "supportPercent": 0,
+      "position": 18,
+      "id": 19
+    },
+    {
+      "name": "121",
+      "headcount": 1221,
+      "capacityHours": 527472,
+      "description": "",
+      "supportPercent": 0,
+      "position": 19,
+      "id": 20
+    },
+    {
+      "name": "122121",
+      "headcount": 2112,
+      "capacityHours": 912384,
+      "description": "",
+      "supportPercent": 0,
+      "position": 20,
+      "id": 21
+    },
+    {
+      "name": "122121",
+      "headcount": 212112,
+      "capacityHours": 91632384,
+      "description": "",
+      "supportPercent": 0,
+      "position": 21,
+      "id": 22
+    },
+    {
+      "name": "122121",
+      "headcount": 211221,
+      "capacityHours": 91247472,
+      "description": "",
+      "supportPercent": 0,
+      "position": 22,
+      "id": 23
+    },
+    {
+      "name": "12312",
+      "headcount": 21312,
+      "capacityHours": 9206784,
+      "description": "",
+      "supportPercent": 0,
+      "position": 23,
+      "id": 24
+    },
+    {
+      "name": "вввввввв",
+      "headcount": 1,
+      "capacityHours": 432,
+      "description": "",
+      "supportPercent": 0,
+      "position": 24,
+      "id": 25
+    },
+    {
+      "name": "1111111в",
+      "headcount": 111,
+      "capacityHours": 47952,
+      "description": "",
+      "supportPercent": 0,
+      "position": 25,
+      "id": 26
+    },
+    {
+      "name": "1231",
+      "headcount": 213,
+      "capacityHours": 92016,
+      "description": "",
+      "supportPercent": 0,
+      "position": 26,
+      "id": 27
+    },
+    {
+      "name": "21312",
+      "headcount": 21312,
+      "capacityHours": 9206784,
+      "description": "",
+      "supportPercent": 0,
+      "position": 27,
+      "id": 28
+    },
+    {
+      "name": "2131",
+      "headcount": 2131,
+      "capacityHours": 920592,
+      "description": "",
+      "supportPercent": 0,
+      "position": 28,
+      "id": 29
+    },
+    {
+      "name": "122312",
+      "headcount": 1221,
+      "capacityHours": 527472,
+      "description": "",
+      "supportPercent": 0,
+      "position": 29,
+      "id": 30
+    },
+    {
+      "name": "11",
+      "headcount": 11,
+      "capacityHours": 4752,
+      "description": "",
+      "supportPercent": 0,
+      "position": 30,
+      "id": 31
+    },
+    {
+      "name": "111",
+      "headcount": 11,
+      "capacityHours": 4752,
+      "description": "",
+      "supportPercent": 0,
+      "position": 31,
+      "id": 32
+    },
+    {
+      "name": "222",
+      "headcount": 222,
+      "capacityHours": 95904,
+      "description": "",
+      "supportPercent": 0,
+      "position": 32,
+      "id": 33
     }
   ]
 }

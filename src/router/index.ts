@@ -29,5 +29,11 @@ export const router = createRouter({
 			component: () => import('../pages/DataManage/DataManage.vue'),
 			meta: { title: 'Управление данными' },
 		},
+		{
+			path: '/project-manage',
+			name: RouteNames.ProjectManage,
+			component: () => import('../pages/ProjectManage/ProjectManage.vue'),
+			meta: { title: 'Управление проектами' },
+		},
 	],
 });

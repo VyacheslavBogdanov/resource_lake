@@ -115,6 +115,7 @@ export const useAllocationsStore = defineStore('allocations', {
 					if (index >= 0) this.items[index] = saved;
 					else this.items.push(saved);
 					useUiStore().touchAllocationsDate();
+					void useProjectsStore().markResourcesChanged(projectId);
 				}
 			} catch (err) {
 				console.error('Ошибка при автоматическом сохранении распределения:', err);
