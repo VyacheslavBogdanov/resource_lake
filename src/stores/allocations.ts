@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { api } from '../services/http';
-import type { Allocation, AllocationPayloadByProject } from '../types/domain';
+import type { Allocation, AllocationPayload, AllocationPayloadByProject } from '../types/domain';
 import { useProjectsStore } from './projects';
 import { useUiStore } from './ui';
 
@@ -121,6 +121,38 @@ export const useAllocationsStore = defineStore('allocations', {
 				useUiStore().touchAllocationsDate();
 			} catch (err) {
 				console.error('Ошибка при установке распределения:', err);
+				throw err;
+			}
+		},
+
+		async setAllocationForGroup(projectId: number, groupId: number, payload: AllocationPayload) {
+			try {
+				const hours = Number(payload.hours || 0);
+				const patch: Partial<Allocation> = {
+					hours,
+					q1: payload.q1 ?? 0,
+					q2: payload.q2 ?? 0,
+					q3: payload.q3 ?? 0,
+					q4: payload.q4 ?? 0,
+				};
+				const existing = this.byPairIndex.get(`${projectId}:${groupId}`);
+				let saved: Allocation | null = null;
+
+				if (existing) {
+					saved = await api.update<Allocation>('allocations', existing.id, patch);
+				} else if (hours > 0 || patch.q1 || patch.q2 || patch.q3 || patch.q4) {
+					saved = await api.create<Allocation>('allocations', { projectId, groupId, ...patch });
+				}
+
+				if (saved) {
+					const index = this.items.findIndex((item) => item.id === saved.id);
+					if (index >= 0) this.items[index] = saved;
+					else this.items.push(saved);
+					useUiStore().touchAllocationsDate();
+					void useProjectsStore().markResourcesChanged(projectId);
+				}
+			} catch (err) {
+				console.error('Ошибка при автоматическом сохранении распределения:', err);
 				throw err;
 			}
 		},

@@ -9,6 +9,8 @@ export interface Project {
 	description?: string;
 	order?: number;
 	allocationsUpdatedAt?: string;
+	actualizedAt?: string;
+	actualizedStale?: boolean;
 }
 
 export interface Group {
