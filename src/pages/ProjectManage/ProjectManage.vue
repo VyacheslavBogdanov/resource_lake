@@ -48,9 +48,7 @@ function matchesSearch(name: string, query: string): boolean {
 
 const visibleProjects = computed(() => {
 	const query = search.value.trim().toLowerCase();
-	return projectsStore.items.filter(
-		(p) => (!hideArchived.value || !p.archived) && matchesSearch(p.name, query),
-	);
+	return projectsStore.items.filter((p) => (!hideArchived.value || !p.archived) && matchesSearch(p.name, query));
 });
 
 const selectedProjectId = ref<number | null>(null);
@@ -68,7 +66,9 @@ function clearSelection() {
 }
 
 const isSplit = computed(() => viewMode.value === 'quarterSplit');
-const quarterField = computed<'q1' | 'q2' | 'q3' | 'q4'>(() => `q${selectedQuarter.value}` as 'q1' | 'q2' | 'q3' | 'q4');
+const quarterField = computed<'q1' | 'q2' | 'q3' | 'q4'>(
+	() => `q${selectedQuarter.value}` as 'q1' | 'q2' | 'q3' | 'q4',
+);
 
 const statusLabel = computed(() => {
 	switch (saveStatus.value) {
@@ -239,52 +239,47 @@ function handleQuarter(projectId: number, groupId: number) {
 
 			<div class="pm__status">
 				<transition name="pm-fade" mode="out-in">
-				<div
-					v-if="saveStatus !== 'idle'"
-					:key="saveStatus"
-					class="pm__notice"
-					:class="`pm__notice--${saveStatus}`"
-					role="status"
-					aria-live="polite"
-				>
-					<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-						<path
-							v-if="saveStatus === 'saved'"
-							d="M20 6L9 17l-5-5"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-						<path
-							v-else-if="saveStatus === 'error'"
-							d="M12 8v5m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-						<path
-							v-else
-							class="pm__saving-icon"
-							d="M20 12a8 8 0 1 1-2.34-5.66"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-					</svg>
-					<span>{{ statusLabel }}</span>
-					<button
-						v-if="saveStatus === 'error'"
-						type="button"
-						class="pm__retry"
-						@click="retrySave"
+					<div
+						v-if="saveStatus !== 'idle'"
+						:key="saveStatus"
+						class="pm__notice"
+						:class="`pm__notice--${saveStatus}`"
+						role="status"
+						aria-live="polite"
 					>
-						Повторить
-					</button>
-				</div>
-			</transition>
+						<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+							<path
+								v-if="saveStatus === 'saved'"
+								d="M20 6L9 17l-5-5"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+							<path
+								v-else-if="saveStatus === 'error'"
+								d="M12 8v5m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+							<path
+								v-else
+								class="pm__saving-icon"
+								d="M20 12a8 8 0 1 1-2.34-5.66"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+						</svg>
+						<span>{{ statusLabel }}</span>
+						<button v-if="saveStatus === 'error'" type="button" class="pm__retry" @click="retrySave">
+							Повторить
+						</button>
+					</div>
+				</transition>
 			</div>
 		</div>
 
@@ -457,7 +452,7 @@ function handleQuarter(projectId: number, groupId: number) {
 										:disabled="p.archived"
 										:title="String(cell(p.id, g.id)[`q${q}` as 'q1' | 'q2' | 'q3' | 'q4'])"
 										v-model.number="cell(p.id, g.id)[`q${q}` as 'q1' | 'q2' | 'q3' | 'q4']"
-									@input="handleQuarter(p.id, g.id)"
+										@input="handleQuarter(p.id, g.id)"
 									/>
 								</td>
 							</template>

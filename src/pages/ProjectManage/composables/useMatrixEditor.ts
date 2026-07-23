@@ -123,11 +123,9 @@ export function useMatrixEditor(options: MatrixEditorOptions = {}) {
 		buffer.value = next;
 	}
 
-	watch(
-		() => [projectsStore.items.length, groupsStore.items.length, allocationsStore.items.length],
-		buildBuffer,
-		{ immediate: true },
-	);
+	watch(() => [projectsStore.items.length, groupsStore.items.length, allocationsStore.items.length], buildBuffer, {
+		immediate: true,
+	});
 
 	function cell(projectId: number, groupId: number): RowBuffer {
 		const key = pairKey(projectId, groupId);
