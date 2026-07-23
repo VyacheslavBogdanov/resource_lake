@@ -40,5 +40,5 @@ export default defineConfig(({ command }) => ({
 			},
 		},
 	},
-	server: { port: 5173 },
+	server: { host: true, port: 5173 },
 }));

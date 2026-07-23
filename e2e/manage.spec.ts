@@ -97,18 +97,24 @@ test.describe('Страница «Управление данными»', () => 
 		await expect(page.locator('.manage__cell--left:has-text("Проект Бета")')).toBeHidden();
 	});
 
-	test('кнопка «Сохранить» отправляет данные', async ({ page }) => {
+	test('изменения сохраняются автоматически', async ({ page }) => {
 		await page.goto('/manage');
 
 		await page.locator('.c-select__trigger').click();
 		await page.locator('.c-select__option').filter({ hasText: 'Frontend' }).click();
 		await expect(page.locator('.manage__table')).toBeVisible({ timeout: 5_000 });
 
-		// Клик по кнопке сохранения
-		await page.click('button:has-text("Сохранить")');
+		const totalInput = page.locator('.manage__row').first().locator('.manage__input').first();
+		await totalInput.fill('137');
 
-		// Уведомление «Сохранено» появляется
+		// Сохранение запускается после небольшой паузы.
 		await expect(page.locator('text=Сохранено')).toBeVisible({ timeout: 5_000 });
+
+		// Значение остаётся после перезагрузки страницы.
+		await page.reload();
+		await page.locator('.c-select__trigger').click();
+		await page.locator('.c-select__option').filter({ hasText: 'Frontend' }).click();
+		await expect(page.locator('.manage__row').first().locator('.manage__input').first()).toHaveValue('137');
 	});
 
 	test('уведомление «Сохранено» исчезает', async ({ page }) => {
@@ -118,18 +124,26 @@ test.describe('Страница «Управление данными»', () => 
 		await page.locator('.c-select__option').filter({ hasText: 'Frontend' }).click();
 		await expect(page.locator('.manage__table')).toBeVisible({ timeout: 5_000 });
 
-		await page.click('button:has-text("Сохранить")');
+		const totalInput = page.locator('.manage__row').first().locator('.manage__input').first();
+		await totalInput.fill('138');
 		await expect(page.locator('text=Сохранено')).toBeVisible({ timeout: 5_000 });
 
 		// Ждём исчезновения (2.5с + анимация)
 		await expect(page.locator('text=Сохранено')).toBeHidden({ timeout: 5_000 });
 	});
 
-	test('кнопка «Сохранить» заблокирована без выбора группы', async ({ page }) => {
+	test('ручная кнопка запускает ожидающее автосохранение сразу', async ({ page }) => {
 		await page.goto('/manage');
 
-		const saveBtn = page.locator('button:has-text("Сохранить")');
-		await expect(saveBtn).toBeDisabled();
+		await page.locator('.c-select__trigger').click();
+		await page.locator('.c-select__option').filter({ hasText: 'Frontend' }).click();
+		await expect(page.locator('.manage__table')).toBeVisible({ timeout: 5_000 });
+
+		const totalInput = page.locator('.manage__row').first().locator('.manage__input').first();
+		await totalInput.fill('139');
+		await page.getByRole('button', { name: 'Сохранить изменения' }).click();
+
+		await expect(page.locator('text=Сохранено')).toBeVisible({ timeout: 5_000 });
 	});
 
 	test('пустая страница без выбора группы', async ({ page }) => {

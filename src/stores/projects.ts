@@ -120,6 +120,38 @@ export const useProjectsStore = defineStore('projects', {
 			}
 		},
 
+		async setActualized(id: number) {
+			try {
+				const iso = new Date().toISOString();
+				const saved = await api.update<Project>('projects', id, {
+					actualizedAt: iso,
+					actualizedStale: false,
+				});
+				const item = this.items.find((p) => p.id === id);
+				if (item) {
+					item.actualizedAt = saved?.actualizedAt ?? iso;
+					item.actualizedStale = false;
+				}
+				useUiStore().touchProjectsDate();
+			} catch (err) {
+				console.error('Ошибка при актуализации проекта:', err);
+				throw err;
+			}
+		},
+
+		// Пометить, что ресурсы проекта изменились после актуализации → отметка «устарела».
+		// Пишем в API только при переходе (была свежая отметка), лишних запросов нет.
+		async markResourcesChanged(id: number) {
+			const item = this.items.find((p) => p.id === id);
+			if (!item || !item.actualizedAt || item.actualizedStale) return;
+			item.actualizedStale = true;
+			try {
+				await api.update<Project>('projects', id, { actualizedStale: true });
+			} catch (err) {
+				console.error('Ошибка при пометке актуализации устаревшей:', err);
+			}
+		},
+
 		async deleteProject(id: number) {
 			try {
 				const allocationsStore = useAllocationsStore();

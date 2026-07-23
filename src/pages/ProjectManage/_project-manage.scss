@@ -1,0 +1,492 @@
+@use '../../styles/variables' as *;
+
+.pm {
+	--pm-row-h: 38px;
+	--pm-ctl-h: 28px;
+	--pm-hscroll-h: 16px;
+
+	&--has-hscroll {
+		padding-bottom: calc(var(--pm-hscroll-h) + 10px);
+	}
+
+	// горизонтальная полоса, всегда приклеенная к низу экрана
+	&__hscroll {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: var(--pm-hscroll-h);
+		overflow-x: auto;
+		overflow-y: hidden;
+		background: rgba(245, 249, 255, 0.92);
+		backdrop-filter: blur(6px);
+		border-top: 1px solid $color-border-accent;
+		z-index: 50;
+	}
+
+	&__hscroll-inner {
+		height: 1px;
+	}
+
+	&__title {
+		margin-bottom: 4px;
+	}
+
+	&__subtitle {
+		margin: 0 0 10px;
+		color: $color-text-soft;
+		font-size: $font-size-sm;
+	}
+
+	&__alert {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 12px;
+		padding: 8px 14px;
+		border-radius: $radius-md;
+		background: $color-warning-bg;
+		border: 1px solid $color-warning-border;
+		color: #b45309;
+		font-size: $font-size-sm;
+		font-weight: 600;
+
+		svg {
+			flex: 0 0 auto;
+		}
+	}
+
+	&__toolbar {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-bottom: 10px;
+	}
+
+	&__archived-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: $font-size-sm;
+		color: $color-text-muted;
+		white-space: nowrap;
+		cursor: pointer;
+
+		input {
+			cursor: pointer;
+		}
+	}
+
+	&__search {
+		height: 40px;
+		min-width: 320px;
+		padding: 0 14px;
+		border: 1px solid $color-border;
+		border-radius: $radius-md;
+		background: $color-bg-surface;
+		font: inherit;
+		font-size: $font-size-base;
+		color: $color-text-muted;
+		box-sizing: border-box;
+
+		&:focus-visible {
+			outline: none;
+			border-color: $color-primary-600;
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+		}
+	}
+
+	&__view-modes {
+		display: inline-flex;
+		align-items: center;
+		gap: 14px;
+		flex-wrap: wrap;
+	}
+
+	&__mode {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: $font-size-sm;
+		color: $color-text-muted;
+		cursor: pointer;
+
+		input {
+			cursor: pointer;
+		}
+	}
+
+	&__quarter-picker {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: $font-size-sm;
+		color: $color-text-soft;
+	}
+
+	&__quarter-select {
+		height: var(--pm-ctl-h);
+		border: 1px solid $color-border-input;
+		border-radius: 6px;
+		background: $color-bg-surface;
+		padding: 0 6px;
+	}
+
+	&__status {
+		min-height: 34px;
+		display: flex;
+		align-items: center;
+	}
+
+	&__notice {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 10px;
+		border-radius: 999px;
+		border: 1px solid $color-border-accent;
+		background: $color-bg-subtle;
+		color: $color-text-muted;
+		font-size: $font-size-sm;
+		font-weight: 600;
+		box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
+
+		&--saved {
+			border-color: $color-success-border;
+			background: $color-success-bg;
+			color: $color-success-text;
+		}
+
+		&--error {
+			border-color: $color-danger-border;
+			background: $color-danger-bg;
+			color: $color-danger-text;
+		}
+	}
+
+	&__saving-icon {
+		transform-origin: center;
+		animation: pm-saving-spin 0.8s linear infinite;
+	}
+
+	&__retry {
+		padding: 0;
+		border: 0;
+		border-bottom: 1px solid currentColor;
+		background: transparent;
+		cursor: pointer;
+		color: inherit;
+		font-size: inherit;
+	}
+
+	&__scroll {
+		overflow: auto;
+		max-width: 100%;
+		max-height: calc(100vh - 220px);
+		border: 1px solid $color-border-divider;
+		border-radius: 12px;
+		box-shadow: $shadow-sm;
+	}
+
+	&__table {
+		width: max-content;
+		min-width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		background: $color-bg-surface;
+		table-layout: fixed;
+		font-size: 13px;
+	}
+
+	&__col--name {
+		width: 250px;
+	}
+	&__col--num {
+		width: 76px;
+	}
+	&__col--q {
+		width: 50px;
+	}
+	&__col--total {
+		width: 66px;
+	}
+
+	&__th,
+	&__cell {
+		height: var(--pm-row-h);
+		padding: 0 4px;
+		border-bottom: 1px solid $color-border-separator;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	tbody &__cell {
+		border-bottom-width: 2px;
+	}
+
+	&__th {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		background: $color-bg-subtle;
+		font-size: 13px;
+		font-weight: $font-weight-semibold;
+		color: $color-text-link;
+	}
+
+	&__th--group {
+		border-left: 2px solid $color-border-separator;
+		white-space: normal;
+		word-break: normal;
+		line-height: 1.2;
+		cursor: pointer;
+	}
+
+	&__th--sub {
+		top: var(--pm-row-h);
+		font-weight: 400;
+		color: $color-text-secondary;
+		cursor: pointer;
+	}
+
+	&__th--group-start,
+	&__cell--group-start {
+		border-left: 2px solid $color-border-separator;
+	}
+
+	// тонкие линии между кварталами внутри группы (режим «Квартально (4 колонки)»)
+	&__th--sub:not(.pm__th--group-start),
+	&__cell:not(.pm__cell--group-start):not(.pm__cell--total):not(.pm__cell--left) {
+		border-left: 1px solid $color-border-separator;
+	}
+
+	// стык «Проект» и первой колонки данных: убираем вторую линию,
+	// оставляя только правую границу липкой колонки
+	&__th--left + &__th--group,
+	&__cell--left + &__cell--group-start,
+	&__th--sub:first-child {
+		border-left: none;
+	}
+
+	&__th--left,
+	&__cell--left {
+		position: sticky;
+		left: 0;
+		z-index: 3;
+		text-align: left;
+		background: $color-bg-surface;
+		line-height: 1.25;
+		overflow: hidden;
+		border-right: 2px solid $color-border-separator;
+	}
+
+	&__cell--left {
+		cursor: pointer;
+	}
+
+	&__cell--left {
+		padding-top: 6px;
+		padding-bottom: 6px;
+	}
+
+	&__th--left {
+		z-index: 4;
+		background: $color-bg-subtle;
+		font-size: $font-size-base;
+		font-weight: $font-weight-bold;
+		color: $color-text-heading;
+	}
+
+	&__project {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	&__project-name {
+		font-size: $font-size-base;
+		font-weight: $font-weight-medium;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__actual {
+		margin-top: 4px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 3px;
+		max-width: 100%;
+	}
+
+	&__actual-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		max-width: 100%;
+		font-size: 11px;
+		line-height: 1.3;
+
+		svg {
+			flex: 0 0 auto;
+		}
+
+		span {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		&--ok {
+			color: $color-success-text;
+		}
+
+		&--stale {
+			color: #b45309;
+		}
+	}
+
+	&__actualize {
+		display: inline-flex;
+		align-items: center;
+		padding: 2px 10px;
+		border-radius: $radius-full;
+		border: 1px solid $color-border-active;
+		background: $color-bg-surface;
+		color: $color-primary-600;
+		font-size: 11px;
+		line-height: 1.5;
+		cursor: pointer;
+		white-space: nowrap;
+
+		&:hover {
+			background: $color-bg-subtle;
+		}
+	}
+
+	&__archived-tag {
+		display: inline-block;
+		margin-left: 6px;
+		padding: 1px 6px;
+		border-radius: $radius-full;
+		background: $color-bg-badge;
+		color: $color-badge-text;
+		font-size: 10px;
+		vertical-align: middle;
+	}
+
+	&__th-name {
+		display: block;
+		font-weight: $font-weight-bold;
+	}
+
+	&__th-note {
+		display: block;
+		margin-top: 2px;
+		font-size: 11px;
+		color: $color-text-secondary;
+		font-weight: 400;
+	}
+
+	&__th--total-head,
+	&__cell--total {
+		border-left: 2px solid $color-border-separator;
+		background: $color-bg-subtle;
+		font-weight: $font-weight-semibold;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__row:hover &__cell {
+		background: $color-bg-row-hover;
+	}
+	&__row:hover &__cell--left {
+		background: $color-bg-row-hover;
+	}
+
+	// приглушаем содержимое, но НЕ трогаем границы — сетка остаётся чёткой
+	&__row--archived &__cell {
+		color: $color-text-secondary;
+	}
+	&__row--archived &__project-name {
+		color: $color-text-secondary;
+		font-weight: 400;
+	}
+
+	&__row--selected td {
+		background: $color-border-cell-edit !important;
+	}
+
+	&__cell--col-selected,
+	&__th--col-selected {
+		background: $color-border-cell-edit !important;
+	}
+
+	// подсветка изменённых (устаревших) ячеек — красным
+	&__cell--changed &__input {
+		border-color: $color-danger;
+		background: $color-danger-bg;
+		color: $color-danger-text;
+		font-weight: $font-weight-semibold;
+	}
+
+	&__input {
+		width: 40px;
+		height: var(--pm-ctl-h);
+		padding: 0 3px;
+		border: 1px solid $color-border;
+		border-radius: 6px;
+		background: $color-bg-surface;
+		box-sizing: border-box;
+		text-align: center;
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+
+		&--total {
+			width: 52px;
+			font-weight: $font-weight-semibold;
+		}
+
+		&:focus-visible {
+			outline: none;
+			border-color: $color-primary-600;
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+		}
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+	}
+
+	&__empty {
+		color: $color-text-soft;
+	}
+}
+
+@keyframes pm-saving-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.pm-fade-enter-active,
+.pm-fade-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+.pm-fade-enter-from,
+.pm-fade-leave-to {
+	opacity: 0;
+	transform: translateY(-4px);
+}

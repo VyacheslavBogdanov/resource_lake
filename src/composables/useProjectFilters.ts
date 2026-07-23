@@ -1,9 +1,19 @@
 import { computed, ref, type ComputedRef, type Ref } from 'vue';
 import type { Project } from '../types/domain';
 
-export function useProjectFilters(projects: Ref<Project[]> | ComputedRef<Project[]>) {
+interface ProjectFiltersOptions {
+	hideArchivedByDefault?: boolean;
+}
+
+export function useProjectFilters(
+	projects: Ref<Project[]> | ComputedRef<Project[]>,
+	options: ProjectFiltersOptions = {},
+) {
+	const { hideArchivedByDefault = false } = options;
+
 	const selectedCustomers = ref<string[]>([]);
 	const selectedManagers = ref<string[]>([]);
+	const hideArchived = ref(hideArchivedByDefault);
 
 	const customerOptions = computed(() => {
 		const set = new Set<string>();
@@ -23,7 +33,9 @@ export function useProjectFilters(projects: Ref<Project[]> | ComputedRef<Project
 		return Array.from(set).sort((a, b) => a.localeCompare(b, 'ru'));
 	});
 
-	const hasActiveFilters = computed(() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0);
+	const hasActiveFilters = computed(
+		() => selectedCustomers.value.length > 0 || selectedManagers.value.length > 0 || hideArchived.value,
+	);
 
 	const filteredProjects = computed(() => {
 		if (!hasActiveFilters.value) return projects.value;
@@ -32,6 +44,8 @@ export function useProjectFilters(projects: Ref<Project[]> | ComputedRef<Project
 		const managers = new Set(selectedManagers.value);
 
 		return projects.value.filter((p) => {
+			if (hideArchived.value && p.archived) return false;
+
 			const customer = (p.customer ?? '').trim();
 			const manager = (p.projectManager ?? '').trim();
 
@@ -47,11 +61,13 @@ export function useProjectFilters(projects: Ref<Project[]> | ComputedRef<Project
 	function resetFilters() {
 		selectedCustomers.value = [];
 		selectedManagers.value = [];
+		hideArchived.value = hideArchivedByDefault;
 	}
 
 	return {
 		selectedCustomers,
 		selectedManagers,
+		hideArchived,
 		customerOptions,
 		managerOptions,
 		hasActiveFilters,

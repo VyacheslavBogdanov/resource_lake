@@ -92,6 +92,54 @@ describe('useProjectFilters', () => {
 		expect(hasActiveFilters.value).toBe(true);
 	});
 
+	it('скрывает архивные проекты при hideArchived', () => {
+		const projects = ref<Project[]>([
+			makeProject({ id: 1, name: 'A' }),
+			makeProject({ id: 2, name: 'B', archived: true }),
+		]);
+		const { hideArchived, hasActiveFilters, filteredProjects } = useProjectFilters(projects);
+
+		expect(filteredProjects.value).toHaveLength(2);
+
+		hideArchived.value = true;
+		expect(hasActiveFilters.value).toBe(true);
+		expect(filteredProjects.value).toHaveLength(1);
+		expect(filteredProjects.value[0].name).toBe('A');
+	});
+
+	it('resetFilters сбрасывает hideArchived', () => {
+		const projects = ref<Project[]>([
+			makeProject({ id: 1, name: 'A' }),
+			makeProject({ id: 2, name: 'B', archived: true }),
+		]);
+		const { hideArchived, resetFilters, filteredProjects } = useProjectFilters(projects);
+
+		hideArchived.value = true;
+		resetFilters();
+
+		expect(hideArchived.value).toBe(false);
+		expect(filteredProjects.value).toHaveLength(2);
+	});
+
+	it('hideArchivedByDefault включает скрытие сразу и сохраняется при сбросе', () => {
+		const projects = ref<Project[]>([
+			makeProject({ id: 1, name: 'A' }),
+			makeProject({ id: 2, name: 'B', archived: true }),
+		]);
+		const { hideArchived, hasActiveFilters, filteredProjects, resetFilters } = useProjectFilters(projects, {
+			hideArchivedByDefault: true,
+		});
+
+		expect(hideArchived.value).toBe(true);
+		expect(hasActiveFilters.value).toBe(true);
+		expect(filteredProjects.value).toHaveLength(1);
+		expect(filteredProjects.value[0].name).toBe('A');
+
+		hideArchived.value = false;
+		resetFilters();
+		expect(hideArchived.value).toBe(true);
+	});
+
 	it('игнорирует пустые значения customer/manager', () => {
 		const projects = ref<Project[]>([
 			makeProject({ id: 1, name: 'A', customer: '', projectManager: '  ' }),

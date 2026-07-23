@@ -13,19 +13,20 @@ function createTestRouter() {
 			{ path: '/projects', name: RouteNames.Projects, component: { template: '<div />' } },
 			{ path: '/groups', name: RouteNames.Groups, component: { template: '<div />' } },
 			{ path: '/manage', name: RouteNames.Manage, component: { template: '<div />' } },
+			{ path: '/project-manage', name: RouteNames.ProjectManage, component: { template: '<div />' } },
 		],
 	});
 }
 
 describe('NavHeader', () => {
-	it('renders 4 navigation links', async () => {
+	it('renders 5 navigation links', async () => {
 		const router = createTestRouter();
 		await router.push('/plan');
 		await router.isReady();
 
 		const wrapper = mount(NavHeader, { global: { plugins: [router, createPinia()] } });
 		const links = wrapper.findAll('.header__link');
-		expect(links).toHaveLength(4);
+		expect(links).toHaveLength(5);
 	});
 
 	it('links have correct routes', async () => {
@@ -40,6 +41,7 @@ describe('NavHeader', () => {
 		expect(hrefs).toContain('/projects');
 		expect(hrefs).toContain('/groups');
 		expect(hrefs).toContain('/manage');
+		expect(hrefs).toContain('/project-manage');
 	});
 
 	it('shows help icon when VITE_HELP_URL is set', async () => {
