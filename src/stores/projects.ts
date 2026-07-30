@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { api } from '../services/http';
-import type { Project, Allocation } from '../types/domain';
+import type { Project, ProjectStatus, ProjectCompletionInput, Allocation } from '../types/domain';
 import { sortProjectsForView } from './utils';
 import { useAllocationsStore } from './allocations';
 import { useUiStore } from './ui';
@@ -43,7 +43,7 @@ export const useProjectsStore = defineStore('projects', {
 			description?: string,
 		) {
 			try {
-				const payload: Partial<Project> = { name, archived: false };
+				const payload: Partial<Project> = { name, status: 'active', archived: false };
 
 				const currentMaxOrder = this.items.reduce(
 					(max, p) => Math.max(max, Number.isFinite(p.order) ? Number(p.order) : -1),
@@ -69,12 +69,66 @@ export const useProjectsStore = defineStore('projects', {
 
 		async toggleArchive(id: number, archived: boolean) {
 			try {
-				await api.update<Project>('projects', id, { archived });
+				const payload: Partial<Project> = archived
+					? { archived: true }
+					: { archived: false, status: 'active', completedAt: null };
+				await api.update<Project>('projects', id, payload);
 				const projects = await api.list<Project>('projects');
 				this.items = sortProjectsForView(projects);
 				useUiStore().touchProjectsDate();
 			} catch (err) {
 				console.error('Ошибка при архивации проекта:', err);
+				throw err;
+			}
+		},
+
+		async setStatus(id: number, status: ProjectStatus) {
+			const completedAt = status === 'completed' ? new Date().toISOString() : null;
+			const project = this.items.find((item) => item.id === id);
+			const shouldUnarchive = status === 'completed' && project?.archived === true;
+			const payload: Partial<Project> = { status, completedAt };
+			if (shouldUnarchive) payload.archived = false;
+			try {
+				await api.update<Project>('projects', id, payload);
+				if (project) {
+					project.status = status;
+					project.completedAt = completedAt;
+					if (shouldUnarchive) project.archived = false;
+				}
+				useUiStore().touchProjectsDate();
+			} catch (err) {
+				console.error('Ошибка при изменении статуса проекта:', err);
+				throw err;
+			}
+		},
+
+		async completeProject(id: number, input: ProjectCompletionInput) {
+			const project = this.items.find((item) => item.id === id);
+			const previousCompletedAt = project?.completion?.completedAt ?? project?.completedAt;
+			const completedAt =
+				project?.status === 'completed' && previousCompletedAt ? previousCompletedAt : new Date().toISOString();
+			const completion = {
+				completedAt,
+				entryMode: input.entryMode,
+				actualTotalHours: input.actualTotalHours,
+				resources: input.resources.map((resource) => ({ ...resource })),
+			};
+			try {
+				await api.update<Project>('projects', id, {
+					status: 'completed',
+					archived: false,
+					completedAt,
+					completion,
+				});
+				if (project) {
+					project.status = 'completed';
+					project.archived = false;
+					project.completedAt = completedAt;
+					project.completion = completion;
+				}
+				useUiStore().touchProjectsDate();
+			} catch (err) {
+				console.error('Ошибка при завершении проекта:', err);
 				throw err;
 			}
 		},

@@ -114,7 +114,7 @@ defineEmits<{
 							:checked="viewMode === 'quarterSingle'"
 							@change="$emit('update:viewMode', 'quarterSingle')"
 						/>
-						<span class="plan__mode-label">По квартально</span>
+						<span class="plan__mode-label">Поквартально</span>
 					</label>
 
 					<label class="plan__mode">

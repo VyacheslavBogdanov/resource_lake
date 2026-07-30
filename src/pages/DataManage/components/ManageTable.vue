@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProjectActualizationStatus from '../../../components/shared/ProjectActualizationStatus.vue';
 import type { Project } from '../../../types/domain';
 import type { RowBuffer } from '../composables/useAllocationBuffer';
 
@@ -6,6 +7,7 @@ defineProps<{
 	projects: Project[];
 	groupName: string;
 	buffer: Record<number, RowBuffer>;
+	hasChangedCells: (projectId: number) => boolean;
 }>();
 
 defineEmits<{
@@ -91,6 +93,11 @@ function openProjectUrl(p: Project) {
 							</svg>
 						</button>
 						<span :title="projectHoverTitle(p)">{{ p.name }}</span>
+						<ProjectActualizationStatus
+							v-if="!p.archived"
+							:project="p"
+							:show-unactualized="hasChangedCells(p.id)"
+						/>
 					</div>
 				</td>
 

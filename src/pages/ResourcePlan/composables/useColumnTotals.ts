@@ -15,7 +15,9 @@ export function useColumnTotals(
 	const groupsStore = useGroupsStore();
 	const allocationsStore = useAllocationsStore();
 
-	const activeProjects = computed(() => projectsStore.items.filter((p) => !p.archived));
+	const activeProjects = computed(() =>
+		projectsStore.items.filter((project) => !project.archived && project.status !== 'completed'),
+	);
 
 	const activeColTotals = computed<Record<number, number>>(() => {
 		const totals: Record<number, number> = {};

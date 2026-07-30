@@ -122,6 +122,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		flex-wrap: wrap;
 	}
 
 	&__project-link {
@@ -168,7 +169,7 @@
 	&__th,
 	&__cell {
 		padding: 0 12px;
-		border-bottom: 1px solid $color-border-row;
+		border-bottom: 1px solid $color-border-separator;
 		vertical-align: middle;
 		height: var(--row-h);
 		white-space: nowrap;
@@ -177,12 +178,33 @@
 		text-align: center;
 	}
 
+	&__th {
+		background: $color-bg-subtle;
+		color: $color-text-link;
+		font-weight: $font-weight-semibold;
+	}
+
+	tbody &__cell {
+		border-bottom-width: 2px;
+	}
+
+	&__th:not(:first-child),
+	&__cell:not(:first-child) {
+		border-left: 1px solid $color-border-separator;
+	}
+
 	&__th--left,
 	&__cell--left {
 		text-align: left;
 		white-space: normal;
 		overflow: visible;
 		text-overflow: clip;
+		border-right: 2px solid $color-border-separator;
+	}
+
+	&__th--left + &__th,
+	&__cell--left + &__cell {
+		border-left: none;
 	}
 
 	&__cell--left {

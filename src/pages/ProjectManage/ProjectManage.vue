@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import FilterPanel from '../../components/shared/FilterPanel.vue';
+import ProjectActualizationStatus from '../../components/shared/ProjectActualizationStatus.vue';
+import { useProjectFilters } from '../../composables/useProjectFilters';
 import { useProjectsStore } from '../../stores/projects';
 import { useGroupsStore } from '../../stores/groups';
 import { useMatrixEditor } from './composables/useMatrixEditor';
 import { actualizationStatus } from './composables/actualization';
 import { useTableScroll } from '../ResourcePlan/composables/useTableScroll';
 import { useViewMode, quarterLabel, quarterNumbers, type Quarter } from '../ResourcePlan/composables/useViewMode';
-import type { Project } from '../../types/domain';
+import ProjectCompletionDialog from '../Projects/components/ProjectCompletionDialog.vue';
+import ProjectActionMenu from './components/ProjectActionMenu.vue';
+import type { Project, ProjectCompletionInput, ProjectCompletionResource } from '../../types/domain';
 
 const projectsStore = useProjectsStore();
 const groupsStore = useGroupsStore();
@@ -25,8 +30,32 @@ const {
 const { viewMode, selectedQuarter } = useViewMode();
 
 const hasData = computed(() => !!(projectsStore.items.length && groupsStore.items.length));
+const manageableProjects = computed(() =>
+	projectsStore.items.filter((project) => project.status !== 'completed' || project.archived),
+);
 
-const staleCount = computed(() => projectsStore.items.filter((p) => needsActual(p)).length);
+const {
+	selectedCustomers,
+	selectedManagers,
+	hideArchived,
+	customerOptions,
+	managerOptions,
+	hasActiveFilters,
+	filteredProjects,
+	filteredProjectsCount,
+	resetFilters,
+} = useProjectFilters(manageableProjects, { hideArchivedByDefault: true });
+
+const notActualizedCount = computed(() => filteredProjects.value.filter((project) => needsActual(project)).length);
+
+const actualizationAlertText = computed(() => {
+	const count = notActualizedCount.value;
+	const projectLabel = pluralProjects(count);
+	if (selectedManagers.value.length === 1) {
+		return `У руководителя ${selectedManagers.value[0]} не актуализировано ${count} ${projectLabel}`;
+	}
+	return `Не актуализировано ${count} ${projectLabel}`;
+});
 
 function pluralProjects(n: number): string {
 	const mod10 = n % 10;
@@ -36,7 +65,6 @@ function pluralProjects(n: number): string {
 	return 'проектов';
 }
 
-const hideArchived = ref(true);
 const search = ref('');
 
 function matchesSearch(name: string, query: string): boolean {
@@ -48,12 +76,20 @@ function matchesSearch(name: string, query: string): boolean {
 
 const visibleProjects = computed(() => {
 	const query = search.value.trim().toLowerCase();
-	return projectsStore.items.filter((p) => (!hideArchived.value || !p.archived) && matchesSearch(p.name, query));
+	return filteredProjects.value.filter((p) => matchesSearch(p.name, query));
 });
 
 const selectedProjectId = ref<number | null>(null);
 const selectedGroupId = ref<number | null>(null);
+const actionProject = ref<Project | null>(null);
+const completionProject = ref<Project | null>(null);
+const isCompleting = ref(false);
+const completionError = ref('');
 
+function toggleProjectActions(project: Project) {
+	const isOpen = actionProject.value?.id === project.id;
+	actionProject.value = isOpen ? null : project;
+}
 function toggleRow(id: number) {
 	selectedProjectId.value = selectedProjectId.value === id ? null : id;
 }
@@ -63,6 +99,54 @@ function toggleColumn(id: number) {
 function clearSelection() {
 	selectedProjectId.value = null;
 	selectedGroupId.value = null;
+	actionProject.value = null;
+}
+
+const completionResources = computed<ProjectCompletionResource[]>(() => {
+	if (!completionProject.value) return [];
+	const project = completionProject.value;
+	const previousFact = new Map(
+		project.completion?.resources.map((resource) => [resource.groupId, resource.actualHours]) ?? [],
+	);
+	return groupsStore.items.map((group) => ({
+		groupId: group.id,
+		groupName: group.name,
+		plannedHours: cell(project.id, group.id).total,
+		actualHours: previousFact.get(group.id) ?? 0,
+	}));
+});
+
+async function toggleProjectArchive(project: Project): Promise<void> {
+	actionProject.value = null;
+	selectedProjectId.value = null;
+	await projectsStore.toggleArchive(project.id, !project.archived);
+}
+
+function openCompletion(project: Project): void {
+	actionProject.value = null;
+	completionProject.value = project;
+	completionError.value = '';
+}
+
+function closeCompletion(): void {
+	if (isCompleting.value) return;
+	completionProject.value = null;
+	completionError.value = '';
+}
+
+async function confirmCompletion(input: ProjectCompletionInput): Promise<void> {
+	if (!completionProject.value) return;
+	isCompleting.value = true;
+	completionError.value = '';
+	try {
+		await projectsStore.completeProject(completionProject.value.id, input);
+		completionProject.value = null;
+		selectedProjectId.value = null;
+	} catch {
+		completionError.value = 'Не удалось завершить проект. Попробуйте ещё раз.';
+	} finally {
+		isCompleting.value = false;
+	}
 }
 
 const isSplit = computed(() => viewMode.value === 'quarterSplit');
@@ -85,39 +169,22 @@ const statusLabel = computed(() => {
 	}
 });
 
-function actualizedStamp(iso?: string): string {
-	if (!iso) return '';
-	return new Date(iso).toLocaleString('ru-RU', {
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit',
-	});
-}
-
-function statusText(p: Project): string {
-	const status = actualizationStatus(p);
-	if (status === 'ok') return `Актуализировано ${actualizedStamp(p.actualizedAt)}`;
-	if (status === 'stale') return `Данные устарели · ${actualizedStamp(p.actualizedAt)}`;
-	// ни разу не актуализировали, но данные уже правили
-	if (hasChangedCells(p.id)) return 'Данные не актуализированы';
-	return '';
-}
-
 // проекту нужна актуализация: подтверждали и изменили, либо правили без подтверждения
 function needsActual(p: Project): boolean {
 	const status = actualizationStatus(p);
 	if (status === 'ok') return false;
-	if (status === 'stale') return true;
-	return hasChangedCells(p.id);
+	if (status === 'none') return hasChangedCells(p.id);
+	return true;
 }
 
 function actualizedTitle(p: Project): string {
 	const status = actualizationStatus(p);
 	if (status === 'none') return 'Отметить, что ресурсы по проекту актуальны';
-	if (status === 'stale') {
+	if (status === 'unactualized') {
 		return `Данные изменились после актуализации (${new Date(p.actualizedAt!).toLocaleString('ru-RU')}). Нажмите, чтобы подтвердить заново.`;
+	}
+	if (status === 'stale') {
+		return `Срок актуальности данных от ${new Date(p.actualizedAt!).toLocaleString('ru-RU')} истёк. Нажмите, чтобы подтвердить заново.`;
 	}
 	return `Актуализировано: ${new Date(p.actualizedAt!).toLocaleString('ru-RU')}. Нажмите, чтобы обновить.`;
 }
@@ -170,7 +237,12 @@ function handleQuarter(projectId: number, groupId: number) {
 			Быстрое редактирование распределения по всем группам сразу. Изменения сохраняются автоматически.
 		</p>
 
-		<div v-if="staleCount" class="pm__alert" role="status">
+		<div
+			class="pm__alert"
+			:class="{ 'pm__alert--hidden': !notActualizedCount }"
+			:role="notActualizedCount ? 'status' : undefined"
+			:aria-hidden="!notActualizedCount"
+		>
 			<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
 				<path
 					d="M12 8v5m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
@@ -180,7 +252,7 @@ function handleQuarter(projectId: number, groupId: number) {
 					stroke-linecap="round"
 				/>
 			</svg>
-			<span>Устаревшие данные: {{ staleCount }} {{ pluralProjects(staleCount) }} — требуется актуализация</span>
+			<span>{{ actualizationAlertText }}</span>
 		</div>
 
 		<div v-if="hasData" class="pm__toolbar">
@@ -213,7 +285,7 @@ function handleQuarter(projectId: number, groupId: number) {
 						:checked="viewMode === 'quarterSingle'"
 						@change="viewMode = 'quarterSingle'"
 					/>
-					<span>По квартально</span>
+					<span>Поквартально</span>
 				</label>
 				<label class="pm__mode">
 					<input
@@ -281,10 +353,28 @@ function handleQuarter(projectId: number, groupId: number) {
 					</div>
 				</transition>
 			</div>
+
+			<FilterPanel
+				:customer-options="customerOptions"
+				:manager-options="managerOptions"
+				:selected-customers="selectedCustomers"
+				:selected-managers="selectedManagers"
+				:has-active-filters="hasActiveFilters"
+				:filtered-count="filteredProjectsCount"
+				:total-count="manageableProjects.length"
+				@update:selected-customers="selectedCustomers = $event"
+				@update:selected-managers="selectedManagers = $event"
+				@reset="resetFilters"
+			/>
 		</div>
 
 		<div v-if="hasData && visibleProjects.length" class="pm__scroll" ref="tableWrapperRef">
-			<table class="pm__table" aria-label="Матрица распределения ресурсов" ref="tableRef" @click.stop>
+			<table
+				class="pm__table"
+				aria-label="Матрица распределения ресурсов"
+				ref="tableRef"
+				@click.stop="actionProject = null"
+			>
 				<colgroup>
 					<col class="pm__col--name" />
 					<template v-for="g in groupsStore.items" :key="'col-' + g.id">
@@ -340,43 +430,29 @@ function handleQuarter(projectId: number, groupId: number) {
 						class="pm__row"
 						:class="{ 'pm__row--archived': p.archived, 'pm__row--selected': selectedProjectId === p.id }"
 					>
-						<td class="pm__cell pm__cell--left" @click="toggleRow(p.id)">
+						<td
+							class="pm__cell pm__cell--left"
+							:class="{ 'pm__cell--actions-open': actionProject?.id === p.id }"
+							@click="toggleRow(p.id)"
+						>
 							<div class="pm__project">
 								<span class="pm__project-name" :title="p.name">{{ p.name }}</span>
 								<span v-if="p.archived" class="pm__archived-tag">в архиве</span>
+								<button
+									type="button"
+									class="pm__project-actions-trigger"
+									:class="{ 'pm__project-actions-trigger--active': actionProject?.id === p.id }"
+									:aria-label="`Действия проекта «${p.name}»`"
+									:aria-expanded="actionProject?.id === p.id"
+									@click.stop="toggleProjectActions(p)"
+								>
+									<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+										<path fill="currentColor" d="M7 10l5 5 5-5H7Z" />
+									</svg>
+								</button>
 							</div>
 							<div v-if="!p.archived" class="pm__actual">
-								<span
-									v-if="statusText(p)"
-									class="pm__actual-status"
-									:class="
-										actualizationStatus(p) === 'ok'
-											? 'pm__actual-status--ok'
-											: 'pm__actual-status--stale'
-									"
-								>
-									<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
-										<path
-											v-if="actualizationStatus(p) === 'ok'"
-											d="M20 6L9 17l-5-5"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2.4"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-										/>
-										<path
-											v-else
-											d="M12 8v5m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-										/>
-									</svg>
-									<span>{{ statusText(p) }}</span>
-								</span>
+								<ProjectActualizationStatus :project="p" :show-unactualized="hasChangedCells(p.id)" />
 								<button
 									v-if="actualizationStatus(p) !== 'ok'"
 									type="button"
@@ -387,6 +463,12 @@ function handleQuarter(projectId: number, groupId: number) {
 									Актуализировать
 								</button>
 							</div>
+							<ProjectActionMenu
+								v-if="actionProject?.id === p.id"
+								:project="p"
+								@toggle-archive="toggleProjectArchive(p)"
+								@complete="openCompletion(p)"
+							/>
 						</td>
 
 						<template v-for="g in groupsStore.items" :key="`c-${p.id}-${g.id}`">
@@ -400,7 +482,7 @@ function handleQuarter(projectId: number, groupId: number) {
 								}"
 							>
 								<input
-									class="pm__input pm__input--total"
+									class="pm__input pm__input--single"
 									type="number"
 									min="0"
 									step="1"
@@ -421,7 +503,7 @@ function handleQuarter(projectId: number, groupId: number) {
 								}"
 							>
 								<input
-									class="pm__input"
+									class="pm__input pm__input--single"
 									type="number"
 									min="0"
 									step="1"
@@ -470,6 +552,19 @@ function handleQuarter(projectId: number, groupId: number) {
 		<div v-show="showHScroll" ref="hScrollRef" class="pm__hscroll" aria-hidden="true">
 			<div ref="hScrollInnerRef" class="pm__hscroll-inner"></div>
 		</div>
+
+		<ProjectCompletionDialog
+			v-if="completionProject"
+			:project-name="completionProject.name"
+			:resources="completionResources"
+			:initial-actual-total-hours="completionProject.completion?.actualTotalHours"
+			:initial-entry-mode="completionProject.completion?.entryMode"
+			:editing="completionProject.status === 'completed'"
+			:confirming="isCompleting"
+			:error="completionError"
+			@close="closeCompletion"
+			@confirm="confirmCompletion"
+		/>
 	</section>
 </template>
 

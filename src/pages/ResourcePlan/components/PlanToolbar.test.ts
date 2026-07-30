@@ -22,6 +22,13 @@ function makeProps(overrides: Partial<InstanceType<typeof PlanToolbar>['$props']
 }
 
 describe('PlanToolbar', () => {
+	it('показывает корректное название поквартального режима', () => {
+		const wrapper = mount(PlanToolbar, { props: makeProps() });
+
+		expect(wrapper.text()).toContain('Поквартально');
+		expect(wrapper.text()).not.toContain('По квартально');
+	});
+
 	it('показывает переключатель нулевых строк только при наличии данных', () => {
 		const wrapper = mount(PlanToolbar, { props: makeProps() });
 

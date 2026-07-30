@@ -4,6 +4,7 @@ import FilterPanel from '../../components/shared/FilterPanel.vue';
 import { useProjectsStore } from '../../stores/projects';
 import { useGroupsStore } from '../../stores/groups';
 import { useProjectFilters } from '../../composables/useProjectFilters';
+import { useChangedAllocationCells } from '../../composables/useChangedAllocationCells';
 import { useAllocationBuffer } from './composables/useAllocationBuffer';
 import { useAllocationAutoSave } from './composables/useAllocationAutoSave';
 import ManageToolbar from './components/ManageToolbar.vue';
@@ -30,6 +31,7 @@ const {
 
 const { buffer, onTotalInput, onQuarterInput } = useAllocationBuffer(selectedGroupId);
 const { saveStatus, scheduleSave, saveNow, retrySave } = useAllocationAutoSave(selectedGroupId, buffer);
+const { markChanged, hasChangedCells } = useChangedAllocationCells();
 
 const groupOptions = computed(() =>
 	groupsStore.items.map((g) => ({
@@ -46,11 +48,13 @@ function groupName(id: number) {
 
 function handleTotalInput(projectId: number) {
 	onTotalInput(projectId);
+	markChanged(projectId, selectedGroupId.value);
 	scheduleSave(projectId);
 }
 
 function handleQuarterInput(projectId: number) {
 	onQuarterInput(projectId);
+	markChanged(projectId, selectedGroupId.value);
 	scheduleSave(projectId);
 }
 </script>
@@ -117,6 +121,7 @@ function handleQuarterInput(projectId: number) {
 			:projects="filteredProjects"
 			:group-name="groupName(selectedGroupId)"
 			:buffer="buffer"
+			:has-changed-cells="hasChangedCells"
 			@total-input="handleTotalInput"
 			@quarter-input="handleQuarterInput"
 		/>

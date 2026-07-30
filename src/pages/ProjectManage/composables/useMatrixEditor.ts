@@ -3,8 +3,11 @@ import { useProjectsStore } from '../../../stores/projects';
 import { useGroupsStore } from '../../../stores/groups';
 import { useAllocationsStore } from '../../../stores/allocations';
 import { roundInt } from '../../../utils/format';
+import { pairKey, useChangedAllocationCells } from '../../../composables/useChangedAllocationCells';
 import { splitTotalToQuarters, type RowBuffer } from '../../DataManage/composables/useAllocationBuffer';
 import type { AllocationPayload } from '../../../types/domain';
+
+export { CHANGED_CELLS_STORAGE_KEY, pairKey } from '../../../composables/useChangedAllocationCells';
 
 export type MatrixSaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'error';
 
@@ -20,25 +23,6 @@ type MatrixEditorOptions = {
 	delayMs?: number;
 	savedVisibleMs?: number;
 };
-
-export const CHANGED_CELLS_STORAGE_KEY = 'resource_pm_changed_cells';
-
-export function pairKey(projectId: number, groupId: number): string {
-	return `${projectId}:${groupId}`;
-}
-
-function loadChangedCells(): Set<string> {
-	if (typeof window === 'undefined') return new Set();
-	try {
-		const raw = localStorage.getItem(CHANGED_CELLS_STORAGE_KEY);
-		if (!raw) return new Set();
-		const parsed: unknown = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return new Set();
-		return new Set(parsed.filter((v): v is string => typeof v === 'string'));
-	} catch {
-		return new Set();
-	}
-}
 
 function emptyRow(): RowBuffer {
 	return { total: 0, q1: 0, q2: 0, q3: 0, q4: 0 };
@@ -59,35 +43,7 @@ export function useMatrixEditor(options: MatrixEditorOptions = {}) {
 
 	const buffer = ref<Record<string, RowBuffer>>({});
 	const saveStatus = ref<MatrixSaveStatus>('idle');
-	// пары «проект:группа», изменённые после последней актуализации (для подсветки);
-	// хранится в localStorage, чтобы переживать перезагрузку
-	const changedCells = ref<Set<string>>(loadChangedCells());
-
-	function persistChangedCells() {
-		if (typeof window === 'undefined') return;
-		try {
-			localStorage.setItem(CHANGED_CELLS_STORAGE_KEY, JSON.stringify(Array.from(changedCells.value)));
-		} catch {
-			// игнорируем ошибки сохранения
-		}
-	}
-
-	function markChanged(projectId: number, groupId: number) {
-		changedCells.value.add(pairKey(projectId, groupId));
-		persistChangedCells();
-	}
-
-	function clearChangedForProject(projectId: number) {
-		const prefix = `${projectId}:`;
-		let removed = false;
-		for (const key of Array.from(changedCells.value)) {
-			if (key.startsWith(prefix)) {
-				changedCells.value.delete(key);
-				removed = true;
-			}
-		}
-		if (removed) persistChangedCells();
-	}
+	const { markChanged, clearChangedForProject, isChanged, hasChangedCells } = useChangedAllocationCells();
 
 	const pendingCells = new Map<string, PendingCell>();
 	let debounceTimer: number | null = null;
@@ -250,18 +206,6 @@ export function useMatrixEditor(options: MatrixEditorOptions = {}) {
 	function retrySave() {
 		if (!pendingCells.size) return;
 		void flushSave();
-	}
-
-	function isChanged(projectId: number, groupId: number): boolean {
-		return changedCells.value.has(pairKey(projectId, groupId));
-	}
-
-	function hasChangedCells(projectId: number): boolean {
-		const prefix = `${projectId}:`;
-		for (const key of changedCells.value) {
-			if (key.startsWith(prefix)) return true;
-		}
-		return false;
 	}
 
 	function onTotalInput(projectId: number, groupId: number) {

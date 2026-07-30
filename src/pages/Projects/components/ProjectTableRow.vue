@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '../../../types/domain';
+import type { Project, ProjectStatus } from '../../../types/domain';
 
 defineProps<{
 	project: Project;
@@ -22,7 +22,9 @@ const emit = defineEmits<{
 	saveName: [id: number];
 	cancelEdit: [];
 	onNameBlur: [id: number];
+	setStatus: [id: number, status: ProjectStatus];
 	toggleArchive: [id: number, archived: boolean];
+	openStatistics: [p: Project];
 	removeProject: [p: Project];
 	saveUrl: [id: number];
 	saveCustomer: [id: number];
@@ -38,6 +40,50 @@ const emit = defineEmits<{
 }>();
 
 const nameInputRef = defineModel<HTMLInputElement[] | null>('nameInputRef', { default: null });
+
+function statusLabel(project: Project): string {
+	if (project.archived) return 'В архиве';
+	if (project.status === 'completed') return 'Завершён';
+	return 'Активен';
+}
+
+function statusClass(project: Project): string {
+	if (project.archived) return 'badge--muted';
+	if (project.status === 'completed') return 'badge--completed';
+	return 'badge--ok';
+}
+
+function statusActionTitle(project: Project): string {
+	if (project.archived || project.status !== 'completed') return 'Завершить проект';
+	return 'Вернуть в работу';
+}
+
+function statusActionAriaLabel(project: Project): string {
+	if (project.archived || project.status !== 'completed') return `Завершить проект «${project.name}»`;
+	return `Вернуть проект «${project.name}» в активные`;
+}
+
+function statusActionButtonLabel(project: Project): string {
+	if (project.archived || project.status !== 'completed') return 'Завершить проект';
+	return 'Вернуть в работу';
+}
+
+function archiveActionTitle(project: Project): string {
+	return project.archived ? 'Разархивировать' : 'Архивировать';
+}
+
+function archiveActionAriaLabel(project: Project): string {
+	const action = project.archived ? 'Разархивировать' : 'Архивировать';
+	return `${action} проект «${project.name}»`;
+}
+
+function handleStatusAction(project: Project) {
+	if (project.archived) {
+		emit('setStatus', project.id, 'completed');
+		return;
+	}
+	emit('setStatus', project.id, project.status === 'completed' ? 'active' : 'completed');
+}
 </script>
 
 <template>
@@ -81,6 +127,22 @@ const nameInputRef = defineModel<HTMLInputElement[] | null>('nameInputRef', { de
 
 					<div class="projects__name-actions">
 						<button
+							v-if="project.status === 'completed' && !project.archived"
+							type="button"
+							class="projects__card-btn"
+							:title="`Статистика проекта «${project.name}»`"
+							:aria-label="`Статистика проекта «${project.name}»`"
+							@click="emit('openStatistics', project)"
+						>
+							<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+								<path
+									fill="currentColor"
+									d="M4 3h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h16V5H4Zm3 10h2v2H7v-2Zm4-4h2v6h-2v-6Zm4-3h2v9h-2V8Z"
+								/>
+							</svg>
+						</button>
+
+						<button
 							type="button"
 							class="projects__icon-btn"
 							title="Переименовать проект"
@@ -97,7 +159,8 @@ const nameInputRef = defineModel<HTMLInputElement[] | null>('nameInputRef', { de
 						<button
 							type="button"
 							class="projects__icon-btn projects__icon-btn--archive"
-							:title="project.archived ? 'Разархивировать' : 'Архивировать'"
+							:title="archiveActionTitle(project)"
+							:aria-label="archiveActionAriaLabel(project)"
 							@click="emit('toggleArchive', project.id, !project.archived)"
 						>
 							<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
@@ -125,9 +188,24 @@ const nameInputRef = defineModel<HTMLInputElement[] | null>('nameInputRef', { de
 
 		<td class="projects__cell">
 			<div class="projects__cell-inner">
-				<span class="badge" :class="project.archived ? 'badge--muted' : 'badge--ok'">
-					{{ project.archived ? 'В архиве' : 'Активен' }}
-				</span>
+				<div class="projects__status-actions">
+					<span class="badge" :class="statusClass(project)">
+						<span class="badge__label">{{ statusLabel(project) }}</span>
+					</span>
+					<button
+						type="button"
+						class="projects__status-btn"
+						:class="{
+							'projects__status-btn--complete': project.archived || project.status !== 'completed',
+							'projects__status-btn--restore': !project.archived && project.status === 'completed',
+						}"
+						:title="statusActionTitle(project)"
+						:aria-label="statusActionAriaLabel(project)"
+						@click="handleStatusAction(project)"
+					>
+						{{ statusActionButtonLabel(project) }}
+					</button>
+				</div>
 			</div>
 		</td>
 

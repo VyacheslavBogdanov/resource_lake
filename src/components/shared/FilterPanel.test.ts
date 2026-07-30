@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import FilterPanel from './FilterPanel.vue';
@@ -28,6 +29,17 @@ describe('FilterPanel', () => {
 		const wrapper = mount(FilterPanel, { props: baseProps });
 		await wrapper.find('.filter-panel__btn').trigger('click');
 		expect(wrapper.find('.filter-panel').exists()).toBe(true);
+	});
+
+	it('закрывает панель по клику вне фильтра', async () => {
+		const wrapper = mount(FilterPanel, { props: baseProps, attachTo: document.body });
+		await wrapper.find('.filter-panel__btn').trigger('click');
+
+		document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		await nextTick();
+
+		expect(wrapper.find('.filter-panel').exists()).toBe(false);
+		wrapper.unmount();
 	});
 
 	it('отображает бейдж при активных фильтрах', () => {

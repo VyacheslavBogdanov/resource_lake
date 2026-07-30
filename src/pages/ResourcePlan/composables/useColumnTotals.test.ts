@@ -118,4 +118,27 @@ describe('useColumnTotals — availableByColumn', () => {
 		// effectiveCapacity = 100, multiplier = 1 (quarterSingle); q1 = 40 → available = 60
 		expect(availableByColumn(col)).toBe(60);
 	});
+
+	it('не учитывает завершённые проекты в итоговой загрузке', () => {
+		const projectsStore = useProjectsStore();
+		const groupsStore = useGroupsStore();
+		const allocationsStore = useAllocationsStore();
+
+		projectsStore.items = [
+			{ ...makeProject(1), status: 'active' },
+			{ ...makeProject(2), status: 'completed' },
+		];
+		groupsStore.items = [makeGroup(1, 100, 0)];
+		allocationsStore.items = [makeAllocation(1, 1, 1, 60), makeAllocation(2, 2, 1, 500)];
+
+		const viewMode = ref<ViewMode>('total');
+		const selectedQuarter = ref<Quarter>(1);
+		const col = makeCol(1);
+		const tableColumns = ref([col]);
+
+		const { activeGrandTotal, availableByColumn } = useColumnTotals(viewMode, selectedQuarter, tableColumns);
+
+		expect(activeGrandTotal.value).toBe(60);
+		expect(availableByColumn(col)).toBe(340);
+	});
 });

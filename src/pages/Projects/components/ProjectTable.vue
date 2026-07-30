@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '../../../types/domain';
+import type { Project, ProjectStatus } from '../../../types/domain';
 import ProjectTableRow from './ProjectTableRow.vue';
 
 defineProps<{
@@ -24,7 +24,9 @@ defineEmits<{
 	saveName: [id: number];
 	cancelEdit: [];
 	onNameBlur: [id: number];
+	setStatus: [id: number, status: ProjectStatus];
 	toggleArchive: [id: number, archived: boolean];
+	openStatistics: [p: Project];
 	removeProject: [p: Project];
 	saveUrl: [id: number];
 	saveCustomer: [id: number];
@@ -44,13 +46,13 @@ defineEmits<{
 	<div class="projects__table-wrap">
 		<table class="projects__table">
 			<colgroup>
-				<col style="width: 28%" />
-				<col style="width: 10%" />
-				<col style="width: 14%" />
-				<col style="width: 12%" />
-				<col style="width: 10%" />
-				<col style="width: 16%" />
-				<col style="width: 10%" />
+				<col style="width: 21%" />
+				<col style="width: 25%" />
+				<col style="width: 13%" />
+				<col style="width: 11%" />
+				<col style="width: 9%" />
+				<col style="width: 13%" />
+				<col style="width: 8%" />
 			</colgroup>
 
 			<thead>
@@ -88,7 +90,9 @@ defineEmits<{
 					@save-name="$emit('saveName', $event)"
 					@cancel-edit="$emit('cancelEdit')"
 					@on-name-blur="$emit('onNameBlur', $event)"
+					@set-status="(id, status) => $emit('setStatus', id, status)"
 					@toggle-archive="(id, archived) => $emit('toggleArchive', id, archived)"
+					@open-statistics="$emit('openStatistics', $event)"
 					@remove-project="$emit('removeProject', $event)"
 					@save-url="$emit('saveUrl', $event)"
 					@save-customer="$emit('saveCustomer', $event)"

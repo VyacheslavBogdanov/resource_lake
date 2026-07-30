@@ -44,9 +44,9 @@ describe('actualization', () => {
 			expect(actualizationStatus(p, now)).toBe('ok');
 		});
 
-		it('stale — если данные изменились после подтверждения', () => {
+		it('unactualized — если данные изменились после подтверждения', () => {
 			const p = { actualizedAt: new Date(2026, 6, 1).toISOString(), actualizedStale: true };
-			expect(actualizationStatus(p, now)).toBe('stale');
+			expect(actualizationStatus(p, now)).toBe('unactualized');
 		});
 
 		it('stale — если наступило новое 20-е число (отметка из прошлого периода)', () => {

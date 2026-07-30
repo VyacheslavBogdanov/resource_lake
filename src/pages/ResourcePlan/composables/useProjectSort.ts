@@ -17,7 +17,9 @@ export function useProjectSort(deps: ProjectSortDeps) {
 	}>({ field: null, columnId: null, direction: 'asc' });
 
 	const sortedProjects = computed(() => {
-		const projects = [...deps.filteredProjects.value].filter((p) => !p.archived);
+		const projects = [...deps.filteredProjects.value].filter(
+			(project) => !project.archived && project.status !== 'completed',
+		);
 		const { field, direction } = sortState.value;
 		if (!field) return projects;
 

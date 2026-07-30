@@ -1,5 +1,5 @@
 <template>
-	<div class="filter-panel-wrapper">
+	<div ref="wrapperRef" class="filter-panel-wrapper">
 		<button
 			type="button"
 			class="filter-panel__btn"
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = defineProps<{
 	customerOptions: string[];
@@ -85,6 +85,16 @@ const emit = defineEmits<{
 }>();
 
 const isOpen = ref(false);
+const wrapperRef = ref<HTMLElement | null>(null);
+
+function handleDocumentClick(event: MouseEvent) {
+	const target = event.target;
+	if (!isOpen.value || !(target instanceof Node) || wrapperRef.value?.contains(target)) return;
+	isOpen.value = false;
+}
+
+onMounted(() => document.addEventListener('click', handleDocumentClick));
+onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick));
 
 function toggleCustomer(value: string) {
 	const current = [...props.selectedCustomers];

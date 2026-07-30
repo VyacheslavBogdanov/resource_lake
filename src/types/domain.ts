@@ -1,6 +1,32 @@
+export type ProjectStatus = 'active' | 'completed';
+export type ProjectCompletionEntryMode = 'groups' | 'total';
+
+export interface ProjectCompletionResource {
+	groupId: number;
+	groupName: string;
+	plannedHours: number;
+	actualHours: number;
+}
+
+export interface ProjectCompletionInput {
+	entryMode: ProjectCompletionEntryMode;
+	actualTotalHours: number;
+	resources: ProjectCompletionResource[];
+}
+
+export interface ProjectCompletion {
+	completedAt: string;
+	entryMode?: ProjectCompletionEntryMode;
+	actualTotalHours?: number;
+	resources: ProjectCompletionResource[];
+}
+
 export interface Project {
 	id: number;
 	name: string;
+	status?: ProjectStatus;
+	completedAt?: string | null;
+	completion?: ProjectCompletion;
 	archived?: boolean;
 	url?: string;
 	customer?: string;

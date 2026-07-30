@@ -19,20 +19,21 @@ export function isActualized(actualizedAt: string | undefined | null, now: Date 
 	return at.getTime() >= currentPeriodStart(now).getTime();
 }
 
-export type ActualizationStatus = 'none' | 'ok' | 'stale';
+export type ActualizationStatus = 'none' | 'ok' | 'unactualized' | 'stale';
 
 /**
  * Статус актуализации проекта:
  * - none  — никогда не подтверждали;
  * - ok    — подтверждено в текущем периоде и данные с тех пор не менялись;
- * - stale — подтверждали, но данные изменились ИЛИ наступило новое 20-е число.
+ * - unactualized — ресурсы изменились после подтверждения;
+ * - stale — наступило новое 20-е число и срок подтверждения истёк.
  */
 export function actualizationStatus(
 	project: { actualizedAt?: string | null; actualizedStale?: boolean },
 	now: Date = new Date(),
 ): ActualizationStatus {
 	if (!project.actualizedAt) return 'none';
-	if (project.actualizedStale) return 'stale';
+	if (project.actualizedStale) return 'unactualized';
 	if (!isActualized(project.actualizedAt, now)) return 'stale';
 	return 'ok';
 }

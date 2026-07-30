@@ -23,6 +23,14 @@ import PlanCapacityChart from './components/PlanCapacityChart.vue';
 
 const projectsStore = useProjectsStore();
 const groupsStore = useGroupsStore();
+const planProjects = computed(() =>
+	projectsStore.items.filter((project) => !project.archived && project.status !== 'completed'),
+);
+const emptyMessage = computed(() =>
+	projectsStore.items.length && !planProjects.value.length
+		? 'Нет активных проектов для ресурсного плана.'
+		: 'Добавьте проекты и группы ресурсов, чтобы увидеть план.',
+);
 
 const { viewMode, selectedQuarter, displayByResourceType, capacityDisplay } = useViewMode();
 
@@ -38,7 +46,7 @@ const {
 	filteredProjects,
 	filteredProjectsCount,
 	resetFilters,
-} = useProjectFilters(computed(() => projectsStore.items));
+} = useProjectFilters(planProjects);
 
 const {
 	activeColTotals,
@@ -135,7 +143,7 @@ const { tableWrapperRef, tableRef, hScrollRef, hScrollInnerRef, showHScroll, ens
 
 watch(
 	() => [
-		projectsStore.items.length,
+		planProjects.value.length,
 		groupsStore.items.length,
 		filteredProjectsCount.value,
 		tableColumns.value.length,
@@ -169,14 +177,14 @@ const { chartRows } = useChartData({
 			:display-by-resource-type="displayByResourceType"
 			:capacity-display="capacityDisplay"
 			:move-zero-rows-down="moveZeroRowsDown"
-			:has-data="!!(projectsStore.items.length && groupsStore.items.length)"
+			:has-data="!!(planProjects.length && groupsStore.items.length)"
 			:customer-options="customerOptions"
 			:manager-options="managerOptions"
 			:selected-customers="selectedCustomers"
 			:selected-managers="selectedManagers"
 			:has-active-filters="hasActiveFilters"
 			:filtered-projects-count="filteredProjectsCount"
-			:total-projects-count="projectsStore.items.length"
+			:total-projects-count="planProjects.length"
 			@export-csv="exportCsv"
 			@update:view-mode="viewMode = $event"
 			@update:selected-quarter="selectedQuarter = $event"
@@ -189,8 +197,8 @@ const { chartRows } = useChartData({
 		/>
 
 		<PlanKpis
-			v-if="groupsStore.items.length || projectsStore.items.length"
-			:projects-count="projectsStore.items.length"
+			v-if="groupsStore.items.length || planProjects.length"
+			:projects-count="planProjects.length"
 			:groups-count="groupsStore.items.length"
 			:total-capacity="totalCapacity"
 			:total-allocated="totalAllocated"
@@ -199,7 +207,7 @@ const { chartRows } = useChartData({
 			:util-class="utilClass"
 		/>
 
-		<template v-if="projectsStore.items.length && groupsStore.items.length">
+		<template v-if="planProjects.length && groupsStore.items.length">
 			<div class="plan__table-wrapper" ref="tableWrapperRef">
 				<table class="plan__table" aria-label="Таблица ресурсного плана" ref="tableRef">
 					<colgroup>
@@ -272,7 +280,7 @@ const { chartRows } = useChartData({
 			</div>
 		</template>
 
-		<p v-else class="plan__empty">Добавьте проекты и группы ресурсов, чтобы увидеть план.</p>
+		<p v-else class="plan__empty">{{ emptyMessage }}</p>
 
 		<PlanCapacityChart
 			v-if="groupsStore.items.length"

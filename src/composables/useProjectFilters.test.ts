@@ -92,14 +92,15 @@ describe('useProjectFilters', () => {
 		expect(hasActiveFilters.value).toBe(true);
 	});
 
-	it('скрывает архивные проекты при hideArchived', () => {
+	it('скрывает архивные и завершённые проекты при hideArchived', () => {
 		const projects = ref<Project[]>([
 			makeProject({ id: 1, name: 'A' }),
 			makeProject({ id: 2, name: 'B', archived: true }),
+			makeProject({ id: 3, name: 'C', status: 'completed' }),
 		]);
 		const { hideArchived, hasActiveFilters, filteredProjects } = useProjectFilters(projects);
 
-		expect(filteredProjects.value).toHaveLength(2);
+		expect(filteredProjects.value).toHaveLength(3);
 
 		hideArchived.value = true;
 		expect(hasActiveFilters.value).toBe(true);

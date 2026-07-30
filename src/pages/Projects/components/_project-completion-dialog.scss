@@ -1,0 +1,249 @@
+@use '../../../styles/variables' as *;
+
+.project-completion {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+
+	&__hint {
+		margin: 0 0 10px;
+		color: $color-text-secondary;
+		font-size: $font-size-sm;
+		line-height: 1.4;
+	}
+
+	&__mode {
+		display: inline-flex;
+		align-self: flex-start;
+		margin-bottom: 12px;
+		padding: 3px;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+		background: $color-bg-subtle;
+	}
+
+	&__mode-button {
+		min-width: 132px;
+		height: 32px;
+		padding: 0 14px;
+		border: 0;
+		border-radius: $radius-sm;
+		background: transparent;
+		color: $color-text-secondary;
+		font: inherit;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-semibold;
+		cursor: pointer;
+
+		&--active {
+			background: $color-bg-surface;
+			color: $color-primary-600;
+			box-shadow: $shadow-sm;
+		}
+
+		&:focus-visible {
+			outline: none;
+			box-shadow: $shadow-focus;
+		}
+	}
+
+	&__summary {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+
+	&__stat {
+		display: flex;
+		flex-direction: column;
+		gap: 7px;
+		padding: 12px 14px;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+		background: $color-bg-subtle;
+
+		span {
+			color: $color-text-secondary;
+			font-size: $font-size-xs;
+		}
+
+		strong {
+			color: $color-text-heading;
+			font-size: $font-size-xl;
+			font-variant-numeric: tabular-nums;
+		}
+
+		&--delta strong {
+			color: $color-success-text;
+		}
+
+		&--over strong {
+			color: $color-danger-text-dark;
+		}
+	}
+
+	&__total {
+		display: grid;
+		grid-template-columns: minmax(240px, 1fr) 180px auto;
+		align-items: center;
+		gap: 16px;
+		padding: 14px 16px;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+		background: $color-bg-subtle;
+	}
+
+	&__total-label {
+		color: $color-text-primary;
+		font-size: $font-size-base;
+		font-weight: $font-weight-semibold;
+		line-height: 1.4;
+	}
+
+	&__groups {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-height: 180px;
+		padding: 14px 16px;
+		border: 1px solid $color-border-accent;
+		border-radius: $radius-md;
+		background: $color-bg-subtle;
+	}
+
+	&__groups-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		margin: 0 0 8px;
+
+		h3 {
+			margin: 0;
+			color: $color-text-primary;
+			font-size: $font-size-base;
+			font-weight: $font-weight-semibold;
+			line-height: 1.4;
+		}
+	}
+
+	&__fill {
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: $color-primary-600;
+		font: inherit;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-semibold;
+		cursor: pointer;
+
+		&:hover {
+			color: $color-primary-700;
+			text-decoration: underline;
+		}
+	}
+
+	&__table-wrap {
+		flex: 1;
+		min-height: 0;
+		overflow: auto;
+		border: 1px solid $color-border-cell;
+		border-radius: $radius-md;
+		background: $color-bg-surface;
+	}
+
+	&__table {
+		width: 100%;
+		min-width: 540px;
+		border-collapse: separate;
+		border-spacing: 0;
+	}
+
+	th,
+	td {
+		padding: 10px 12px;
+		border-bottom: 1px solid $color-border-cell;
+		text-align: left;
+	}
+
+	th + th,
+	td + td {
+		border-left: 1px solid $color-border-cell;
+	}
+
+	th {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: $color-bg-header;
+		color: $color-text-muted;
+		font-size: $font-size-base;
+		font-weight: $font-weight-semibold;
+	}
+
+	tbody tr:last-child td {
+		border-bottom: 0;
+	}
+
+	&__input,
+	&__total-input {
+		height: 32px;
+		padding: 0 9px;
+		border: 1px solid $color-border-input;
+		border-radius: $radius-sm;
+		background: $color-bg-surface;
+		color: $color-text-primary;
+		font: inherit;
+		font-variant-numeric: tabular-nums;
+
+		&:focus-visible {
+			outline: none;
+			border-color: $color-primary-600;
+			box-shadow: $shadow-focus;
+		}
+	}
+
+	&__input {
+		width: 110px;
+	}
+
+	&__total-input {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	&__deviation {
+		color: $color-success-text;
+		font-variant-numeric: tabular-nums;
+
+		&--over {
+			color: $color-danger-text-dark;
+		}
+	}
+
+	&__empty {
+		margin: 12px 0 0;
+		color: $color-text-secondary;
+	}
+
+	&__error {
+		margin: 12px 0 0;
+		padding: 10px 12px;
+		border: 1px solid $color-danger-border-light;
+		border-radius: $radius-md;
+		background: $color-danger-bg;
+		color: $color-danger-text;
+	}
+}
+
+@media (max-width: 640px) {
+	.project-completion__summary {
+		grid-template-columns: 1fr;
+	}
+
+	.project-completion__total {
+		grid-template-columns: 1fr;
+	}
+}

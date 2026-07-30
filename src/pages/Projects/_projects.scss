@@ -11,6 +11,50 @@
 		flex-wrap: wrap;
 	}
 
+	&__tabs {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		margin-bottom: 14px;
+		border-bottom: 1px solid $color-border-divider;
+	}
+
+	&__tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 9px 14px;
+		border: 0;
+		border-bottom: 2px solid transparent;
+		background: transparent;
+		color: $color-text-secondary;
+		font: inherit;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-semibold;
+		cursor: pointer;
+
+		&:hover {
+			color: $color-primary-600;
+			background: $color-bg-subtle;
+		}
+
+		&--active {
+			color: $color-primary-600;
+			border-bottom-color: $color-primary-600;
+		}
+	}
+
+	&__tab-count {
+		min-width: 22px;
+		padding: 1px 6px;
+		border-radius: $radius-full;
+		background: $color-bg-badge;
+		color: $color-badge-text;
+		font-size: $font-size-xs;
+		font-variant-numeric: tabular-nums;
+		text-align: center;
+	}
+
 	&__input {
 		flex: 0 1 260px;
 		padding: 0 10px;
@@ -29,7 +73,7 @@
 
 	&__table {
 		width: 100%;
-		min-width: 880px;
+		min-width: 1180px;
 		background: $color-bg-surface;
 		box-shadow: $shadow-sm;
 		border-collapse: separate;
@@ -86,6 +130,26 @@
 		margin-left: auto;
 	}
 
+	&__card-btn {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border: 1px solid $color-success-border;
+		border-radius: $radius-md;
+		background: $color-success-bg;
+		color: $color-success-700;
+		cursor: pointer;
+
+		&:hover {
+			border-color: $color-success-600;
+			background: $color-bg-surface;
+		}
+	}
+
 	&__icon-btn {
 		height: 28px;
 		width: 28px;
@@ -125,6 +189,59 @@
 	&__icon-btn--danger:hover {
 		background: $color-danger-bg-hover;
 		border-color: $color-danger-border-alt;
+	}
+
+	&__status-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 24px;
+		white-space: nowrap;
+	}
+
+	&__status-btn {
+		width: 160px;
+		height: 28px;
+		padding: 0 10px;
+		border: 1px solid $color-border-active;
+		border-radius: 8px;
+		background: $color-bg-surface;
+		color: $color-primary-600;
+		font: inherit;
+		font-size: $font-size-xs;
+		font-weight: $font-weight-semibold;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background $transition-fast,
+			border-color $transition-fast;
+
+		&:hover {
+			border-color: $color-primary-600;
+			background: $color-bg-row-hover;
+		}
+	}
+
+	&__status-btn--complete {
+		border-color: $color-success-600;
+		background: $color-bg-surface;
+		color: $color-success-700;
+	}
+
+	&__status-btn--complete:hover {
+		border-color: $color-success-700;
+		background: $color-success-bg;
+	}
+
+	&__status-btn--restore {
+		border-color: $color-border-active;
+		background: $color-bg-subtle;
+		color: $color-primary-600;
+	}
+
+	&__status-btn--restore:hover {
+		border-color: $color-primary-600;
+		background: $color-bg-row-hover;
 	}
 
 	&__cell--url {
@@ -200,12 +317,21 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 10px;
+	width: 92px;
 	height: 24px;
 	min-width: 92px;
+	padding: 0;
+	box-sizing: border-box;
 	border-radius: 999px;
-	font-size: 12px;
-	border: 1px solid transparent;
+	border: 2px solid transparent;
+	font-size: 13px;
+	font-weight: $font-weight-semibold;
+	line-height: 1;
+	text-align: center;
+
+	&__label {
+		transform: translateY(-1px);
+	}
 
 	&--ok {
 		background: $color-bg-cell-edit;
@@ -216,5 +342,10 @@
 		background: $color-disabled-bg;
 		color: $color-disabled-text;
 		border-color: $color-disabled-border;
+	}
+	&--completed {
+		background: $color-success-bg;
+		color: $color-success-text;
+		border-color: $color-success-border;
 	}
 }

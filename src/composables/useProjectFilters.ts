@@ -44,7 +44,7 @@ export function useProjectFilters(
 		const managers = new Set(selectedManagers.value);
 
 		return projects.value.filter((p) => {
-			if (hideArchived.value && p.archived) return false;
+			if (hideArchived.value && (p.archived || p.status === 'completed')) return false;
 
 			const customer = (p.customer ?? '').trim();
 			const manager = (p.projectManager ?? '').trim();
